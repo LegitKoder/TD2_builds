@@ -1,0 +1,2338 @@
+{
+  "mods": [
+    {
+      "id": 1,
+      "slot": "Optics Rail",
+      "type": "Iron Sight",
+      "name": "Streamlined Iron Sights",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 2,
+      "slot": "Optics Rail",
+      "type": "Iron Sight",
+      "name": "Weighted Iron Sights",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 3,
+      "slot": "Optics Rail",
+      "type": "Iron Sight",
+      "name": "Open Iron Sights",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 4,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "552 Holo Sight",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 5,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "ACOG Scope (4x)",
+      "bonus": {
+        "optimal_range": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 6,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "C79 Scope (3.4x)",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 7,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "CQBSS Scope (8x)",
+      "bonus": {
+        "headshot_damage": 30
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 8,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "Digital Scope",
+      "bonus": {
+        "headshot_damage": 45
+      },
+      "drawback": {
+        "critical_hit_damage": -5
+      },
+      "specialization": "Sharpshooter"
+    },
+    {
+      "id": 9,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "MK5 Scope (15x)",
+      "bonus": {
+        "headshot_damage": 40
+      },
+      "drawback": {
+        "reload_speed": -20
+      },
+      "specialization": "TAC-50 C Rifle"
+    },
+    {
+      "id": 10,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "VX-1 Scope (12x)",
+      "bonus": {
+        "headshot_damage": 35
+      },
+      "drawback": {
+        "reload_speed": -10
+      },
+      "specialization": "Default MMRs Scope"
+    },
+    {
+      "id": 11,
+      "slot": "Optics Rail",
+      "type": "Micro",
+      "name": "Low Reflex Sight",
+      "bonus": {
+        "headshot_damage": 5
+      },
+      "drawback": {
+        "optimal_range": -20
+      },
+      "specialization": null
+    },
+    {
+      "id": 12,
+      "slot": "Optics Rail",
+      "type": "Short",
+      "name": "EXPS3 Holo Sight",
+      "bonus": {
+        "headshot_damage": 3
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 13,
+      "slot": "Optics Rail",
+      "type": "Short",
+      "name": "PRO Red Dot Sight",
+      "bonus": {
+        "stability": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 14,
+      "slot": "Optics Rail",
+      "type": "Short",
+      "name": "Reflex Sight",
+      "bonus": {
+        "weapon_handling": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 15,
+      "slot": "Optics Rail",
+      "type": "Long",
+      "name": "Rugged Mini Reflex Sight",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 16,
+      "slot": "Optics Rail",
+      "type": "Short",
+      "name": "Russian Red Dot Sight",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 17,
+      "slot": "Optics Rail",
+      "type": "Short",
+      "name": "Small RDS Scope",
+      "bonus": {
+        "stability": 15
+      },
+      "drawback": {
+        "accuracy": -5
+      },
+      "specialization": null
+    },
+    {
+      "id": 18,
+      "slot": "Optics Rail",
+      "type": "Short",
+      "name": "T2 Micro Red Dot Sight",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 19,
+      "slot": "Optics Rail",
+      "type": "Eagle Bearer only",
+      "name": "Eagle Eye Sight",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 20,
+      "slot": "Optics Rail",
+      "type": "Chameleon only",
+      "name": "Chameleon Optics",
+      "bonus": {
+        "critical_hit_chance": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 21,
+      "slot": "Optics Rail",
+      "type": "The Big Horn only",
+      "name": "Fire Select Scope",
+      "bonus": {
+        "headshot_damage": 30
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 22,
+      "slot": "Optics Rail",
+      "type": "Capacitor only",
+      "name": "Conductive Focal",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 23,
+      "slot": "Optics Rail",
+      "type": "St. Elmo’s Engine only",
+      "name": "St. Elmo’s Engine Optic",
+      "bonus": {
+        "critical_hit_damage": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 24,
+      "slot": "Optics Rail",
+      "type": "Overlord only",
+      "name": "Overlord Optics",
+      "bonus": {
+        "critical_hit_damage": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 25,
+      "slot": "Optics Rail",
+      "type": "Sweet Dreams only",
+      "name": "Outcast Optics",
+      "bonus": {
+        "accuracy": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 26,
+      "slot": "Optics Rail",
+      "type": "Scorpio only",
+      "name": "Starlight Receptors",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 27,
+      "slot": "Optics Rail",
+      "type": "The Chatterbox only",
+      "name": "Modified Optics",
+      "bonus": {
+        "critical_hit_chance": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 28,
+      "slot": "Optics Rail",
+      "type": "Lady Death only",
+      "name": "Gaze of Death",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 29,
+      "slot": "Optics Rail",
+      "type": "Backfire only",
+      "name": "Quick Sight",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 30,
+      "slot": "Optics Rail",
+      "type": "Merciless only",
+      "name": "Merciless Optics",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 31,
+      "slot": "Optics Rail",
+      "type": "Diamondback only",
+      "name": "Diamondback Dot Sight",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 32,
+      "slot": "Optics Rail",
+      "type": "The Ravenous only",
+      "name": "Predatory Optics",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 33,
+      "slot": "Optics Rail",
+      "type": "Nemesis only",
+      "name": "Nemesis Digital Scope",
+      "bonus": {
+        "headshot_damage": 45
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 34,
+      "slot": "Optics Rail",
+      "type": "Mantis only",
+      "name": "Anti-Glint Coated Sight",
+      "bonus": {
+        "headshot_damage": 40
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 35,
+      "slot": "Optics Rail",
+      "type": "Liberty only",
+      "name": "Liberty Sight",
+      "bonus": {
+        "headshot_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 36,
+      "slot": "Magazine",
+      "type": "9mm",
+      "name": "Oversized 9mm Mag",
+      "bonus": {
+        "extra_rounds": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 37,
+      "slot": "Magazine",
+      "type": "9mm",
+      "name": "Extended 9mm Mag",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {
+        "reload_speed": -10
+      },
+      "specialization": null
+    },
+    {
+      "id": 38,
+      "slot": "Magazine",
+      "type": "9mm",
+      "name": "Segmented 9mm Mag",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 39,
+      "slot": "Magazine",
+      "type": "9mm",
+      "name": "Heavy Spring 9mm Mag",
+      "bonus": {
+        "critical_hit_damage": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 40,
+      "slot": "Magazine",
+      "type": "0.45",
+      "name": "Extended .45 ACP Mag",
+      "bonus": {
+        "extra_rounds": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 41,
+      "slot": "Magazine",
+      "type": "0.45",
+      "name": "Oversized .45 ACP Mag",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {
+        "reload_speed": -10
+      },
+      "specialization": null
+    },
+    {
+      "id": 42,
+      "slot": "Magazine",
+      "type": "0.45",
+      "name": "Short Spring .45 ACP Mag",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 43,
+      "slot": "Magazine",
+      "type": "0.45",
+      "name": "Force Feed .45 ACP Mag",
+      "bonus": {
+        "rate_of_fire": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 44,
+      "slot": "Magazine",
+      "type": "0.45",
+      "name": "Precision Feeding .45 Mag",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 45,
+      "slot": "Magazine",
+      "type": "5.56",
+      "name": "Light Extended 5.56 Mag",
+      "bonus": {
+        "extra_rounds": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 46,
+      "slot": "Magazine",
+      "type": "5.56",
+      "name": "Sturdy Extended 5.56 Mag",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {
+        "reload_speed": -10
+      },
+      "specialization": null
+    },
+    {
+      "id": 47,
+      "slot": "Magazine",
+      "type": "5.56",
+      "name": "Tactical 5.56 Mag",
+      "bonus": {
+        "critical_hit_damage": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 48,
+      "slot": "Magazine",
+      "type": "5.56",
+      "name": "Infantry 5.56 Mag",
+      "bonus": {
+        "optimal_range": 30
+      },
+      "drawback": {},
+      "specialization": "Survivalist"
+    },
+    {
+      "id": 49,
+      "slot": "Magazine",
+      "type": "5.56",
+      "name": "Balanced Spring 5.56 Mag",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 50,
+      "slot": "Magazine",
+      "type": "7.62",
+      "name": "Light Extended 7.62 Mag",
+      "bonus": {
+        "extra_rounds": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 51,
+      "slot": "Magazine",
+      "type": "7.62",
+      "name": "Sturdy Extended 7.62 Mag",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {
+        "reload_speed": -10
+      },
+      "specialization": null
+    },
+    {
+      "id": 52,
+      "slot": "Magazine",
+      "type": "7.62",
+      "name": "Weighted 7.62 Mag",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 53,
+      "slot": "Magazine",
+      "type": "7.62",
+      "name": "Precision 7.62 Mag",
+      "bonus": {
+        "headshot_damage": 7
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 54,
+      "slot": "Magazine",
+      "type": "7.62",
+      "name": "Thin 7.62 Mag",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 55,
+      "slot": "Magazine",
+      "type": "Ammunition Belt",
+      "name": "Large Pouch",
+      "bonus": {
+        "extra_rounds": 35
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 56,
+      "slot": "Magazine",
+      "type": "Ammunition Belt",
+      "name": "Large Pouch",
+      "bonus": {
+        "extra_rounds": 50
+      },
+      "drawback": {},
+      "specialization": "Gunner"
+    },
+    {
+      "id": 57,
+      "slot": "Magazine",
+      "type": "Ammunition Belt",
+      "name": "Tactical Small Pouch",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 58,
+      "slot": "Magazine",
+      "type": "Ammunition Belt",
+      "name": "Nimble Link Belt",
+      "bonus": {
+        "rate_of_fire": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 59,
+      "slot": "Magazine",
+      "type": "Ammunition Belt",
+      "name": "Non-disruptive Link",
+      "bonus": {
+        "critical_hit_damage": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 60,
+      "slot": "Magazine",
+      "type": "Ammunition Belt",
+      "name": "Calibrated Link",
+      "bonus": {
+        "stability": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 61,
+      "slot": "Magazine",
+      "type": "Integrated",
+      "name": "Compensated Integrated Spring",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 62,
+      "slot": "Magazine",
+      "type": "Integrated",
+      "name": "Overbalanced Integrated Spring",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 63,
+      "slot": "Magazine",
+      "type": "Integrated",
+      "name": "Stiff Integrated Spring",
+      "bonus": {
+        "weapon_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 64,
+      "slot": "Magazine",
+      "type": "Integrated",
+      "name": "Underbalanced Integrated Spring",
+      "bonus": {
+        "rate_of_fire": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 65,
+      "slot": "Magazine",
+      "type": "Marksman 7.62",
+      "name": "Tightly Packed Marksman Mag",
+      "bonus": {
+        "extra_rounds": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 66,
+      "slot": "Magazine",
+      "type": "Marksman 7.62",
+      "name": "Lightweight Marksman Mag",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 67,
+      "slot": "Magazine",
+      "type": "Marksman 7.62",
+      "name": "Sturdy Marksman Mag",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 68,
+      "slot": "Magazine",
+      "type": "Marksman 7.62",
+      "name": "Mended Marksman Mag",
+      "bonus": {
+        "optimal_range": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 69,
+      "slot": "Magazine",
+      "type": "Pistol",
+      "name": "Extended Pistol Mag",
+      "bonus": {
+        "extra_rounds": 11
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 70,
+      "slot": "Magazine",
+      "type": "Pistol",
+      "name": "Field Pistol Mag",
+      "bonus": {
+        "optimal_range": 30
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 71,
+      "slot": "Magazine",
+      "type": "Pistol",
+      "name": "Police Pistol Mag",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 72,
+      "slot": "Magazine",
+      "type": "Revolver Drum",
+      "name": "Speed Loading Revolver Drum",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 73,
+      "slot": "Magazine",
+      "type": "Tubular",
+      "name": "Hard Tubular Spring",
+      "bonus": {
+        "rate_of_fire": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 74,
+      "slot": "Magazine",
+      "type": "Tubular",
+      "name": "Counter-Clockwise Tubular Spring",
+      "bonus": {
+        "headshot_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 75,
+      "slot": "Magazine",
+      "type": "Tubular",
+      "name": "Flexible Tubular Spring",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 76,
+      "slot": "Magazine",
+      "type": "Eagle Bearer only",
+      "name": "Bullet Eyrie",
+      "bonus": {
+        "extra_rounds": 30
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 77,
+      "slot": "Magazine",
+      "type": "Chameleon only",
+      "name": "Chameleon ActivCamo Processor",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 78,
+      "slot": "Magazine",
+      "type": "The Big Horn only",
+      "name": "Tension Spring Magazine",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 79,
+      "slot": "Magazine",
+      "type": "Capacitor only",
+      "name": "Voltage Generator",
+      "bonus": {
+        "extra_rounds": 11
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 80,
+      "slot": "Magazine",
+      "type": "St. Elmo’s Engine only",
+      "name": "St. Elmo’s Engine Magazine",
+      "bonus": {
+        "extra_rounds": 30
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 81,
+      "slot": "Magazine",
+      "type": "Pestilence only",
+      "name": "Plagued Magazine",
+      "bonus": {
+        "rate_of_fire": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 82,
+      "slot": "Magazine",
+      "type": "Bullet King only",
+      "name": "Mag of Holding",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 83,
+      "slot": "Magazine",
+      "type": "Overlord only",
+      "name": "Overlord Magazine",
+      "bonus": {
+        "reload_speed": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 84,
+      "slot": "Magazine",
+      "type": "Sweet Dreams only",
+      "name": "Modified Feed System",
+      "bonus": {
+        "reload_speed": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 85,
+      "slot": "Magazine",
+      "type": "Scorpio only",
+      "name": "Venom Glands",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 86,
+      "slot": "Magazine",
+      "type": "The Chatterbox only",
+      "name": "Chatterbox Magazine",
+      "bonus": {
+        "extra_rounds": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 87,
+      "slot": "Magazine",
+      "type": "Lady Death only",
+      "name": "Death's Hand",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 88,
+      "slot": "Magazine",
+      "type": "Backfire only",
+      "name": "Barbed Grip Magazine",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 89,
+      "slot": "Magazine",
+      "type": "Merciless only",
+      "name": "Merciless Magazine",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 90,
+      "slot": "Magazine",
+      "type": "Diamondback only",
+      "name": "Diamondback Lever",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 91,
+      "slot": "Magazine",
+      "type": "The Ravenous only",
+      "name": "Gluttonous Magazines",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 92,
+      "slot": "Magazine",
+      "type": "Nemesis only",
+      "name": "Nemesis Bolt",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 93,
+      "slot": "Magazine",
+      "type": "Mantis only",
+      "name": "Well-Oiled Machine",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 94,
+      "slot": "Magazine",
+      "type": "Liberty only",
+      "name": "Trigger Mechanism",
+      "bonus": {
+        "weapon_handling": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 95,
+      "slot": "Magazine",
+      "type": "Regulus only",
+      "name": "Engraved Drum",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 96,
+      "slot": "Magazine",
+      "type": "Bluescreen only",
+      "name": "Deauthentication Frame",
+      "bonus": {
+        "weapon_handling": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 97,
+      "slot": "Magazine",
+      "type": "Dread Edict only",
+      "name": "Tuned-tension Spring",
+      "bonus": {
+        "weapon_handling": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 98,
+      "slot": "Magazine",
+      "type": "Lullaby only",
+      "name": "Modified Feed System",
+      "bonus": {
+        "reload_speed": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 99,
+      "slot": "Magazine",
+      "type": "Ruthless only",
+      "name": "Ruthless Magazine",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 100,
+      "slot": "Magazine",
+      "type": "Doctor Home only",
+      "name": "Homes Magazin",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 101,
+      "slot": "Magazine",
+      "type": "Sacrum Imperium only",
+      "name": "Sacrum Magazine",
+      "bonus": {
+        "headshot_damage": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 102,
+      "slot": "Magazine",
+      "type": "Busy Little Bee only",
+      "name": "Bee's Speed",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 103,
+      "slot": "Magazine",
+      "type": "Iron Lung only",
+      "name": "Bellows",
+      "bonus": {
+        "extra_rounds": 35
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 104,
+      "slot": "Magazine",
+      "type": "Ouroboros only",
+      "name": "Ouroboros Magazine",
+      "bonus": {
+        "reload_speed": 25
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 105,
+      "slot": "Magazine",
+      "type": "Mosquito only",
+      "name": "Mosquito Magazine",
+      "bonus": {
+        "reload_speed": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 106,
+      "slot": "Magazine",
+      "type": "Vindicator only",
+      "name": "Vindicator Magazine",
+      "bonus": {
+        "extra_rounds": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 107,
+      "slot": "Underbarrel",
+      "type": "Gadget",
+      "name": "Compact Coupled Laser Pointer",
+      "bonus": {
+        "headshot_damage": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 108,
+      "slot": "Underbarrel",
+      "type": "Gadget",
+      "name": "Compact Coupled Small Laser Pointer",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 109,
+      "slot": "Underbarrel",
+      "type": "Long",
+      "name": "Hand Stop",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 110,
+      "slot": "Underbarrel",
+      "type": "Long",
+      "name": "Short Grip",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 111,
+      "slot": "Underbarrel",
+      "type": "Long",
+      "name": "Tactical Short Grip",
+      "bonus": {
+        "critical_hit_damage": 10
+      },
+      "drawback": {},
+      "specialization": "Firewall"
+    },
+    {
+      "id": 112,
+      "slot": "Underbarrel",
+      "type": "Short",
+      "name": "Angled Grip",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 113,
+      "slot": "Underbarrel",
+      "type": "Short",
+      "name": "Vertical Grip",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 114,
+      "slot": "Underbarrel",
+      "type": "Side",
+      "name": "Laser Pointer",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 115,
+      "slot": "Underbarrel",
+      "type": "Side",
+      "name": "Small Laser Pointer",
+      "bonus": {
+        "critical_hit_chance": 7
+      },
+      "drawback": {},
+      "specialization": "Demolitionist"
+    },
+    {
+      "id": 116,
+      "slot": "Underbarrel",
+      "type": "Long",
+      "name": "Linked Laser Pointer",
+      "bonus": {},
+      "drawback": {},
+      "specialization": "Pulses Targets"
+    },
+    {
+      "id": 117,
+      "slot": "Underbarrel",
+      "type": "Eagle Bearer only",
+      "name": "Talon Grip",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 118,
+      "slot": "Underbarrel",
+      "type": "Chameleon only",
+      "name": "Chameleon Grip",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 118,
+      "slot": "Underbarrel",
+      "type": "Chameleon only",
+      "name": "Chameleon Grip",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 119,
+      "slot": "Underbarrel",
+      "type": "The Big Horn only",
+      "name": "Bighorn Horn Grip",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 120,
+      "slot": "Underbarrel",
+      "type": "Capacitor only",
+      "name": "Dielectric Safety Grip",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 121,
+      "slot": "Underbarrel",
+      "type": "St. Elmo’s Engine only",
+      "name": "St. Elmo’s Engine Grip",
+      "bonus": {
+        "weapon_handling": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 122,
+      "slot": "Underbarrel",
+      "type": "Pestilence only",
+      "name": "Caution Tape",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 123,
+      "slot": "Underbarrel",
+      "type": "Bullet King only",
+      "name": "Solid Gold Bipod",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 124,
+      "slot": "Underbarrel",
+      "type": "Overlord only",
+      "name": "Overlord Underbarrel",
+      "bonus": {
+        "weapon_stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 125,
+      "slot": "Underbarrel",
+      "type": "Sweet Dreams only",
+      "name": "Stunner",
+      "bonus": {
+        "optimal_range": 25
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 126,
+      "slot": "Underbarrel",
+      "type": "Scorpio only",
+      "name": "Chaelae Grip",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 127,
+      "slot": "Underbarrel",
+      "type": "The Chatterbox only",
+      "name": "Chatterbox Cannister",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 128,
+      "slot": "Underbarrel",
+      "type": "Lady Death only",
+      "name": "Kiss of Death",
+      "bonus": {
+        "melee_damage": 500
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 129,
+      "slot": "Underbarrel",
+      "type": "Backfire only",
+      "name": "Barbed Frame",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 130,
+      "slot": "Underbarrel",
+      "type": "Merciless only",
+      "name": "Merciless Grip",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 131,
+      "slot": "Underbarrel",
+      "type": "Diamondback only",
+      "name": "Diamondback Grip",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 132,
+      "slot": "Underbarrel",
+      "type": "The Ravenous only",
+      "name": "Wolf's Claw",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 133,
+      "slot": "Underbarrel",
+      "type": "Nemesis only",
+      "name": "Nemesis Bipod",
+      "bonus": {
+        "weapon_handling": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 134,
+      "slot": "Underbarrel",
+      "type": "Mantis only",
+      "name": "Ghillie Frame",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 135,
+      "slot": "Underbarrel",
+      "type": "Liberty only",
+      "name": "Trigger Mechanism",
+      "bonus": {
+        "rate_of_fire": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 136,
+      "slot": "Underbarrel",
+      "type": "Bluescreen only",
+      "name": "Dropkick Grip",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 137,
+      "slot": "Underbarrel",
+      "type": "Dread Edict only",
+      "name": "Fearless Frame",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 138,
+      "slot": "Underbarrel",
+      "type": "Lullaby only",
+      "name": "Hardened Grip",
+      "bonus": {
+        "optimal_range": 25
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 139,
+      "slot": "Underbarrel",
+      "type": "Ruthless only",
+      "name": "Ruthless Grip",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 140,
+      "slot": "Underbarrel",
+      "type": "Doctor Home only",
+      "name": "Doctors Grip",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 141,
+      "slot": "Underbarrel",
+      "type": "Sacrum Imperium only",
+      "name": "Sacrum Underbarrel",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 142,
+      "slot": "Underbarrel",
+      "type": "Busy Little Bee only",
+      "name": "Bee's Strength",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 143,
+      "slot": "Underbarrel",
+      "type": "Iron Lung only",
+      "name": "Scales",
+      "bonus": {
+        "critical_hit_damage": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 144,
+      "slot": "Underbarrel",
+      "type": "Ouroboros only",
+      "name": "Ouroboros Underbarrel",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 145,
+      "slot": "Underbarrel",
+      "type": "Mosquito only",
+      "name": "---",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 146,
+      "slot": "Underbarrel",
+      "type": "Vindicator only",
+      "name": "Vindicator Underbarrel",
+      "bonus": {
+        "stability": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 147,
+      "slot": "Muzzle",
+      "type": "9mm",
+      "name": "Compensator 9mm",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 148,
+      "slot": "Muzzle",
+      "type": "9mm",
+      "name": "Flash Hider 9mm",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 149,
+      "slot": "Muzzle",
+      "type": "9mm",
+      "name": "Loud Vent Brake 9mm",
+      "bonus": {
+        "optimal_range": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 150,
+      "slot": "Muzzle",
+      "type": "9mm",
+      "name": "Muzzle Brake 9mm",
+      "bonus": {
+        "headshot_damage": 3
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 151,
+      "slot": "Muzzle",
+      "type": "9mm",
+      "name": "Osprey 9 Suppressor",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 152,
+      "slot": "Muzzle",
+      "type": "9mm",
+      "name": "Small Suppressor 9mm",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 153,
+      "slot": "Muzzle",
+      "type": "0.45",
+      "name": "Compensator .45",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 154,
+      "slot": "Muzzle",
+      "type": "0.45",
+      "name": "Flash Hider .45",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 155,
+      "slot": "Muzzle",
+      "type": "0.45",
+      "name": "Loud Vent Brake .45",
+      "bonus": {
+        "optimal_range": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 156,
+      "slot": "Muzzle",
+      "type": "0.45",
+      "name": "Muzzle Brake .45",
+      "bonus": {
+        "headshot_damage": 3
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 157,
+      "slot": "Muzzle",
+      "type": "0.45",
+      "name": "Osprey .45 Suppressor",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 158,
+      "slot": "Muzzle",
+      "type": "0.45",
+      "name": "Small Suppressor .45",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 159,
+      "slot": "Muzzle",
+      "type": "5.56",
+      "name": "Compensator 5.56",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 160,
+      "slot": "Muzzle",
+      "type": "5.56",
+      "name": "Flash Hider 5.56",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 161,
+      "slot": "Muzzle",
+      "type": "5.56",
+      "name": "Large Suppressor 5.56",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 162,
+      "slot": "Muzzle",
+      "type": "5.56",
+      "name": "Loud Vent Brake 5.56",
+      "bonus": {
+        "optimal_range": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 163,
+      "slot": "Muzzle",
+      "type": "5.56",
+      "name": "Muzzle Brake 5.56",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 164,
+      "slot": "Muzzle",
+      "type": "5.56",
+      "name": "Omega 5.56 Rifle Suppressor",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {
+        "optimal_range": -10
+      },
+      "specialization": null
+    },
+    {
+      "id": 165,
+      "slot": "Muzzle",
+      "type": "7.62",
+      "name": "Compensator 7.62",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 166,
+      "slot": "Muzzle",
+      "type": "7.62",
+      "name": "Flash Hider 7.62",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 167,
+      "slot": "Muzzle",
+      "type": "7.62",
+      "name": "Large Suppressor 7.62",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 168,
+      "slot": "Muzzle",
+      "type": "7.62",
+      "name": "Loud Vent Brake 7.62",
+      "bonus": {
+        "optimal_range": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 169,
+      "slot": "Muzzle",
+      "type": "7.62",
+      "name": "Muzzle Brake 7.62",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 170,
+      "slot": "Muzzle",
+      "type": "7.62",
+      "name": "Omega 7.62 Rifle Suppressor",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {
+        "optimal_range": -10
+      },
+      "specialization": null
+    },
+    {
+      "id": 171,
+      "slot": "Muzzle",
+      "type": "Eagle Bearer only",
+      "name": "Jagged Beak",
+      "bonus": {
+        "critical_hit_damage": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 172,
+      "slot": "Muzzle",
+      "type": "Chameleon only",
+      "name": "Chameleon Dampener",
+      "bonus": {
+        "accuracy": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 173,
+      "slot": "Muzzle",
+      "type": "The Big Horn only",
+      "name": "Carbon Steel Muzzle",
+      "bonus": {
+        "accuracy": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 174,
+      "slot": "Muzzle",
+      "type": "Capacitor only",
+      "name": "Discharge Electrode",
+      "bonus": {
+        "critical_hit_damage": 30
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 175,
+      "slot": "Muzzle",
+      "type": "St. Elmo’s Engine only",
+      "name": "St. Elmo’s Engine Muzzle",
+      "bonus": {
+        "critical_hit_chance": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 176,
+      "slot": "Muzzle",
+      "type": "Pestilence only",
+      "name": "Plagued Muzzle",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 177,
+      "slot": "Muzzle",
+      "type": "Bullet King only",
+      "name": "Gold Plated Muzzle",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 178,
+      "slot": "Muzzle",
+      "type": "Overlord only",
+      "name": "---",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 179,
+      "slot": "Muzzle",
+      "type": "Sweet Dreams only",
+      "name": "---",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 180,
+      "slot": "Muzzle",
+      "type": "Scorpio only",
+      "name": "Aculeus",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 181,
+      "slot": "Muzzle",
+      "type": "The Chatterbox only",
+      "name": "Chatterbox Muzzle",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 182,
+      "slot": "Muzzle",
+      "type": "Lady Death only",
+      "name": "Death's Maw",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 183,
+      "slot": "Muzzle",
+      "type": "Backfire only",
+      "name": "Jagged Muzzle",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 184,
+      "slot": "Muzzle",
+      "type": "Merciless only",
+      "name": "Merciless Muzzle",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 185,
+      "slot": "Muzzle",
+      "type": "Diamondback only",
+      "name": "Rattlesnake Ornamentation",
+      "bonus": {
+        "critical_hit_damage": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 186,
+      "slot": "Muzzle",
+      "type": "The Ravenous only",
+      "name": "Devouring Maw",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 187,
+      "slot": "Muzzle",
+      "type": "Nemesis only",
+      "name": "Nemesis Barrel",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 188,
+      "slot": "Muzzle",
+      "type": "Mantis only",
+      "name": "Wrapped Suppressor",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 189,
+      "slot": "Muzzle",
+      "type": "Liberty only",
+      "name": "Liberty Customs",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 190,
+      "slot": "Muzzle",
+      "type": "Regulus only",
+      "name": "Engraved Muzzle",
+      "bonus": {
+        "accuracy": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 191,
+      "slot": "Muzzle",
+      "type": "Stoner only",
+      "name": "QDC Sound Suppressor",
+      "bonus": {
+        "stability": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 192,
+      "slot": "Muzzle",
+      "type": "Bluescreen only",
+      "name": "Overclock Muzzle",
+      "bonus": {
+        "rate_of_fire": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 193,
+      "slot": "Muzzle",
+      "type": "Dread Edict only",
+      "name": "Punctuating Barrel",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 194,
+      "slot": "Optics Rail",
+      "type": "Lullaby only",
+      "name": "Damage Optics",
+      "bonus": {
+        "accuracy": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 195,
+      "slot": "Muzzle",
+      "type": "Ruthless only",
+      "name": "Mayhem's Muzzle",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 196,
+      "slot": "Muzzle",
+      "type": "Doctor Home only",
+      "name": "Doctors Perseverance",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 197,
+      "slot": "Muzzle",
+      "type": "Sacrum Imperium only",
+      "name": "Sacrum Muzzle",
+      "bonus": {
+        "optimal_range": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 198,
+      "slot": "Muzzle",
+      "type": "Busy Little Bee only",
+      "name": "Bee's Purpose",
+      "bonus": {
+        "stability": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 199,
+      "slot": "Muzzle",
+      "type": "Ouroboros only",
+      "name": "Ouroboros Muzzle",
+      "bonus": {
+        "rate_of_fire": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 200,
+      "slot": "Muzzle",
+      "type": "Mosquito only",
+      "name": "Mosquito Muzzle",
+      "bonus": {
+        "accuracy": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 201,
+      "slot": "Muzzle",
+      "type": "Vindicator only",
+      "name": "Vindicator Muzzle",
+      "bonus": {
+        "optimal_range": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 202,
+      "slot": "Optics Rail",
+      "type": "HK GR9 only",
+      "name": "Built-in scope (8x)",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 203,
+      "slot": "Optics Rail",
+      "type": "Iron Lung only",
+      "name": "Dragon Horns",
+      "bonus": {
+        "critical_hit_damage": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 204,
+      "slot": "Optics Rail",
+      "type": "Bluescreen only",
+      "name": "Lightning Sight",
+      "bonus": {
+        "reload_speed": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 205,
+      "slot": "Optics Rail",
+      "type": "Sacrum Imperium only",
+      "name": "Sacrum Optic",
+      "bonus": {
+        "headshot_damage": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 206,
+      "slot": "Optics Rail",
+      "type": "Dread Edict only",
+      "name": "Judgement's Glare",
+      "bonus": {
+        "headshot_damage": 40
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 207,
+      "slot": "Optics Rail",
+      "type": "Doctor Home only",
+      "name": "Doctors Sight",
+      "bonus": {
+        "accuracy": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 208,
+      "slot": "Optics Rail",
+      "type": "Vindicator only",
+      "name": "Vindicator Optics",
+      "bonus": {
+        "accuracy": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 209,
+      "slot": "Optics Rail",
+      "type": "Ruthless only",
+      "name": "Unidentified Custom Russian Sight",
+      "bonus": {
+        "accuracy": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 210,
+      "slot": "Optics Rail",
+      "type": "Busy Little Bee only",
+      "name": "Bee's Focus",
+      "bonus": {
+        "optimal_range": 25
+      },
+      "drawback": {},
+      "specialization": null
+    }
+  ]
+}
+

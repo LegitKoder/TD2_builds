@@ -1,0 +1,3248 @@
+[
+  {
+    "skillId": "chem_launcher",
+    "skillName": "Chem Launcher",
+    "imagePath": "Skills/skillbanners/skill_chem.png",
+    "description": "Fires a canister that disperses a chemical cloud.",
+    "skillType": "Chem Launcher",
+    "variants": [
+      {
+        "variantName": "Oxidizer",
+        "v_imagePath": "Skills/skills_menu_chemlauncher_corrosive.png",
+        "description": "Standard corrosive gas cloud.",
+        "baseCooldownSeconds": 25.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damagePerTick", "value": 58399 },
+              { "name": "cloudDurationSeconds", "value": 6.0 },
+              { "name": "cloudRadiusMeters", "value": 3.5 },
+              { "name": "ammo", "value": 1 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damagePerTick", "value": 64239 },
+              { "name": "cloudDurationSeconds", "value": 7.2 },
+              { "name": "cloudRadiusMeters", "value": 3.6 },
+              { "name": "ammo", "value": 2 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damagePerTick", "value": 70079 },
+              { "name": "cloudDurationSeconds", "value": 8.4 },
+              { "name": "cloudRadiusMeters", "value": 3.6 },
+              { "name": "ammo", "value": 3 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damagePerTick", "value": 75919 },
+              { "name": "cloudDurationSeconds", "value": 9.6 },
+              { "name": "cloudRadiusMeters", "value": 3.7 },
+              { "name": "ammo", "value": 4 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damagePerTick", "value": 81759 },
+              { "name": "cloudDurationSeconds", "value": 10.8 },
+              { "name": "cloudRadiusMeters", "value": 3.8 },
+              { "name": "ammo", "value": 5 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damagePerTick", "value": 87599 },
+              { "name": "cloudDurationSeconds", "value": 12.0 },
+              { "name": "cloudRadiusMeters", "value": 3.9 },
+              { "name": "ammo", "value": 6 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damagePerTick", "value": 93438 },
+              { "name": "cloudDurationSeconds", "value": 13.2 },
+              { "name": "cloudRadiusMeters", "value": 3.9 },
+              { "name": "ammo", "value": 7 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damagePerTick", "value": 105118 },
+              { "name": "cloudDurationSeconds", "value": 15.0 },
+              { "name": "cloudRadiusMeters", "value": 7.0 },
+              { "name": "ammo", "value": 7 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Reinforcer",
+        "v_imagePath": "Skills/skills_menu_chemlauncher_repair.png",
+        "description": "Creates a cloud that repairs ally armor.",
+        "baseCooldownSeconds": 30.0,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "allyRepair", "value": 218996 },
+              { "name": "repairOverTime", "value": 43799 },
+              { "name": "cloudRadiusMeters", "value": 3.0 },
+              { "name": "ammo", "value": 2 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "allyRepair", "value": 262795 },
+              { "name": "repairOverTime", "value": 52558 },
+              { "name": "cloudRadiusMeters", "value": 3.3 },
+              { "name": "ammo", "value": 3 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "allyRepair", "value": 306594 },
+              { "name": "repairOverTime", "value": 61318 },
+              { "name": "cloudRadiusMeters", "value": 3.6 },
+              { "name": "ammo", "value": 4 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "allyRepair", "value": 350393 },
+              { "name": "repairOverTime", "value": 70078 },
+              { "name": "cloudRadiusMeters", "value": 3.9 },
+              { "name": "ammo", "value": 5 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "allyRepair", "value": 394192 },
+              { "name": "repairOverTime", "value": 78838 },
+              { "name": "cloudRadiusMeters", "value": 4.2 },
+              { "name": "ammo", "value": 6 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "allyRepair", "value": 437991 },
+              { "name": "repairOverTime", "value": 87597 },
+              { "name": "cloudRadiusMeters", "value": 4.5 },
+              { "name": "ammo", "value": 7 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "allyRepair", "value": 481791 },
+              { "name": "repairOverTime", "value": 96357 },
+              { "name": "cloudRadiusMeters", "value": 4.8 },
+              { "name": "ammo", "value": 8 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "allyRepair", "value": 525590 },
+              { "name": "repairOverTime", "value": 105117 },
+              { "name": "cloudRadiusMeters", "value": 7.5 },
+              { "name": "ammo", "value": 8 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Firestarter",
+        "v_imagePath": "Skills/skills_menu_chemlauncher_explosive.png",
+        "description": "Creates a cloud of flammable gas.",
+        "baseCooldownSeconds": 30.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 114674 },
+              { "name": "burnDuration", "value": 5.36 },
+              { "name": "cloudRadiusMeters", "value": 3.0 },
+              { "name": "ammo", "value": 1 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 126142 },
+              { "name": "burnDuration", "value": 5.9 },
+              { "name": "cloudRadiusMeters", "value": 3.15 },
+              { "name": "ammo", "value": 2 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 137609 },
+              { "name": "burnDuration", "value": 6.4 },
+              { "name": "cloudRadiusMeters", "value": 3.3 },
+              { "name": "ammo", "value": 3 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 149077 },
+              { "name": "burnDuration", "value": 7.0 },
+              { "name": "cloudRadiusMeters", "value": 3.45 },
+              { "name": "ammo", "value": 4 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 160544 },
+              { "name": "burnDuration", "value": 7.5 },
+              { "name": "cloudRadiusMeters", "value": 3.6 },
+              { "name": "ammo", "value": 5 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 172012 },
+              { "name": "burnDuration", "value": 8.0 },
+              { "name": "cloudRadiusMeters", "value": 3.75 },
+              { "name": "ammo", "value": 6 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 183479 },
+              { "name": "burnDuration", "value": 8.6 },
+              { "name": "cloudRadiusMeters", "value": 3.9 },
+              { "name": "ammo", "value": 7 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "burnDamage", "value": 183479 },
+              { "name": "burnDuration", "value": 10.7 },
+              { "name": "cloudRadiusMeters", "value": 7.05 },
+              { "name": "ammo", "value": 7 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Riot Foam",
+        "v_imagePath": "Skills/skills_menu_chemlauncher_foam.png",
+        "description": "Fires a canister of Riot Foam that ensnares enemies.",
+        "baseCooldownSeconds": 30.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "ensnareDuration", "value": 8.04 },
+              { "name": "ensnareHealth", "value": 452470 },
+              { "name": "cloudRadiusMeters", "value": 3.0 },
+              { "name": "ammo", "value": 1 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "ensnareDuration", "value": 8.8 },
+              { "name": "ensnareHealth", "value": 678705 },
+              { "name": "cloudRadiusMeters", "value": 3.15 },
+              { "name": "ammo", "value": 2 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "ensnareDuration", "value": 9.6 },
+              { "name": "ensnareHealth", "value": 904940 },
+              { "name": "cloudRadiusMeters", "value": 3.3 },
+              { "name": "ammo", "value": 3 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "ensnareDuration", "value": 10.5 },
+              { "name": "ensnareHealth", "value": 1131175 },
+              { "name": "cloudRadiusMeters", "value": 3.45 },
+              { "name": "ammo", "value": 4 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "ensnareDuration", "value": 11.3 },
+              { "name": "ensnareHealth", "value": 1357410 },
+              { "name": "cloudRadiusMeters", "value": 3.6 },
+              { "name": "ammo", "value": 5 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "ensnareDuration", "value": 12.1 },
+              { "name": "ensnareHealth", "value": 1583645 },
+              { "name": "cloudRadiusMeters", "value": 3.75 },
+              { "name": "ammo", "value": 6 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "ensnareDuration", "value": 12.9 },
+              { "name": "ensnareHealth", "value": 1809880 },
+              { "name": "cloudRadiusMeters", "value": 3.9 },
+              { "name": "ammo", "value": 7 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "ensnareDuration", "value": 16.1 },
+              { "name": "ensnareHealth", "value": 2714820 },
+              { "name": "cloudRadiusMeters", "value": 7.05 },
+              { "name": "ammo", "value": 7 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "sticky_bomb",
+    "skillName": "Sticky Bomb",
+    "imagePath": "Skills/skillbanners/skill_sticky.png",
+    "description": "Fires a bomb that sticks to surfaces and detonates.",
+    "skillType": "Sticky Bomb",
+    "variants": [
+      {
+        "variantName": "Explosive",
+        "v_imagePath": "Skills/skills_menu_stickybomb_explosive.png",
+        "description": "Standard explosive charge.",
+        "baseCooldownSeconds": 60.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "explosionDamage", "value": 1459970 },
+              { "name": "blastRadiusMeters", "value": 3.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "explosionDamage", "value": 1605967 },
+              { "name": "blastRadiusMeters", "value": 3.6 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "explosionDamage", "value": 1751964 },
+              { "name": "blastRadiusMeters", "value": 3.9 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "explosionDamage", "value": 1897961 },
+              { "name": "blastRadiusMeters", "value": 4.2 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "explosionDamage", "value": 2043958 },
+              { "name": "blastRadiusMeters", "value": 4.5 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "explosionDamage", "value": 2189955 },
+              { "name": "blastRadiusMeters", "value": 4.8 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "explosionDamage", "value": 2335952 },
+              { "name": "blastRadiusMeters", "value": 5.1 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "explosionDamage", "value": 2627945 },
+              { "name": "blastRadiusMeters", "value": 9.0 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Incendiary",
+        "v_imagePath": "Skills/skills_menu_stickybomb_burn.png",
+        "description": "Applies fire as AOE Damage (WONY Exclusive).",
+        "baseCooldownSeconds": 50.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "burnDamage", "value": 114674 },
+              { "name": "burnDuration", "value": 5.36 },
+              { "name": "blastRadiusMeters", "value": 5.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "burnDamage", "value": 126142 },
+              { "name": "burnDuration", "value": 8.0 },
+              { "name": "blastRadiusMeters", "value": 5.5 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "burnDamage", "value": 137609 },
+              { "name": "burnDuration", "value": 10.7 },
+              { "name": "blastRadiusMeters", "value": 6.0 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "burnDamage", "value": 149077 },
+              { "name": "burnDuration", "value": 13.4 },
+              { "name": "blastRadiusMeters", "value": 6.5 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "burnDamage", "value": 160544 },
+              { "name": "burnDuration", "value": 16.1 },
+              { "name": "blastRadiusMeters", "value": 7.0 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "burnDamage", "value": 172012 },
+              { "name": "burnDuration", "value": 18.8 },
+              { "name": "blastRadiusMeters", "value": 7.5 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "burnDamage", "value": 183479 },
+              { "name": "burnDuration", "value": 21.4 },
+              { "name": "blastRadiusMeters", "value": 8.0 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "burnDamage", "value": 229349 },
+              { "name": "burnDuration", "value": 26.8 },
+              { "name": "blastRadiusMeters", "value": 15.0 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "EMP",
+        "v_imagePath": "Skills/skills_menu_stickybomb_emp.png",
+        "description": "Applies EMP (WONY Exclusive).",
+        "baseCooldownSeconds": 60.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "explosionDamage", "value": 1459970 },
+              { "name": "blastRadiusMeters", "value": 3.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "explosionDamage", "value": 1605967 },
+              { "name": "blastRadiusMeters", "value": 3.6 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "explosionDamage", "value": 1751964 },
+              { "name": "blastRadiusMeters", "value": 3.9 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "explosionDamage", "value": 1897961 },
+              { "name": "blastRadiusMeters", "value": 4.2 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "explosionDamage", "value": 2043958 },
+              { "name": "blastRadiusMeters", "value": 4.5 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "explosionDamage", "value": 2189955 },
+              { "name": "blastRadiusMeters", "value": 4.8 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "explosionDamage", "value": 2335952 },
+              { "name": "blastRadiusMeters", "value": 5.1 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "explosionDamage", "value": 2627945 },
+              { "name": "blastRadiusMeters", "value": 9.0 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+    {
+    "skillId": "turret",
+    "skillName": "Turret",
+    "imagePath": "Skills/skillbanners/skill_turret.png",
+    "description": "Deploys a stationary turret that tracks and attacks enemies.",
+    "skillType": "Turret",
+    "variants": [
+      {
+        "variantName": "Artillery",
+        "v_imagePath": "Skills/skills_menu_turret_mortar.png",
+        "description": "A specialized deployable turret that launches explosive shells at designated targets.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 802984 },
+              { "name": "blastRadiusMeters", "value": 4.5 },
+              { "name": "ammo", "value": 3 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 923431 },
+              { "name": "blastRadiusMeters", "value": 4.86 },
+              { "name": "ammo", "value": 4 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 1043879 },
+              { "name": "blastRadiusMeters", "value": 5.22 },
+              { "name": "ammo", "value": 5 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 1164326 },
+              { "name": "blastRadiusMeters", "value": 5.58 },
+              { "name": "ammo", "value": 6 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 1284774 },
+              { "name": "blastRadiusMeters", "value": 5.94 },
+              { "name": "ammo", "value": 7 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 1405221 },
+              { "name": "blastRadiusMeters", "value": 6.3 },
+              { "name": "ammo", "value": 8 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 1525669 },
+              { "name": "blastRadiusMeters", "value": 6.75 },
+              { "name": "ammo", "value": 9 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 1907086 },
+              { "name": "blastRadiusMeters", "value": 7.875 },
+              { "name": "ammo", "value": 13 },
+              { "name": "health", "value": 7007854 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Assault",
+        "v_imagePath": "Skills/skills_menu_turret_assault.png",
+        "description": "Autotarget. This skill is designed with offensive players in mind.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 802984 },
+              { "name": "blastRadiusMeters", "value": 4.5 },
+              { "name": "ammo", "value": 3 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 923431 },
+              { "name": "blastRadiusMeters", "value": 4.86 },
+              { "name": "ammo", "value": 4 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 1043879 },
+              { "name": "blastRadiusMeters", "value": 5.22 },
+              { "name": "ammo", "value": 5 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 1164326 },
+              { "name": "blastRadiusMeters", "value": 5.58 },
+              { "name": "ammo", "value": 6 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 1284774 },
+              { "name": "blastRadiusMeters", "value": 5.94 },
+              { "name": "ammo", "value": 7 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 1405221 },
+              { "name": "blastRadiusMeters", "value": 6.3 },
+              { "name": "ammo", "value": 8 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 1525669 },
+              { "name": "blastRadiusMeters", "value": 6.75 },
+              { "name": "ammo", "value": 9 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 1907086 },
+              { "name": "blastRadiusMeters", "value": 7.875 },
+              { "name": "ammo", "value": 13 },
+              { "name": "health", "value": 7007854 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Incinerator",
+        "v_imagePath": "Skills/skills_menu_turret_flamer.png",
+        "description": "If you enjoy crowd control, this skill is for you! Equipped with an incendiary tank, the Incinerator ignites the fuel and fires it in a cone to deal area-of-effect damage.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 802984 },
+              { "name": "blastRadiusMeters", "value": 4.5 },
+              { "name": "ammo", "value": 3 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 923431 },
+              { "name": "blastRadiusMeters", "value": 4.86 },
+              { "name": "ammo", "value": 4 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 1043879 },
+              { "name": "blastRadiusMeters", "value": 5.22 },
+              { "name": "ammo", "value": 5 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 1164326 },
+              { "name": "blastRadiusMeters", "value": 5.58 },
+              { "name": "ammo", "value": 6 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 1284774 },
+              { "name": "blastRadiusMeters", "value": 5.94 },
+              { "name": "ammo", "value": 7 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 1405221 },
+              { "name": "blastRadiusMeters", "value": 6.3 },
+              { "name": "ammo", "value": 8 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 1525669 },
+              { "name": "blastRadiusMeters", "value": 6.75 },
+              { "name": "ammo", "value": 9 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 1907086 },
+              { "name": "blastRadiusMeters", "value": 7.875 },
+              { "name": "ammo", "value": 13 },
+              { "name": "health", "value": 7007854 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Sniper",
+        "v_imagePath": "Skills/skills_menu_turret_sniper.png",
+        "description": "This long-range, semi-automatic turret targets manually selected targets..",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 802984 },
+              { "name": "blastRadiusMeters", "value": 4.5 },
+              { "name": "ammo", "value": 3 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 923431 },
+              { "name": "blastRadiusMeters", "value": 4.86 },
+              { "name": "ammo", "value": 4 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 1043879 },
+              { "name": "blastRadiusMeters", "value": 5.22 },
+              { "name": "ammo", "value": 5 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 1164326 },
+              { "name": "blastRadiusMeters", "value": 5.58 },
+              { "name": "ammo", "value": 6 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 1284774 },
+              { "name": "blastRadiusMeters", "value": 5.94 },
+              { "name": "ammo", "value": 7 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 1405221 },
+              { "name": "blastRadiusMeters", "value": 6.3 },
+              { "name": "ammo", "value": 8 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 1525669 },
+              { "name": "blastRadiusMeters", "value": 6.75 },
+              { "name": "ammo", "value": 9 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 1907086 },
+              { "name": "blastRadiusMeters", "value": 7.875 },
+              { "name": "ammo", "value": 13 },
+              { "name": "health", "value": 7007854 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "hive",
+    "skillName": "Hive",
+    "imagePath": "Skills/skillbanners/skill_hive.png",
+    "description": "Deploys a hive that sends out micro-drones.",
+    "skillType": "Hive",
+    "variants": [
+      {
+        "variantName": "Restorer",
+        "v_imagePath": "Skills/skills_menu_hive_armor.png",
+        "description": "Sends out repair drones to heal allies.",
+        "baseCooldownSeconds": 12.0,
+        "categories": ["scHealing"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "healing", "value": 65699 },
+              { "name": "charges", "value": 8 },
+              { "name": "range", "value": 8 },
+              { "name": "health", "value": 796347 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "healing", "value": 78838 },
+              { "name": "charges", "value": 12 },
+              { "name": "range", "value": 8.8 },
+              { "name": "health", "value": 1353790 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "healing", "value": 91978 },
+              { "name": "charges", "value": 16 },
+              { "name": "range", "value": 9.6 },
+              { "name": "health", "value": 1911233 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "healing", "value": 105118 },
+              { "name": "charges", "value": 20 },
+              { "name": "range", "value": 10.4 },
+              { "name": "health", "value": 2468676 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "healing", "value": 118257 },
+              { "name": "charges", "value": 24 },
+              { "name": "range", "value": 11.2 },
+              { "name": "health", "value": 3026119 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "healing", "value": 131397 },
+              { "name": "charges", "value": 28 },
+              { "name": "range", "value": 12.0 },
+              { "name": "health", "value": 3583562 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "healing", "value": 144537 },
+              { "name": "charges", "value": 32 },
+              { "name": "range", "value": 12.8 },
+              { "name": "health", "value": 4141004 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "healing", "value": 157677 },
+              { "name": "charges", "value": 32 },
+              { "name": "range", "value": 24.0 },
+              { "name": "health", "value": 4141004 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Stinger",
+        "v_imagePath": "Skills/skills_menu_hive_nest.png",
+        "description": "Sends out stinger drones to attack enemies.",
+        "baseCooldownSeconds": 10.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 291994 },
+              { "name": "charges", "value": 8 },
+              { "name": "range", "value": 8 },
+              { "name": "health", "value": 796347 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 350393 },
+              { "name": "charges", "value": 9 },
+              { "name": "range", "value": 8.4 },
+              { "name": "health", "value": 1353790 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 408791 },
+              { "name": "charges", "value": 10 },
+              { "name": "range", "value": 8.8 },
+              { "name": "health", "value": 1911233 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 467190 },
+              { "name": "charges", "value": 11 },
+              { "name": "range", "value": 9.2 },
+              { "name": "health", "value": 2468676 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 525589 },
+              { "name": "charges", "value": 12 },
+              { "name": "range", "value": 9.6 },
+              { "name": "health", "value": 3026119 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 583988 },
+              { "name": "charges", "value": 13 },
+              { "name": "range", "value": 10.0 },
+              { "name": "health", "value": 3583562 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 642387 },
+              { "name": "charges", "value": 14 },
+              { "name": "range", "value": 10.4 },
+              { "name": "health", "value": 4141004 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 875982 },
+              { "name": "charges", "value": 14 },
+              { "name": "range", "value": 16.0 },
+              { "name": "health", "value": 4141004 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Reviver",
+        "v_imagePath": "Skills/skills_menu_hive_revive.png",
+        "description": "Sends out drones to revive downed allies.",
+        "baseCooldownSeconds": 180.0,
+        "categories": ["scHealing"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "reviveArmor", "value": 0.25 },
+              { "name": "charges", "value": 1 },
+              { "name": "range", "value": 8 },
+              { "name": "health", "value": 796347 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "reviveArmor", "value": 0.35 },
+              { "name": "charges", "value": 2 },
+              { "name": "range", "value": 8.4 },
+              { "name": "health", "value": 1353790 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "reviveArmor", "value": 0.45 },
+              { "name": "charges", "value": 3 },
+              { "name": "range", "value": 8.8 },
+              { "name": "health", "value": 1911233 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "reviveArmor", "value": 0.55 },
+              { "name": "charges", "value": 4 },
+              { "name": "range", "value": 9.2 },
+              { "name": "health", "value": 2468676 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "reviveArmor", "value": 0.65 },
+              { "name": "charges", "value": 5 },
+              { "name": "range", "value": 9.6 },
+              { "name": "health", "value": 3026119 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "reviveArmor", "value": 0.75 },
+              { "name": "charges", "value": 6 },
+              { "name": "range", "value": 10.0 },
+              { "name": "health", "value": 3583562 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "reviveArmor", "value": 0.85 },
+              { "name": "charges", "value": 7 },
+              { "name": "range", "value": 10.4 },
+              { "name": "health", "value": 4141004 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "reviveArmor", "value": 1.00 },
+              { "name": "charges", "value": 7 },
+              { "name": "range", "value": 16.0 },
+              { "name": "health", "value": 4141004 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Booster",
+        "v_imagePath": "Skills/skills_menu_hive_stims.png",
+        "description": "Administers a stimulant to nearby allies.",
+        "baseCooldownSeconds": 11.3,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "stimEfficiency", "value": 0.20 },
+              { "name": "charges", "value": 8 },
+              { "name": "range", "value": 8 },
+              { "name": "health", "value": 796347 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "stimEfficiency", "value": 0.266 },
+              { "name": "charges", "value": 12 },
+              { "name": "range", "value": 8.4 },
+              { "name": "health", "value": 1353790 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "stimEfficiency", "value": 0.332 },
+              { "name": "charges", "value": 16 },
+              { "name": "range", "value": 8.8 },
+              { "name": "health", "value": 1911233 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "stimEfficiency", "value": 0.40 },
+              { "name": "charges", "value": 20 },
+              { "name": "range", "value": 9.2 },
+              { "name": "health", "value": 2468676 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "stimEfficiency", "value": 0.466 },
+              { "name": "charges", "value": 24 },
+              { "name": "range", "value": 9.6 },
+              { "name": "health", "value": 3026119 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "stimEfficiency", "value": 0.532 },
+              { "name": "charges", "value": 28 },
+              { "name": "range", "value": 10.0 },
+              { "name": "health", "value": 3583562 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "stimEfficiency", "value": 0.60 },
+              { "name": "charges", "value": 32 },
+              { "name": "range", "value": 10.4 },
+              { "name": "health", "value": 4141004 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "stimEfficiency", "value": 1.00 },
+              { "name": "charges", "value": 32 },
+              { "name": "range", "value": 16.0 },
+              { "name": "health", "value": 4141004 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Artificer",
+        "v_imagePath": "Skills/skills_menu_hive_tech.png",
+        "description": "Drones buff allied skills.",
+        "baseCooldownSeconds": 11.3,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "skillRepair", "value": 0.11 },
+              { "name": "skillRefresh", "value": 3 },
+              { "name": "charges", "value": 8 },
+              { "name": "range", "value": 8 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "skillRepair", "value": 0.22 },
+              { "name": "skillRefresh", "value": 5 },
+              { "name": "charges", "value": 12 },
+              { "name": "range", "value": 8.8 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "skillRepair", "value": 0.33 },
+              { "name": "skillRefresh", "value": 7 },
+              { "name": "charges", "value": 16 },
+              { "name": "range", "value": 9.6 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "skillRepair", "value": 0.44 },
+              { "name": "skillRefresh", "value": 9 },
+              { "name": "charges", "value": 20 },
+              { "name": "range", "value": 10.4 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "skillRepair", "value": 0.55 },
+              { "name": "skillRefresh", "value": 11 },
+              { "name": "charges", "value": 24 },
+              { "name": "range", "value": 11.2 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "skillRepair", "value": 0.66 },
+              { "name": "skillRefresh", "value": 13 },
+              { "name": "charges", "value": 28 },
+              { "name": "range", "value": 12.0 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "skillRepair", "value": 0.77 },
+              { "name": "skillRefresh", "value": 15 },
+              { "name": "charges", "value": 32 },
+              { "name": "range", "value": 12.8 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "skillRepair", "value": 0.88 },
+              { "name": "skillRefresh", "value": 25 },
+              { "name": "charges", "value": 32 },
+              { "name": "range", "value": 24.0 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "firefly",
+    "skillName": "Firefly",
+    "imagePath": "Skills/skillbanners/skill_firefly.png",
+    "description": "Deploys a small drone that targets and affects multiple enemies.",
+    "skillType": "Firefly",
+    "variants": [
+      {
+        "variantName": "Blinder",
+        "v_imagePath": "Skills/skills_menu_firefly_blind.png",
+        "description": "Blinds targeted enemies.",
+        "baseCooldownSeconds": 50.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "blindDuration", "value": 6.7 },
+              { "name": "maxTargets", "value": 3 },
+              { "name": "speed", "value": 1.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "blindDuration", "value": 7.4 },
+              { "name": "maxTargets", "value": 4 },
+              { "name": "speed", "value": 1.35 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "blindDuration", "value": 8.0 },
+              { "name": "maxTargets", "value": 5 },
+              { "name": "speed", "value": 1.7 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "blindDuration", "value": 8.7 },
+              { "name": "maxTargets", "value": 6 },
+              { "name": "speed", "value": 2.05 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "blindDuration", "value": 9.4 },
+              { "name": "maxTargets", "value": 7 },
+              { "name": "speed", "value": 2.4 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "blindDuration", "value": 10.1 },
+              { "name": "maxTargets", "value": 8 },
+              { "name": "speed", "value": 2.75 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "blindDuration", "value": 10.7 },
+              { "name": "maxTargets", "value": 9 },
+              { "name": "speed", "value": 3.1 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "blindDuration", "value": 13.4 },
+              { "name": "maxTargets", "value": 13 },
+              { "name": "speed", "value": 3.5 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Burster",
+        "v_imagePath": "Skills/skills_menu_firefly_shrapnel.png",
+        "description": "Attaches explosives to targeted enemies.",
+        "baseCooldownSeconds": 30.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 729985 },
+              { "name": "maxTargets", "value": 4 },
+              { "name": "speed", "value": 1.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 839483 },
+              { "name": "maxTargets", "value": 5 },
+              { "name": "speed", "value": 1.35 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 948981 },
+              { "name": "maxTargets", "value": 6 },
+              { "name": "speed", "value": 1.7 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 1058479 },
+              { "name": "maxTargets", "value": 7 },
+              { "name": "speed", "value": 2.05 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 1167976 },
+              { "name": "maxTargets", "value": 8 },
+              { "name": "speed", "value": 2.4 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 1277474 },
+              { "name": "maxTargets", "value": 9 },
+              { "name": "speed", "value": 2.75 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 1386972 },
+              { "name": "maxTargets", "value": 10 },
+              { "name": "speed", "value": 3.1 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 1733715 },
+              { "name": "maxTargets", "value": 14 },
+              { "name": "speed", "value": 3.5 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Demolisher",
+        "v_imagePath": "Skills/skills_menu_firefly_hardpoint.png",
+        "description": "Destroys enemy weak points and skill proxies.",
+        "baseCooldownSeconds": 50.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 1824962 },
+              { "name": "maxTargets", "value": 3 },
+              { "name": "speed", "value": 1.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 2463698 },
+              { "name": "maxTargets", "value": 4 },
+              { "name": "speed", "value": 1.35 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 3102435 },
+              { "name": "maxTargets", "value": 5 },
+              { "name": "speed", "value": 1.7 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 3741171 },
+              { "name": "maxTargets", "value": 6 },
+              { "name": "speed", "value": 2.05 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 4379908 },
+              { "name": "maxTargets", "value": 7 },
+              { "name": "speed", "value": 2.4 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 5018644 },
+              { "name": "maxTargets", "value": 8 },
+              { "name": "speed", "value": 2.75 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 5657381 },
+              { "name": "maxTargets", "value": 9 },
+              { "name": "speed", "value": 3.1 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 7299846 },
+              { "name": "maxTargets", "value": 13 },
+              { "name": "speed", "value": 3.5 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "seeker_mine",
+    "skillName": "Seeker Mine",
+    "imagePath": "Skills/skillbanners/skill_seeker.png",
+    "description": "Deploys a spherical device that seeks out enemies.",
+    "skillType": "Seeker Mine",
+    "variants": [
+      {
+        "variantName": "Explosive",
+        "v_imagePath": "Skills/skills_menu_mine_explosive.png",
+        "description": "Seeks and detonates on a single target.",
+        "baseCooldownSeconds": 35.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 1167976 },
+              { "name": "blastRadiusMeters", "value": 4.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 1284773 },
+              { "name": "blastRadiusMeters", "value": 4.2 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 1401571 },
+              { "name": "blastRadiusMeters", "value": 4.4 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 1518368 },
+              { "name": "blastRadiusMeters", "value": 4.6 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 1635166 },
+              { "name": "blastRadiusMeters", "value": 4.8 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 1751963 },
+              { "name": "blastRadiusMeters", "value": 5.0 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 1868761 },
+              { "name": "blastRadiusMeters", "value": 5.2 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 2102356 },
+              { "name": "blastRadiusMeters", "value": 12.0 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Cluster",
+        "v_imagePath": "Skills/skills_menu_mine_cluster.png",
+        "description": "Splits into multiple smaller mines to seek multiple targets.",
+        "baseCooldownSeconds": 50.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 802984 },
+              { "name": "mines", "value": 3 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 883282 },
+              { "name": "mines", "value": 4 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 963580 },
+              { "name": "mines", "value": 5 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 1043879 },
+              { "name": "mines", "value": 6 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 1124177 },
+              { "name": "mines", "value": 7 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 1204475 },
+              { "name": "mines", "value": 8 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 1284774 },
+              { "name": "mines", "value": 9 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 1445370 },
+              { "name": "mines", "value": 11 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Airburst",
+        "v_imagePath": "Skills/skills_menu_mine_airburst.png",
+        "description": "Launches into the air and detonates, spreading a cloud of fire.",
+        "baseCooldownSeconds": 30.0,
+        "categories": ["scOffensive", "scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 364992 },
+              { "name": "burnDamage", "value": 114674 },
+              { "name": "burnDuration", "value": 5.36 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 401491 },
+              { "name": "burnDamage", "value": 126142 },
+              { "name": "burnDuration", "value": 8.0 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 437991 },
+              { "name": "burnDamage", "value": 137609 },
+              { "name": "burnDuration", "value": 10.7 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 474490 },
+              { "name": "burnDamage", "value": 149077 },
+              { "name": "burnDuration", "value": 13.4 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 510989 },
+              { "name": "burnDamage", "value": 160544 },
+              { "name": "burnDuration", "value": 16.1 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 547488 },
+              { "name": "burnDamage", "value": 172012 },
+              { "name": "burnDuration", "value": 18.8 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 583987 },
+              { "name": "burnDamage", "value": 183479 },
+              { "name": "burnDuration", "value": 21.4 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 729984 },
+              { "name": "burnDamage", "value": 229349 },
+              { "name": "burnDuration", "value": 26.8 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Mender",
+        "v_imagePath": "Skills/skills_menu_mine_heal.png",
+        "description": "Follows an ally and repairs their armor over time.",
+        "baseCooldownSeconds": 25.0,
+        "categories": ["scHealing"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "healing", "value": 19710 },
+              { "name": "duration", "value": 216 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "healing", "value": 23652 },
+              { "name": "duration", "value": 216 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "healing", "value": 27594 },
+              { "name": "duration", "value": 216 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "healing", "value": 31536 },
+              { "name": "duration", "value": 216 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "healing", "value": 35478 },
+              { "name": "duration", "value": 216 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "healing", "value": 39420 },
+              { "name": "duration", "value": 216 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "healing", "value": 43362 },
+              { "name": "duration", "value": 216 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "healing", "value": 51245 },
+              { "name": "duration", "value": 216 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "drone",
+    "skillName": "Drone",
+    "imagePath": "Skills/skillbanners/skill_drone.png",
+    "description": "Deploys a versatile drone that can be controlled to perform various actions.",
+    "skillType": "Drone",
+    "variants": [
+      {
+        "variantName": "Striker",
+        "v_imagePath": "Skills/skills_menu_drone_assault.png",
+        "description": "Continuously fires at a target.",
+        "baseCooldownSeconds": 25.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 18250 },
+              { "name": "health", "value": 530898 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 21900 },
+              { "name": "health", "value": 902527 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 25550 },
+              { "name": "health", "value": 1274155 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 29200 },
+              { "name": "health", "value": 1645784 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 32850 },
+              { "name": "health", "value": 2017412 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 36500 },
+              { "name": "health", "value": 2389041 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 40150 },
+              { "name": "health", "value": 2760670 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 50188 },
+              { "name": "health", "value": 2760670 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Defender",
+        "v_imagePath": "Skills/skills_menu_drone_guardian.png",
+        "description": "Deflects incoming bullets.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scDefensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damageReduction", "value": 0.20 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damageReduction", "value": 0.25 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damageReduction", "value": 0.30 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damageReduction", "value": 0.35 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damageReduction", "value": 0.40 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damageReduction", "value": 0.45 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damageReduction", "value": 0.50 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damageReduction", "value": 0.80 },
+              { "name": "health", "value": 7007854 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Bombardier",
+        "v_imagePath": "Skills/skills_menu_drone_bomb.png",
+        "description": "Drops a payload of explosives on a designated area.",
+        "baseCooldownSeconds": 25.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "damage", "value": 620487 },
+              { "name": "bombs", "value": 3 },
+              { "name": "blastRadiusMeters", "value": 3.5 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "damage", "value": 682536 },
+              { "name": "bombs", "value": 4 },
+              { "name": "blastRadiusMeters", "value": 3.5 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "damage", "value": 744584 },
+              { "name": "bombs", "value": 5 },
+              { "name": "blastRadiusMeters", "value": 3.5 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "damage", "value": 806633 },
+              { "name": "bombs", "value": 6 },
+              { "name": "blastRadiusMeters", "value": 3.5 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "damage", "value": 868682 },
+              { "name": "bombs", "value": 7 },
+              { "name": "blastRadiusMeters", "value": 3.5 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "damage", "value": 930730 },
+              { "name": "bombs", "value": 8 },
+              { "name": "blastRadiusMeters", "value": 3.5 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "damage", "value": 992779 },
+              { "name": "bombs", "value": 9 },
+              { "name": "blastRadiusMeters", "value": 3.5 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "damage", "value": 992779 },
+              { "name": "bombs", "value": 9 },
+              { "name": "blastRadiusMeters", "value": 8.5 },
+              { "name": "health", "value": 5521339 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Fixer",
+        "v_imagePath": "Skills/skills_menu_drone_repair.png",
+        "description": "Repairs allied armor over time.",
+        "baseCooldownSeconds": 25.0,
+        "categories": ["scHealing"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "healing", "value": 19710 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "healing", "value": 23652 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "healing", "value": 27594 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "healing", "value": 31536 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "healing", "value": 35478 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "healing", "value": 39420 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "healing", "value": 43362 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "healing", "value": 54202 },
+              { "name": "health", "value": 6370776 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Tactician",
+        "v_imagePath": "Skills/skills_menu_drone_surveyor.png",
+        "description": "Provides reconnaissance at a designated location.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "scanRange", "value": 50 },
+              { "name": "health", "value": 1061796 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "scanRange", "value": 55 },
+              { "name": "health", "value": 1805053 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "scanRange", "value": 60 },
+              { "name": "health", "value": 2548310 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "scanRange", "value": 65 },
+              { "name": "health", "value": 3291568 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "scanRange", "value": 70 },
+              { "name": "health", "value": 4034825 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "scanRange", "value": 75 },
+              { "name": "health", "value": 4778082 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "scanRange", "value": 80 },
+              { "name": "health", "value": 5521339 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "scanRange", "value": 90 },
+              { "name": "health", "value": 5521339 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "shield",
+    "skillName": "Shield",
+    "imagePath": "Skills\\skillbanners\\skill_sheld.png",
+    "description": "Deploys a personal shield.",
+    "skillType": "Shield",
+    "variants": [
+      {
+        "variantName": "Bulwark",
+        "v_imagePath": "Skills/skills_menu_shield_ballistic.png",
+        "description": "A full-body shield that protects the user from incoming damage.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scDefensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "health", "value": 2654490 },
+              { "name": "activeRegen", "value": 79635 },
+              { "name": "holsteredRegen", "value": 132725 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "health", "value": 4432998 },
+              { "name": "activeRegen", "value": 95562 },
+              { "name": "holsteredRegen", "value": 139361 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "health", "value": 6184962 },
+              { "name": "activeRegen", "value": 111489 },
+              { "name": "holsteredRegen", "value": 145998 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "health", "value": 7963470 },
+              { "name": "activeRegen", "value": 127416 },
+              { "name": "holsteredRegen", "value": 152634 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "health", "value": 9715433 },
+              { "name": "activeRegen", "value": 143343 },
+              { "name": "holsteredRegen", "value": 159270 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "health", "value": 11493942 },
+              { "name": "activeRegen", "value": 159270 },
+              { "name": "holsteredRegen", "value": 165906 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "health", "value": 13272450 },
+              { "name": "activeRegen", "value": 175197 },
+              { "name": "holsteredRegen", "value": 185815 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "health", "value": 15926940 },
+              { "name": "activeRegen", "value": 477810 },
+              { "name": "holsteredRegen", "value": 185815 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Crusader",
+        "v_imagePath": "Skills/skills_menu_shield_rifle.png",
+        "description": "A lightweight shield that allows the use of primary weapons.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scDefensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "health", "value": 1327245 },
+              { "name": "activeRegen", "value": 39817 },
+              { "name": "holsteredRegen", "value": 66362 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "health", "value": 1858143 },
+              { "name": "activeRegen", "value": 43799 },
+              { "name": "holsteredRegen", "value": 69680 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "health", "value": 2203227 },
+              { "name": "activeRegen", "value": 47780 },
+              { "name": "holsteredRegen", "value": 72998 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "health", "value": 2654490 },
+              { "name": "activeRegen", "value": 51762 },
+              { "name": "holsteredRegen", "value": 76316 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "health", "value": 3318113 },
+              { "name": "activeRegen", "value": 55744 },
+              { "name": "holsteredRegen", "value": 79634 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "health", "value": 3981735 },
+              { "name": "activeRegen", "value": 59726 },
+              { "name": "holsteredRegen", "value": 82953 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "health", "value": 4645358 },
+              { "name": "activeRegen", "value": 63707 },
+              { "name": "holsteredRegen", "value": 92907 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "health", "value": 4645358 },
+              { "name": "activeRegen", "value": 238902 },
+              { "name": "holsteredRegen", "value": 92907 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Deflector",
+        "v_imagePath": "Skills/skills_menu_shield_ricochet.png",
+        "description": "Deflects incoming bullets to a nearby target.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scDefensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "health", "value": 2123592 },
+              { "name": "activeRegen", "value": 63708 },
+              { "name": "holsteredRegen", "value": 106180 },
+              { "name": "deflectorDamage", "value": 88512 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "health", "value": 2973029 },
+              { "name": "activeRegen", "value": 70079 },
+              { "name": "holsteredRegen", "value": 111489 },
+              { "name": "deflectorDamage", "value": 97363 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "health", "value": 3525163 },
+              { "name": "activeRegen", "value": 76450 },
+              { "name": "holsteredRegen", "value": 116798 },
+              { "name": "deflectorDamage", "value": 106214 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "health", "value": 4247184 },
+              { "name": "activeRegen", "value": 82820 },
+              { "name": "holsteredRegen", "value": 122107 },
+              { "name": "deflectorDamage", "value": 115065 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "health", "value": 5308980 },
+              { "name": "activeRegen", "value": 89191 },
+              { "name": "holsteredRegen", "value": 127416 },
+              { "name": "deflectorDamage", "value": 123916 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "health", "value": 6370776 },
+              { "name": "activeRegen", "value": 95562 },
+              { "name": "holsteredRegen", "value": 132725 },
+              { "name": "deflectorDamage", "value": 132767 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "health", "value": 7432572 },
+              { "name": "activeRegen", "value": 101933 },
+              { "name": "holsteredRegen", "value": 148652 },
+              { "name": "deflectorDamage", "value": 141618 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "health", "value": 7432572 },
+              { "name": "activeRegen", "value": 101933 },
+              { "name": "holsteredRegen", "value": 148652 },
+              { "name": "deflectorDamage", "value": 177023 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Striker",
+        "v_imagePath": "Skills/skills_menu_shield_rifle.png",
+        "description": "Increases weapon damage for each enemy shot.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scOffensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "health", "value": 1327245 },
+              { "name": "activeRegen", "value": 39817 },
+              { "name": "holsteredRegen", "value": 66362 },
+              { "name": "damageBonusPerEnemy", "value": 0.05 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "health", "value": 1858143 },
+              { "name": "activeRegen", "value": 43799 },
+              { "name": "holsteredRegen", "value": 69680 },
+              { "name": "damageBonusPerEnemy", "value": 0.06 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "health", "value": 2203227 },
+              { "name": "activeRegen", "value": 47780 },
+              { "name": "holsteredRegen", "value": 72998 },
+              { "name": "damageBonusPerEnemy", "value": 0.062 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "health", "value": 2654490 },
+              { "name": "activeRegen", "value": 51762 },
+              { "name": "holsteredRegen", "value": 76316 },
+              { "name": "damageBonusPerEnemy", "value": 0.064 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "health", "value": 3318113 },
+              { "name": "activeRegen", "value": 55744 },
+              { "name": "holsteredRegen", "value": 79634 },
+              { "name": "damageBonusPerEnemy", "value": 0.066 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "health", "value": 3981735 },
+              { "name": "activeRegen", "value": 59726 },
+              { "name": "holsteredRegen", "value": 82953 },
+              { "name": "damageBonusPerEnemy", "value": 0.068 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "health", "value": 4645358 },
+              { "name": "activeRegen", "value": 63707 },
+              { "name": "holsteredRegen", "value": 92907 },
+              { "name": "damageBonusPerEnemy", "value": 0.07 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "health", "value": 6636225 },
+              { "name": "activeRegen", "value": 238902 },
+              { "name": "holsteredRegen", "value": 132724 },
+              { "name": "damageBonusPerEnemy", "value": 0.075 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "decoy",
+    "skillName": "Decoy",
+    "imagePath": "Skills/skillbanners/skill_decoy.png",
+    "description": "Deploys a holographic decoy that distracts enemies.",
+    "skillType": "Decoy",
+    "variants": [
+      {
+        "variantName": "Base",
+        "v_imagePath": "Skills/skills_menu_decoy.png",
+        "description": "Holographic decoy.",
+        "baseCooldownSeconds": 25.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "duration", "value": 18 },
+              { "name": "health", "value": 929072 },
+              { "name": "threat", "value": 1.0 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "duration", "value": 20.7 },
+              { "name": "health", "value": 1393608 },
+              { "name": "threat", "value": 1.15 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "duration", "value": 23.4 },
+              { "name": "health", "value": 1858144 },
+              { "name": "threat", "value": 1.30 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "duration", "value": 26.1 },
+              { "name": "health", "value": 2322680 },
+              { "name": "threat", "value": 1.45 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "duration", "value": 28.8 },
+              { "name": "health", "value": 2787216 },
+              { "name": "threat", "value": 1.60 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "duration", "value": 31.5 },
+              { "name": "health", "value": 3251752 },
+              { "name": "threat", "value": 1.75 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "duration", "value": 34.2 },
+              { "name": "health", "value": 3716288 },
+              { "name": "threat", "value": 1.90 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "duration", "value": 34.2 },
+              { "name": "health", "value": 6503504 },
+              { "name": "threat", "value": 3.50 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "pulse",
+    "skillName": "Pulse",
+    "imagePath": "Skills/skillbanners/skill_pulse.png",
+    "description": "Scans the surrounding area for hostiles.",
+    "skillType": "Pulse",
+    "variants": [
+      {
+        "variantName": "Scanner",
+        "v_imagePath": "Skills/skills_menu_pulse_echo.png",
+        "description": "Scans the area and highlights enemies.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "duration", "value": 9.6 },
+              { "name": "radius", "value": 100 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "duration", "value": 11.0 },
+              { "name": "radius", "value": 100 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "duration", "value": 12.5 },
+              { "name": "radius", "value": 100 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "duration", "value": 13.9 },
+              { "name": "radius", "value": 100 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "duration", "value": 15.4 },
+              { "name": "radius", "value": 100 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "duration", "value": 16.8 },
+              { "name": "radius", "value": 100 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "duration", "value": 18.2 },
+              { "name": "radius", "value": 100 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "duration", "value": 28.8 },
+              { "name": "radius", "value": 100 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Remote",
+        "v_imagePath": "Skills/skills_menu_pulse_thrown.png",
+        "description": "Deploys a device that continuously scans an area.",
+        "baseCooldownSeconds": 20.0,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "duration", "value": 54 },
+              { "name": "radius", "value": 15 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "duration", "value": 62 },
+              { "name": "radius", "value": 17 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "duration", "value": 70 },
+              { "name": "radius", "value": 19 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "duration", "value": 78 },
+              { "name": "radius", "value": 22 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "duration", "value": 86 },
+              { "name": "radius", "value": 24 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "duration", "value": 95 },
+              { "name": "radius", "value": 26 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "duration", "value": 103 },
+              { "name": "radius", "value": 29 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "duration", "value": 119 },
+              { "name": "radius", "value": 33 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Jammer",
+        "v_imagePath": "Skills/skills_menu_pulse_emp.png",
+        "description": "Emits an EMP pulse that disrupts enemy electronics.",
+        "baseCooldownSeconds": 30.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "duration", "value": 4 },
+              { "name": "radius", "value": 20 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "duration", "value": 4 },
+              { "name": "radius", "value": 22 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "duration", "value": 5 },
+              { "name": "radius", "value": 24 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "duration", "value": 5 },
+              { "name": "radius", "value": 26 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "duration", "value": 6 },
+              { "name": "radius", "value": 28 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "duration", "value": 6 },
+              { "name": "radius", "value": 30 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "duration", "value": 6 },
+              { "name": "radius", "value": 32 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "duration", "value": 8 },
+              { "name": "radius", "value": 50 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Banshee",
+        "v_imagePath": "Skills/skills_menu_pulse_banshee.png",
+        "description": "Emits a pulse that disorients enemies.",
+        "baseCooldownSeconds": 30.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "duration", "value": 5 },
+              { "name": "coneSize", "value": 20 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "duration", "value": 6 },
+              { "name": "coneSize", "value": 22 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "duration", "value": 6 },
+              { "name": "coneSize", "value": 24 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "duration", "value": 7 },
+              { "name": "coneSize", "value": 26 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "duration", "value": 8 },
+              { "name": "coneSize", "value": 28 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "duration", "value": 8 },
+              { "name": "coneSize", "value": 30 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "duration", "value": 9 },
+              { "name": "coneSize", "value": 32 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "duration", "value": 11 },
+              { "name": "coneSize", "value": 50 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Achilles",
+        "v_imagePath": "Skills/skills_menu_pulse_banshee.png",
+        "description": "Highlights enemy weak points.",
+        "baseCooldownSeconds": 37.2,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "zoneDuration", "value": 12 },
+              { "name": "zoneHealth", "value": 398174 },
+              { "name": "zones", "value": 1 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "zoneDuration", "value": 13 },
+              { "name": "zoneHealth", "value": 437991 },
+              { "name": "zones", "value": 1 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "zoneDuration", "value": 14 },
+              { "name": "zoneHealth", "value": 477809 },
+              { "name": "zones", "value": 1 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "zoneDuration", "value": 16 },
+              { "name": "zoneHealth", "value": 517626 },
+              { "name": "zones", "value": 2 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "zoneDuration", "value": 17 },
+              { "name": "zoneHealth", "value": 557444 },
+              { "name": "zones", "value": 2 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "zoneDuration", "value": 18 },
+              { "name": "zoneHealth", "value": 597261 },
+              { "name": "zones", "value": 2 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "zoneDuration", "value": 19 },
+              { "name": "zoneHealth", "value": 637078 },
+              { "name": "zones", "value": 3 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "zoneDuration", "value": 24 },
+              { "name": "zoneHealth", "value": 796348 },
+              { "name": "zones", "value": 6 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "trap",
+    "skillName": "Trap",
+    "imagePath": "Skills/skillbanners/skill_trap.png",
+    "description": "Deploys a trap that can be triggered by enemies.",
+    "skillType": "Trap",
+    "variants": [
+      {
+        "variantName": "Repair",
+        "v_imagePath": "Skills/skills_menu_trap_heal.png",
+        "description": "Repairs allies that enter its area of effect.",
+        "baseCooldownSeconds": 40.0,
+        "categories": ["scHealing"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "repair", "value": 182496 },
+              { "name": "traps", "value": 2 },
+              { "name": "duration", "value": 72 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "repair", "value": 218995 },
+              { "name": "traps", "value": 3 },
+              { "name": "duration", "value": 72 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "repair", "value": 255494 },
+              { "name": "traps", "value": 4 },
+              { "name": "duration", "value": 72 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "repair", "value": 291993 },
+              { "name": "traps", "value": 5 },
+              { "name": "duration", "value": 72 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "repair", "value": 328492 },
+              { "name": "traps", "value": 6 },
+              { "name": "duration", "value": 72 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "repair", "value": 364991 },
+              { "name": "traps", "value": 7 },
+              { "name": "duration", "value": 72 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "repair", "value": 401490 },
+              { "name": "traps", "value": 8 },
+              { "name": "duration", "value": 72 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "repair", "value": 437989 },
+              { "name": "traps", "value": 8 },
+              { "name": "duration", "value": 72 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Shock",
+        "v_imagePath": "Skills/skills_menu_trap_shock.png",
+        "description": "Shocks enemies that enter its area of effect.",
+        "baseCooldownSeconds": 60.0,
+        "categories": ["scCrowdControl"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "shockDuration", "value": 4.02 },
+              { "name": "shockRadius", "value": 2.5 },
+              { "name": "traps", "value": 6 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "shockDuration", "value": 4.4 },
+              { "name": "shockRadius", "value": 2.75 },
+              { "name": "traps", "value": 8 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "shockDuration", "value": 4.8 },
+              { "name": "shockRadius", "value": 3.0 },
+              { "name": "traps", "value": 8 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "shockDuration", "value": 5.2 },
+              { "name": "shockRadius", "value": 3.25 },
+              { "name": "traps", "value": 10 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "shockDuration", "value": 5.6 },
+              { "name": "shockRadius", "value": 3.5 },
+              { "name": "traps", "value": 12 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "shockDuration", "value": 6.0 },
+              { "name": "shockRadius", "value": 3.75 },
+              { "name": "traps", "value": 14 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "shockDuration", "value": 6.4 },
+              { "name": "shockRadius", "value": 4.0 },
+              { "name": "traps", "value": 16 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "shockDuration", "value": 12.1 },
+              { "name": "shockRadius", "value": 4.25 },
+              { "name": "traps", "value": 18 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "skillId": "smart_cover",
+    "skillName": "Smart Cover",
+    "imagePath": "Skills/skillbanners/skill_smartcover.png",
+    "description": "Deploys a device that provides cover and buffs to allies.",
+    "skillType": "Smart Cover",
+    "variants": [
+      {
+        "variantName": "Precision",
+        "v_imagePath": "Skills/skills_menu_smartcover_precision.png",
+        "description": "Provides offensive buffs.",
+        "baseCooldownSeconds": 45.0,
+        "categories": ["scSupport"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "radius", "value": 6.0 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 0.15 },
+              { "name": "damageOutOfCover", "value": 0.10 },
+              { "name": "health", "value": 663623 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "radius", "value": 6.6 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 0.25 },
+              { "name": "damageOutOfCover", "value": 0.17 },
+              { "name": "health", "value": 1128159 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "radius", "value": 7.2 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 0.35 },
+              { "name": "damageOutOfCover", "value": 0.19 },
+              { "name": "health", "value": 1592695 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "radius", "value": 7.8 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 0.45 },
+              { "name": "damageOutOfCover", "value": 0.22 },
+              { "name": "health", "value": 2057231 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "radius", "value": 8.4 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 0.55 },
+              { "name": "damageOutOfCover", "value": 0.26 },
+              { "name": "health", "value": 2521767 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "radius", "value": 9.0 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 0.65 },
+              { "name": "damageOutOfCover", "value": 0.31 },
+              { "name": "health", "value": 2986304 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "radius", "value": 9.6 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 0.75 },
+              { "name": "damageOutOfCover", "value": 0.37 },
+              { "name": "health", "value": 3450840 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "radius", "value": 12.0 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "weaponHandling", "value": 1.00 },
+              { "name": "damageOutOfCover", "value": 0.45 },
+              { "name": "health", "value": 3450840 }
+            ]
+          }
+        ]
+      },
+      {
+        "variantName": "Fortified",
+        "v_imagePath": "Skills/skills_menu_smartcover_fortified.png",
+        "description": "Provides defensive buffs.",
+        "baseCooldownSeconds": 45.0,
+        "categories": ["scDefensive"],
+        "effectsByTier": [
+          {
+            "tier": 0,
+            "effects": [
+              { "name": "radius", "value": 8.0 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 0.50 },
+              { "name": "explosiveResistance", "value": 0.05 },
+              { "name": "pulseResistance", "value": 0.05 },
+              { "name": "health", "value": 663623 }
+            ]
+          },
+          {
+            "tier": 1,
+            "effects": [
+              { "name": "radius", "value": 8.8 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 0.60 },
+              { "name": "explosiveResistance", "value": 0.15 },
+              { "name": "pulseResistance", "value": 0.15 },
+              { "name": "health", "value": 1128159 }
+            ]
+          },
+          {
+            "tier": 2,
+            "effects": [
+              { "name": "radius", "value": 9.6 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 0.70 },
+              { "name": "explosiveResistance", "value": 0.20 },
+              { "name": "pulseResistance", "value": 0.20 },
+              { "name": "health", "value": 1592695 }
+            ]
+          },
+          {
+            "tier": 3,
+            "effects": [
+              { "name": "radius", "value": 10.4 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 0.80 },
+              { "name": "explosiveResistance", "value": 0.25 },
+              { "name": "pulseResistance", "value": 0.25 },
+              { "name": "health", "value": 2057231 }
+            ]
+          },
+          {
+            "tier": 4,
+            "effects": [
+              { "name": "radius", "value": 11.2 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 0.90 },
+              { "name": "explosiveResistance", "value": 0.30 },
+              { "name": "pulseResistance", "value": 0.30 },
+              { "name": "health", "value": 2521767 }
+            ]
+          },
+          {
+            "tier": 5,
+            "effects": [
+              { "name": "radius", "value": 12.0 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 1.00 },
+              { "name": "explosiveResistance", "value": 0.40 },
+              { "name": "pulseResistance", "value": 0.35 },
+              { "name": "health", "value": 2986304 }
+            ]
+          },
+          {
+            "tier": 6,
+            "effects": [
+              { "name": "radius", "value": 12.8 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 1.10 },
+              { "name": "explosiveResistance", "value": 0.45 },
+              { "name": "pulseResistance", "value": 0.40 },
+              { "name": "health", "value": 3450840 }
+            ]
+          },
+          {
+            "tier": 7,
+            "effects": [
+              { "name": "radius", "value": 16.0 },
+              { "name": "duration", "value": 36.0 },
+              { "name": "bonusArmor", "value": 1.50 },
+              { "name": "explosiveResistance", "value": 0.65 },
+              { "name": "pulseResistance", "value": 0.55 },
+              { "name": "health", "value": 3450840 }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,168 @@
+object FrmRecPrefs: TFrmRecPrefs
+  Left = 0
+  Top = 0
+  Caption = 'Recommendation Preferences'
+  ClientHeight = 428
+  ClientWidth = 452
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object LayoutRoot: TLayout
+    Align = Client
+    Size.Width = 452.000000000000000000
+    Size.Height = 428.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object LabelWeaponFocus: TLabel
+      Position.X = 10.000000000000000000
+      Position.Y = 10.000000000000000000
+      Text = 'Primary Weapon Focus:'
+    end
+    object ComboBoxWeaponFocus: TComboBox
+      Position.X = 10.000000000000000000
+      Position.Y = 30.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+    object LabelOptimizationGoal: TLabel
+      Position.X = 10.000000000000000000
+      Position.Y = 60.000000000000000000
+      Text = 'Optimization Goal:'
+    end
+    object ComboBoxOptimizationGoal: TComboBox
+      Position.X = 10.000000000000000000
+      Position.Y = 80.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      OnChange = ComboBoxOptimizationGoalChange
+    end
+    object LabelSpecificSkill: TLabel
+      Position.X = 10.000000000000000000
+      Position.Y = 110.000000000000000000
+      Text = 'Specific Skill for Damage:'
+      Visible = False
+    end
+    object EditSpecificSkill: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 2
+      Position.X = 10.000000000000000000
+      Position.Y = 130.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      Visible = False
+    end
+    object GroupBoxConstraints: TGroupBox
+      Align = Bottom
+      Position.Y = 110.000000000000000000
+      Size.Width = 452.000000000000000000
+      Size.Height = 278.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Constraints'
+      object LabelRequiredSets: TLabel
+        Position.X = 10.000000000000000000
+        Position.Y = 10.000000000000000000
+        Text = 'Required Sets:'
+      end
+      object ListBoxRequiredSets: TListBox
+        Position.X = 10.000000000000000000
+        Position.Y = 30.000000000000000000
+        Size.Width = 300.000000000000000000
+        Size.Height = 60.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        DisableFocusEffect = True
+        DefaultItemStyles.ItemStyle = ''
+        DefaultItemStyles.GroupHeaderStyle = ''
+        DefaultItemStyles.GroupFooterStyle = ''
+        Viewport.Width = 296.000000000000000000
+        Viewport.Height = 56.000000000000000000
+      end
+      object ButtonAddSet: TButton
+        Position.X = 320.000000000000000000
+        Position.Y = 30.000000000000000000
+        Size.Width = 30.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        Text = '+'
+        TextSettings.Trimming = None
+        OnClick = ButtonAddSetClick
+      end
+      object ButtonRemoveSet: TButton
+        Position.X = 320.000000000000000000
+        Position.Y = 60.000000000000000000
+        Size.Width = 30.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        Text = '-'
+        TextSettings.Trimming = None
+      end
+      object LabelMaxExoticGear: TLabel
+        Position.X = 10.000000000000000000
+        Position.Y = 213.000000000000000000
+        Text = 'Max Exotic Gear Pieces:'
+      end
+      object NumberBoxMaxExoticGear: TNumberBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 1
+        Cursor = crIBeam
+        Max = 1.000000000000000000
+        Value = 1.000000000000000000
+        Position.X = 180.000000000000000000
+        Position.Y = 213.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object LabelMaxExoticWeapon: TLabel
+        Position.X = 10.000000000000000000
+        Position.Y = 233.000000000000000000
+        Text = 'Max Exotic Weapons:'
+      end
+      object NumberBoxMaxExoticWeapon: TNumberBox
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 2
+        Cursor = crIBeam
+        Max = 1.000000000000000000
+        Value = 1.000000000000000000
+        Position.X = 180.000000000000000000
+        Position.Y = 233.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
+    object LayoutButtons: TLayout
+      Align = Bottom
+      Position.Y = 388.000000000000000000
+      Size.Width = 452.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      object ButtonOK: TButton
+        Align = Right
+        Position.X = 372.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'OK'
+        TextSettings.Trimming = None
+        OnClick = ButtonOKClick
+      end
+      object ButtonCancel: TButton
+        Align = Right
+        Position.X = 292.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Cancel'
+        TextSettings.Trimming = None
+      end
+    end
+  end
+end

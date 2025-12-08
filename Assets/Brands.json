@@ -1,0 +1,3825 @@
+{
+    "coreAttributes": [
+        {
+            "id": "weaponDamage",
+            "type": "Weapon Damage",
+            "value": 15
+        },
+        {
+            "id": "armor",
+            "type": "Armor",
+            "value": 170000
+        },
+        {
+            "id": "skillTier",
+            "type": "Skill Tier",
+            "value": 1
+        }
+    ],
+    "minorAttributeSlotCount": [1, 2, 3],
+    "fixedMinorAttributes": [
+        {
+            "id": "modSlots",
+            "type": "Mod Slots",
+            "value": 2.0
+        },
+        {
+            "id": "armorOnKill",
+            "type": "Armor On Kill",
+            "value": 10.0
+        },
+        {
+            "id": "damageToArmor",
+            "type": "Damage to Armor",
+            "value": 8.0
+        },
+        {
+            "id": "statusEffects_0",
+            "type": "Status Effects",
+            "value": 16.0
+        },
+        {
+            "id": "skillHealth",
+            "type": "Skill Health",
+            "value": 25.0
+        },
+        {
+            "id": "armorRegen_0",
+            "type": "Armor Regeneration",
+            "value": 1.0
+        },
+        {
+            "id": "damageTOutOfCover",
+            "type": "Damage To Target Out of Cover",
+            "value": 8.0
+        },
+        {
+            "id": "reducedThreat",
+            "type": "Reduced Threat",
+            "value": 50.0
+        },
+        {
+            "id": "healthDamage",
+            "type": "Health Damage",
+            "value": 14.0
+        },
+        {
+            "id": "scannerPulseHaste",
+            "type": "Scanner Pulse Haste",
+            "value": 100.0
+        },
+        {
+            "id": "optimalRange",
+            "type": "Optimal Range",
+            "value": 50.0
+        },
+        {
+            "id": "meleeDamage",
+            "type": "Melee Damage",
+            "value": 500.0
+        },
+        {
+            "id": "ammoCapacity",
+            "type": "Ammo Capacity",
+            "value": 10.0
+        },
+        {
+            "id": "shieldHealth",
+            "type": "Shield Health",
+            "value": 50.0
+        },
+        {
+            "id": "accuracy",
+            "type": "Accuracy",
+            "value": 38.0
+        },
+        {
+            "id": "rateOfFire",
+            "type": "Rate Of Fire",
+            "value": 5.0
+        },
+        {
+            "id": "pistolDamage",
+            "type": "Pistol Damage",
+            "value": 11.0
+        },
+        {
+            "id": "weaponDamage",
+            "type": "Weapon Damage",
+            "value": 10.0
+        },
+        {
+            "id": "criticalHitChance",
+            "type": "Critical Hit Chance",
+            "value": 6.0
+        },
+        {
+            "id": "criticalHitDamage",
+            "type": "Critical Hit Damage",
+            "value": 12.0
+        },
+        {
+            "id": "weaponHandling_0",
+            "type": "Weapon Handling",
+            "value": 8.0
+        },
+        {
+            "id": "weaponHandling_1",
+            "type": "Weapon Handling",
+            "value": 15.0
+        },
+        {
+            "id": "headshotDamage_0",
+            "type": "Headshot Damage",
+            "value": 10.0
+        },
+        {
+            "id": "headshotDamage_1",
+            "type": "Headshot Damage",
+            "value": 20.0
+        },
+        {
+            "id": "armor",
+            "type": "Armor",
+            "value": 170000.0
+        },
+        {
+            "id": "armorRegen_1",
+            "type": "Armor Regen Hp/S",
+            "value": 4925.0
+        },
+        {
+            "id": "health",
+            "type": "Health",
+            "value": 18935.0
+        },
+        {
+            "id": "incomingRepairs",
+            "type": "Incoming Repairs",
+            "value": 20.0
+        },
+        {
+            "id": "hazardProtection",
+            "type": "Hazard Protection",
+            "value": 10.0
+        },
+        {
+            "id": "explosiveResistance",
+            "type": "Explosive Resistance",
+            "value": 10.0
+        },
+        {
+            "id": "skillTier",
+            "type": "Skill Tier",
+            "value": 1.0
+        },
+        {
+            "id": "statusEffects_1",
+            "type": "Status Effects",
+            "value": 10.0
+        },
+        {
+            "id": "skillDamage",
+            "type": "Skill Damage",
+            "value": 10.0
+        },
+        {
+            "id": "skillHaste",
+            "type": "Skill Haste",
+            "value": 12.0
+        },
+        {
+            "id": "repairSkills",
+            "type": "Repair Skills",
+            "value": 20.0
+        }
+    ],
+    "brandSets": [
+        {
+            "name": "5.11 Tactical",
+            "imageIndex": 0,
+            "parts": {
+                "Mask": {
+                    "name": "5.11 Tactical Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "5.11 Tactical Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "5.11 Tactical Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "5.11 Tactical Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "5.11 Tactical Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "5.11 Tactical Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "health": 30,
+                    "itemsRequired": 1
+                },
+                {
+                    "incoming_repairs": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "hazard_protection": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Airaldi Holdings",
+            "imageIndex": 1,
+            "parts": {
+                "Mask": {
+                    "name": "Airaldi Holdings Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Airaldi Holdings Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Airaldi Holdings Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Airaldi Holdings Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Airaldi Holdings Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Airaldi Holdings Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "marksman_rifle_damage": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "headshot_damage": 13,
+                    "itemsRequired": 2
+                },
+                {
+                    "damage_to_armor": 5,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Alps Summit Armament",
+            "imageIndex": 2,
+            "parts": {
+                "Mask": {
+                    "name": "Alps Summit Armament Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Alps Summit Armament Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Alps Summit Armament Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Alps Summit Armament Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Alps Summit Armament Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Alps Summit Armament Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "repair_skills": 18,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_duration": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_haste": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Badger Tuff",
+            "imageIndex": 3,
+            "parts": {
+                "Mask": {
+                    "name": "Badger Tuff Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Badger Tuff Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Badger Tuff Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Badger Tuff Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Badger Tuff Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Badger Tuff Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "shotgun_damage": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "total_armor": 5,
+                    "itemsRequired": 2
+                },
+                {
+                    "armor_on_kill": 15,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Belstone Armory",
+            "imageIndex": 4,
+            "parts": {
+                "Mask": {
+                    "name": "Belstone Armory Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Belstone Armory Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Belstone Armory Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Belstone Armory Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Belstone Armory Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Belstone Armory Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "armor_regen": 1,
+                    "itemsRequired": 1
+                },
+                {
+                    "armor_on_kill": 10,
+                    "itemsRequired": 2
+                },
+                {
+                    "incoming_repairs": 45,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Brazos de Arcabuz",
+            "imageIndex": 5,
+            "parts": {
+                "Mask": {
+                    "name": "Brazos de Arcabuz Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Brazos de Arcabuz Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Brazos de Arcabuz Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Brazos de Arcabuz Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Brazos de Arcabuz Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Brazos de Arcabuz Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "skill_haste": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_tier": 1,
+                    "itemsRequired": 2
+                },
+                {
+                    "magazine_size": 50,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Česká Výroba s.r.o",
+            "imageIndex": 6,
+            "parts": {
+                "Mask": {
+                    "name": "Česká Výroba s.r.o Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Česká Výroba s.r.o Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Česká Výroba s.r.o Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Česká Výroba s.r.o Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Česká Výroba s.r.o Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Česká Výroba s.r.o Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "critical_hit_chance": 8,
+                    "itemsRequired": 1
+                },
+                {
+                    "hazard_protection": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "health": 90,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "China Light Industries Corporation",
+            "imageIndex": 7,
+            "parts": {
+                "Mask": {
+                    "name": "China Light Industries Corporation Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "China Light Industries Corporation Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "China Light Industries Corporation Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "China Light Industries Corporation Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "China Light Industries Corporation Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "China Light Industries Corporation Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "explosive_damage": 15,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_haste": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "status_effects": 25,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Douglas & Harding",
+            "imageIndex": 8,
+            "parts": {
+                "Mask": {
+                    "name": "Douglas & Harding Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Douglas & Harding Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Douglas & Harding Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Douglas & Harding Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Douglas & Harding Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Douglas & Harding Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "pistol_damage": 20,
+                    "itemsRequired": 1
+                },
+                {
+                    "stability": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "accuracy": 50,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Electrique",
+            "imageIndex": 9,
+            "parts": {
+                "Mask": {
+                    "name": "Electrique Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Electrique Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Electrique Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Electrique Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Electrique Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Electrique Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "status_effects": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "shock_resistance": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "smg_damage": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Empress International",
+            "imageIndex": 10,
+            "parts": {
+                "Mask": {
+                    "name": "Empress International Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Empress International Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Empress International Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Empress International Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Empress International Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Empress International Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "skill_health": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_damage": 10,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_efficiency": 8,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Fenris Group AB",
+            "imageIndex": 11,
+            "parts": {
+                "Mask": {
+                    "name": "Fenris Group AB Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Fenris Group AB Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Fenris Group AB Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Fenris Group AB Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Fenris Group AB Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Fenris Group AB Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "assault_rifle_damage": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "reload_speed": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "stability": 50,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Gila Guard",
+            "imageIndex": 12,
+            "parts": {
+                "Mask": {
+                    "name": "Gila Guard Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Gila Guard Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Gila Guard Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Gila Guard Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Gila Guard Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Gila Guard Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "total_armor": 5,
+                    "itemsRequired": 1
+                },
+                {
+                    "health": 60,
+                    "itemsRequired": 2
+                },
+                {
+                    "armor_regen": 2,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Golan Gear Ltd",
+            "imageIndex": 13,
+            "parts": {
+                "Mask": {
+                    "name": "Golan Gear Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Golan Gear Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Golan Gear Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Golan Gear Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Golan Gear Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Golan Gear Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "status_effects": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "armor_regen": 1.5,
+                    "itemsRequired": 2
+                },
+                {
+                    "total_armor": 10,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Grupo Sombra S.A.",
+            "imageIndex": 14,
+            "parts": {
+                "Mask": {
+                    "name": "Grupo Sombra S.A Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Grupo Sombra S.A Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Grupo Sombra S.A Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Grupo Sombra S.A Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Grupo Sombra S.A Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Grupo Sombra S.A Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "critical_hit_damage": 13,
+                    "itemsRequired": 1
+                },
+                {
+                    "explosive_damage": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "headshot_damage": 13,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Habsburg Guard",
+            "imageIndex": 15,
+            "parts": {
+                "Mask": {
+                    "name": "Habsburg Guard Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Habsburg Guard Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Habsburg Guard Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Habsburg Guard Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Habsburg Guard Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Habsburg Guard Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "headshot_damage": 13,
+                    "itemsRequired": 1
+                },
+                {
+                    "marksman_rifle_damage": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "status_effects": 25,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Hana-U Corporation",
+            "imageIndex": 16,
+            "parts": {
+                "Mask": {
+                    "name": "Hana U Corporation Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Hana U Corporation Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Hana U Corporation Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Hana U Corporation Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Hana U Corporation Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Hana U Corporation Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "skill_haste": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_damage": 10,
+                    "itemsRequired": 2
+                },
+                {
+                    "weapon_damage": 15,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Imminence Armaments",
+            "imageIndex": 17,
+            "parts": {
+                "Mask": {
+                    "name": "Imminence Armaments Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Imminence Armaments Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Imminence Armaments Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Imminence Armaments Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Imminence Armaments Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Imminence Armaments Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "weapon_damage": 5,
+                    "itemsRequired": 1
+                },
+                {
+                    "increased_threat": 100,
+                    "itemsRequired": 2
+                },
+                {
+                    "pistol_damage": 60,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Legatus S.P.A.",
+            "imageIndex": 18,
+            "parts": {
+                "Mask": {
+                    "name": "Legatus S.P.A. Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Legatus S.P.A. Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Legatus S.P.A. Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Legatus S.P.A. Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Legatus S.P.A. Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Legatus S.P.A. Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "swap_speed": 30,
+                    "itemsRequired": 1
+                },
+                {
+                    "optimal_range": 70,
+                    "itemsRequired": 2
+                },
+                {
+                    "weapon_damage": 15,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Lengmo",
+            "imageIndex": 19,
+            "parts": {
+                "Mask": {
+                    "name": "Lengmo Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Lengmo Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Lengmo Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Lengmo Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Lengmo Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Murakami Industries Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "explosive_resistance": 20,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_health": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "lmg_damage": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Murakami Industries",
+            "imageIndex": 20,
+            "parts": {
+                "Mask": {
+                    "name": "Murakami Industries Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Murakami Industries Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Murakami Industries Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Murakami Industries Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Murakami Industries Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Murakami Industries Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "skill_duration": 15,
+                    "itemsRequired": 1
+                },
+                {
+                    "repair_skills": 35,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_damage": 18,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Overlord Armaments",
+            "imageIndex": 21,
+            "parts": {
+                "Mask": {
+                    "name": "Overlord Armaments Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Overlord Armaments Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Overlord Armaments Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Overlord Armaments Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Overlord Armaments Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Overlord Armaments Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "rifle_damage": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "accuracy": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "weapon_handling": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Palisade Steelworks",
+            "imageIndex": 22,
+            "parts": {
+                "Mask": {
+                    "name": "Palisade Steelworks Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Palisade Steelworks Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Palisade Steelworks Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Palisade Steelworks Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Palisade Steelworks Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Palisade Steelworks Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "armor_on_kill": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "health": 60,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_tier": 1,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Petrov Defense Group",
+            "imageIndex": 23,
+            "parts": {
+                "Mask": {
+                    "name": "Petrov Defense Group Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Petrov Defense Group Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Petrov Defense Group Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Petrov Defense Group Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Petrov Defense Group Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Petrov Defense Group Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "lmg_damage": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "weapon_handling": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "ammo_capacity": 50,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Providence Defense",
+            "imageIndex": 24,
+            "parts": {
+                "Mask": {
+                    "name": "Providence Defense Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Providence Defense Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Providence Defense Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Providence Defense Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Providence Defense Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Providence Defense Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "headshot_damage": 13,
+                    "itemsRequired": 1
+                },
+                {
+                    "critical_hit_chance": 8,
+                    "itemsRequired": 2
+                },
+                {
+                    "critical_hit_damage": 13,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Richter & Kaiser GmbH",
+            "imageIndex": 25,
+            "parts": {
+                "Mask": {
+                    "name": "Richter & Kaiser GmbH Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Richter & Kaiser GmbH Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Richter & Kaiser GmbH Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Richter & Kaiser GmbH Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Richter & Kaiser GmbH Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Richter & Kaiser GmbH Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "incoming_repairs": 15,
+                    "itemsRequired": 1
+                },
+                {
+                    "explosive_resistance": 40,
+                    "itemsRequired": 2
+                },
+                {
+                    "repair_skills": 52,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Shiny Monkey",
+            "imageIndex": 26,
+            "parts": {
+                "Mask": {
+                    "name": "Shiny Monkey Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Shiny Monkey Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Shiny Monkey Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Shiny Monkey Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Shiny Monkey Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Shiny Monkey Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "skill_duration": 15,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_efficiency": 5,
+                    "itemsRequired": 2
+                },
+                {
+                    "repair_skills": 52,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Sokolov Concern",
+            "imageIndex": 27,
+            "parts": {
+                "Mask": {
+                    "name": "Sokolov Concern Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Sokolov Concern Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Sokolov Concern Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Sokolov Concern Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Sokolov Concern Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Sokolov Concern Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "smg_damage": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "critical_hit_damage": 13,
+                    "itemsRequired": 2
+                },
+                {
+                    "critical_hit_chance": 8,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Unit Alloys",
+            "imageIndex": 28,
+            "parts": {
+                "Mask": {
+                    "name": "Unit Alloys Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Unit Alloys Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Unit Alloys Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Unit Alloys Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Unit Alloys Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Unit Alloys Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "rate_of_fire": 5,
+                    "itemsRequired": 1
+                },
+                {
+                    "assault_rifle_damage": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "magazine_size": 50,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Urban Lookout",
+            "imageIndex": 29,
+            "parts": {
+                "Mask": {
+                    "name": "Urban Lookout Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Urban Lookout Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Urban Lookout Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Urban Lookout Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Urban Lookout Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Urban Lookout Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "accuracy": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "skill_duration": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "marksman_rifle_damage": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Uzina Getica",
+            "imageIndex": 30,
+            "parts": {
+                "Mask": {
+                    "name": "Uzina Getica Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Uzina Getica Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Uzina Getica Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Uzina Getica Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Uzina Getica Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Uzina Getica Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "total_armor": 5,
+                    "itemsRequired": 1
+                },
+                {
+                    "armor_on_kill": 10,
+                    "itemsRequired": 2
+                },
+                {
+                    "hazard_protection": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Walker, Harris & Co.",
+            "imageIndex": 31,
+            "parts": {
+                "Mask": {
+                    "name": "Walker, Harris & Co. Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Walker, Harris & Co. Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Walker, Harris & Co. Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Walker, Harris & Co. Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Walker, Harris & Co. Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Walker, Harris & Co. Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": [
+                {
+                    "weapon_damage": 5,
+                    "itemsRequired": 1
+                },
+                {
+                    "damage_to_armor": 5,
+                    "itemsRequired": 2
+                },
+                {
+                    "damage_to_health": 10,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Wyvern Wear",
+            "imageIndex": 32,
+            "parts": {
+                "Mask": {
+                    "name": "Wyvern Wear Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Wyvern Wear Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Wyvern Wear Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Wyvern Wear Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Wyvern Wear Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Wyvern Wear Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "bonuses": [
+                {
+                    "skill_damage": 8,
+                    "itemsRequired": 1
+                },
+                {
+                    "status_effects": 18,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_duration": 45,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Yaahl Gear",
+            "imageIndex": 33,
+            "parts": {
+                "Mask": {
+                    "name": "Yaahl Gear Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Yaahl Gear Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Yaahl Gear Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Yaahl Gear Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Yaahl Gear Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Yaahl Gear Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "hazard_protection": 10,
+                    "itemsRequired": 1
+                },
+                {
+                    "weapon_damage": 10,
+                    "itemsRequired": 2
+                },
+                {
+                    "pulse_resistance": 40,
+                    "itemsRequired": 3
+                }
+            ]
+        },
+        {
+            "name": "Zwiadowka Sp. z o.o.",
+            "imageIndex": 34,
+            "parts": {
+                "Mask": {
+                    "name": "Zwiadowka Sp. z o.o. Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Zwiadowka Sp. z o.o. Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Zwiadowka Sp. z o.o. Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Zwiadowka Sp. z o.o. Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Zwiadowka Sp. z o.o. Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Zwiadowka Sp. z o.o. Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "magazine_size": 15,
+                    "itemsRequired": 1
+                },
+                {
+                    "rifle_damage": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "weapon_handling": 30,
+                    "itemsRequired": 3
+                }
+            ]
+        }
+    ],
+    "gearSets": [
+        {
+            "name": "Aces & Eights",
+            "imageIndex": 35,
+            "parts": {
+                "Mask": {
+                    "name": "Aces & Eights Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Aces & Eights Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Aces & Eights Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Aces & Eights Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Aces & Eights Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Aces & Eights Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "marksman_rifle_damage": 15,
+                    "rifle_damage": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "headshot_damage": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Dead Man's Hand",
+                    "description": "Flipping cards while landing shots with a marksman rifle increases the next shot's damage by 30%.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Aegis",
+            "imageIndex": 36,
+            "parts": {
+                "Mask": {
+                    "name": "Aegis Mask",
+                    "coreAttribute": "Armor"
+                },
+                "Vest": {
+                    "name": "Aegis Vest",
+                    "coreAttribute": "Armor"
+                },
+                "Holster": {
+                    "name": "Aegis Holster",
+                    "coreAttribute": "Armor"
+                },
+                "Backpack": {
+                    "name": "Aegis Backpack",
+                    "coreAttribute": "Armor"
+                },
+                "Glove": {
+                    "name": "Aegis Glove",
+                    "coreAttribute": "Armor"
+                },
+                "Kneepad": {
+                    "name": "Aegis Kneepad",
+                    "coreAttribute": "Armor"
+                }
+            },
+            "setBonuses": [
+                {
+                    "health": 70,
+                    "itemsRequired": 2
+                },
+                {
+                    "total_armor": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Stoic",
+                    "description": "Grants +3% damage resistance for every enemy targeting you, multiplied by the number of agents in your group.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Breaking Point",
+            "imageIndex": 37,
+            "parts": {
+                "Mask": {
+                    "name": "Breaking Point Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Breaking Point Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Breaking Point Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Breaking Point Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Breaking Point Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Breaking Point Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "rifle_damage": 25,
+                    "marksman_rifle_damage": 25,
+                    "itemsRequired": 2
+                },
+                {
+                    "headshot_damage": 30,
+                    "weapon_handling": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "On Point",
+                    "description": "Landing a shot with a rifle or marksman rifle grants a stack. Reloading gives +2% weapon handling and weapon damage per stack for 10 seconds.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Concentrated Company",
+            "imageIndex": 38,
+            "parts": {
+                "Mask": {
+                    "name": "Concentrated Company Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Concentrated Company Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Concentrated Company Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Concentrated Company Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Concentrated Company Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Concentrated Company Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "weapon_damage": 10,
+                    "itemsRequired": 2
+                },
+                {
+                    "weapon_handling": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Camaraderie Talent",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Eclipse Protocol",
+            "imageIndex": 39,
+            "parts": {
+                "Mask": {
+                    "name": "Eclipse Protocol Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Eclipse Protocol Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Eclipse Protocol Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Eclipse Protocol Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Eclipse Protocol Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Eclipse Protocol Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "setBonuses": [
+                {
+                    "status_effects": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_haste": 15,
+                    "hazard_protection": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Indirect Transmission",
+                    "description": "Status effects now spread to nearby enemies within 10 meters when you kill an affected target.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Foundry Bulwark",
+            "imageIndex": 40,
+            "parts": {
+                "Mask": {
+                    "name": "Foundry Bulwark Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Foundry Bulwark Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Foundry Bulwark Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Foundry Bulwark Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Foundry Bulwark Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Foundry Bulwark Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "setBonuses": [
+                {
+                    "total_armor": 10,
+                    "itemsRequired": 2
+                },
+                {
+                    "armor_regen": 1,
+                    "shield_health": 50,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Makeshift Repairs",
+                    "description": "When you or your shield take damage, 25% of the damage is repaired over 10 seconds.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Future Initiative",
+            "imageIndex": 41,
+            "parts": {
+                "Mask": {
+                    "name": "Future Initiative Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Future Initiative Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Future Initiative Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Future Initiative Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Future Initiative Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Future Initiative Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "setBonuses": [
+                {
+                    "repair_skills": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_duration": 30,
+                    "skill_haste": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Ground Control",
+                    "description": "Increases your and your allies' weapon and skill damage by 15% while at full armor.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Hard Wired",
+            "imageIndex": 42,
+            "parts": {
+                "Mask": {
+                    "name": "Hard Wired Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Hard Wired Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Hard Wired Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Hard Wired Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Hard Wired Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Hard Wired Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "setBonuses": [
+                {
+                    "skill_haste": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "repair_skills": 30,
+                    "skill_damage": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Feedback Loop",
+                    "description": "Whenever you use or cancel a skill, your other skill's cooldown is reduced by 30 seconds.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Heartbreaker",
+            "imageIndex": 43,
+            "parts": {
+                "Mask": {
+                    "name": "Heartbreaker Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Heartbreaker Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Heartbreaker Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Heartbreaker Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Heartbreaker Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Heartbreaker Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "setBonuses": [
+                {
+                    "assault_rifle_damage": 15,
+                    "lmg_damage": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "weapon_handling": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Heartstopper",
+                    "description": "Headshots apply a pulse for 5 seconds. Weapon hits on pulsed enemies add a stack of 1% bonus armor and 1% weapon damage, stacking up to 50 times.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Hotshot",
+            "imageIndex": 44,
+            "parts": {
+                "Mask": {
+                    "name": "Hotshot Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Hotshot Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Hotshot Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Hotshot Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Hotshot Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Hotshot Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "marksman_rifle_damage": 30,
+                    "weapon_handling": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "headshot_damage": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Headache",
+                    "description": "The first headshot with a marksman rifle increases the next headshot's damage by 20%.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Hunter's Fury",
+            "imageIndex": 45,
+            "parts": {
+                "Mask": {
+                    "name": "Hunter's Fury Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Hunter's Fury Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Hunter's Fury Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Hunter's Fury Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Hunter's Fury Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Hunter's Fury Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "smg_damage": 15,
+                    "shotgun_damage": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "armor_on_kill": 20,
+                    "health_on_kill": 50,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Apex Predator",
+                    "description": "Enemies within 15 meters receive a debuff, amplifying your weapon damage by 20%. Killing a debuffed enemy disorients others within 5 meters.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Measured Assembly",
+            "imageIndex": 46,
+            "parts": {
+                "Mask": {
+                    "name": "Measured Assembly Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Measured Assembly Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Measured Assembly Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Measured Assembly Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Measured Assembly Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Measured Assembly Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "setBonuses": [
+                {
+                    "skill_haste": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "repair_skills": 60,
+                    "explosive_resistance": 40,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Huddle",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Negotiator's Dilemma",
+            "imageIndex": 47,
+            "parts": {
+                "Mask": {
+                    "name": "Negotiator's Dilemma Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Negotiator's Dilemma Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Negotiator's Dilemma Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Negotiator's Dilemma Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Negotiator's Dilemma Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Negotiator's Dilemma Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "critical_hit_chance": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "critical_hit_damage": 20,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Hostile Negotiations",
+                    "description": "Critical hits mark enemies for 20 seconds. Critically hitting a marked enemy causes other marked enemies to take 60% of the damage dealt.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Ongoing Directive",
+            "imageIndex": 48,
+            "parts": {
+                "Mask": {
+                    "name": "Ongoing Directive Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Ongoing Directive Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Ongoing Directive Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Ongoing Directive Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Ongoing Directive Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Ongoing Directive Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "status_effects": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "reload_speed": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Rules of Engagement",
+                    "description": "Shooting a status-affected enemy marks them. Killing a marked enemy grants Hollow-Point Ammo.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Ortiz: Exuro",
+            "imageIndex": 49,
+            "parts": {
+                "Mask": {
+                    "name": "Ortiz: Exuro Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Ortiz: Exuro Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Ortiz: Exuro Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Ortiz: Exuro Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Ortiz: Exuro Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Ortiz: Exuro Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "setBonuses": [
+                {
+                    "burn_duration": 20,
+                    "skill_health": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "burn_damage": 40,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Ortiz Incinerator Turret Prototype",
+                    "description": "The Incinerator Turret rotates 360 degrees. You are immune to your own Incinerator Turret's fire. The turret explodes upon being disabled.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Refactor",
+            "imageIndex": 50,
+            "parts": {
+                "Mask": {
+                    "name": "Refactor Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Refactor Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Refactor Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Refactor Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Refactor Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Refactor Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "setBonuses": [
+                {
+                    "status_effects": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_damage": 25,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Return to Sender",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Rigger",
+            "imageIndex": 51,
+            "parts": {
+                "Mask": {
+                    "name": "Rigger Mask",
+                    "coreAttribute": "skillTier"
+                },
+                "Vest": {
+                    "name": "Rigger Vest",
+                    "coreAttribute": "skillTier"
+                },
+                "Holster": {
+                    "name": "Rigger Holster",
+                    "coreAttribute": "skillTier"
+                },
+                "Backpack": {
+                    "name": "Rigger Backpack",
+                    "coreAttribute": "skillTier"
+                },
+                "Glove": {
+                    "name": "Rigger Glove",
+                    "coreAttribute": "skillTier"
+                },
+                "Kneepad": {
+                    "name": "Rigger Kneepad",
+                    "coreAttribute": "skillTier"
+                }
+            },
+            "setBonuses": [
+                {
+                    "skill_haste": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "skill_duration": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Tend and Befriend",
+                    "description": "Interacting with deployed skills grants them a 25% skill damage boost for 10 seconds.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Striker's Battlegear",
+            "imageIndex": 52,
+            "parts": {
+                "Mask": {
+                    "name": "Striker's Battlegear Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Striker's Battlegear Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Striker's Battlegear Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Striker's Battlegear Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Striker's Battlegear Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Striker's Battlegear Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "weapon_handling": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "rate_of_fire": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Striker's Gamble",
+                    "description": "Weapon hits increase total weapon damage by 0.65%, stacking up to 100 times.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "System Corruption",
+            "imageIndex": 53,
+            "parts": {
+                "Mask": {
+                    "name": "System Corruption Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "System Corruption Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "System Corruption Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "System Corruption Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "System Corruption Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "System Corruption Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "armor_on_kill": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "pulse_resistance": 40,
+                    "disrupt_resistance": 40,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Hackstep Protocol",
+                    "description": "Replaces armor kits with a 20-second cooldown skill that repairs 20% armor.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "The Cavalier",
+            "imageIndex": 54,
+            "parts": {
+                "Mask": {
+                    "name": "The Cavalier Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "The Cavalier Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "The Cavalier Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "The Cavalier Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "The Cavalier Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "The Cavalier Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "setBonuses": [
+                {
+                    "hazard_protection": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "repair_skills": 40,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Charging",
+                    "description": "For every second spent outside of cover during combat, agents gain 5% reduced incoming skill damage, stacking up to 50%.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Tipping Scales",
+            "imageIndex": 55,
+            "parts": {
+                "Mask": {
+                    "name": "Tipping Scales Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Tipping Scales Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Tipping Scales Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Tipping Scales Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Tipping Scales Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Tipping Scales Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "magazine_size": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "lmg_damage": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Throttle Control",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Tip of the Spear",
+            "imageIndex": 56,
+            "parts": {
+                "Mask": {
+                    "name": "Tip of the Spear Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Tip of the Spear Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Tip of the Spear Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Tip of the Spear Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Tip of the Spear Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Tip of the Spear Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "signature_weapon_damage": 20,
+                    "itemsRequired": 2
+                },
+                {
+                    "weapon_damage": 10,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Aggressive Recon",
+                    "description": "Getting a kill with a Signature Weapon boosts its damage by 15% for 10 seconds.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "True Patriot",
+            "imageIndex": 57,
+            "parts": {
+                "Mask": {
+                    "name": "True Patriot Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "True Patriot Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "True Patriot Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "True Patriot Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "True Patriot Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "True Patriot Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "setBonuses": [
+                {
+                    "ammo_capacity": 30,
+                    "itemsRequired": 2
+                },
+                {
+                    "magazine_size": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Red, White, and Blue",
+                    "description": "Shooting enemies applies stacking debuffs: Red, White, and Blue.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Umbra Initiative",
+            "imageIndex": 58,
+            "parts": {
+                "Mask": {
+                    "name": "Umbra Initiative Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Umbra Initiative Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Umbra Initiative Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Umbra Initiative Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Umbra Initiative Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Umbra Initiative Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "critical_hit_chance": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "reload_speed": 30,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "From the Shadows & Into the Light",
+                    "description": "Gain stacks that increase critical hit damage and armor regeneration based on cover status.",
+                    "itemsRequired": 4
+                }
+            ]
+        },
+        {
+            "name": "Virtuoso",
+            "imageIndex": 59,
+            "parts": {
+                "Mask": {
+                    "name": "Virtuoso Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Virtuoso Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Virtuoso Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Virtuoso Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Virtuoso Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Virtuoso Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "setBonuses": [
+                {
+                    "weapon_handling": 15,
+                    "itemsRequired": 2
+                },
+                {
+                    "magazine_size": 15,
+                    "weapon_damage": 15,
+                    "itemsRequired": 3
+                },
+                {
+                    "title": "Symphony",
+                    "itemsRequired": 4
+                }
+            ]
+        }
+    ],
+    "namedSets": [
+        {
+            "name": "5.11 Tactical",
+            "imageIndex": 0,
+            "parts": {
+                "Glove": {
+                    "name": "Deathgrips",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "armorOnKill"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Airaldi Holdings",
+            "imageIndex": 1,
+            "parts": {
+                "Vest": {
+                    "name": "Pristine Example",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Focus"
+                }
+            }
+        },
+        {
+            "name": "Alps Summit Armament",
+            "imageIndex": 2,
+            "parts": {
+                "Backpack": {
+                    "name": "Percussive Maintenance",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfect Tech Support"
+                },
+                "Glove": {
+                    "name": "Motherly Love",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "skillHealth"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Badger Tuff",
+            "imageIndex": 3,
+            "parts": {
+                "Vest": {
+                    "name": "Zero F's",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Unbreakable"
+                },
+                "Holster": {
+                    "name": "Ammo Dump Holster",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "ammoCapacity"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Belstone Armory",
+            "imageIndex": 4,
+            "parts": {
+                "Backpack": {
+                    "name": "Liquid Engineer",
+                    "coreAttribute": "armor",
+                    "talent": "Perfect Bloodsucker"
+                },
+                "Vest": {
+                    "name": "Everyday Carrier",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Efficient"
+                }
+            }
+        },
+        {
+            "name": "Brazos de Arcabuz",
+            "imageIndex": 5,
+            "parts": {
+                "Holster": {
+                    "name": "Picaro's Holster",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "weaponDamage"
+                    ]
+                },
+                "Backpack": {
+                    "name": "Hermano",
+                    "coreAttribute": "armor",
+                    "talent": "Perfect Overclock"
+                }
+            }
+        },
+        {
+            "name": "Česká Výroba s.r.o",
+            "imageIndex": 6,
+            "parts": {
+                "Backpack": {
+                    "name": "Devil's Due",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Clutch"
+                },
+                "Kneepad": {
+                    "name": "Turmoil",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Bewildered"
+                }
+            }
+        },
+        {
+            "name": "China Light Industries Corporation",
+            "imageIndex": 7,
+            "parts": {
+                "Backpack": {
+                    "name": "Strategic Alignment",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfect Shock & Awe"
+                }
+            }
+        },
+        {
+            "name": "Douglas & Harding",
+            "imageIndex": 8,
+            "parts": {
+                "Mask": {
+                    "name": "Punch Drunk",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "headshotDamage_1"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Empress International",
+            "imageIndex": 10,
+            "parts": {
+                "Vest": {
+                    "name": "Caesar's Guard",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfectly Skilled"
+                },
+                "Backpack": {
+                    "name": "Battery Pack",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfectly Calculated"
+                }
+            }
+        },
+        {
+            "name": "Fenris Group AB",
+            "imageIndex": 11,
+            "parts": {
+                "Vest": {
+                    "name": "Ferocious Calm",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Overwatch"
+                }
+            }
+        },
+        {
+            "name": "Gila Guard",
+            "imageIndex": 12,
+            "parts": {
+                "Mask": {
+                    "name": "Nightwatcher",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "scannerPulseHaste"
+                    ]
+                },
+                "Vest": {
+                    "name": "Pointman",
+                    "coreAttribute": "armor",
+                    "talent": "Perfect Vanguard"
+                },
+                "Mask_ChillOut": {
+                    "name": "Chill Out",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "modSlots"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Golan Gear",
+            "imageIndex": 13,
+            "parts": {
+                "Vest": {
+                    "name": "Hunter-Killer",
+                    "coreAttribute": "armor",
+                    "talent": "Perfect Intimidate"
+                },
+                "Backpack": {
+                    "name": "Anarchist's Cookbook",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Wicked"
+                }
+            }
+        },
+        {
+            "name": "Grupo Sombra S.A",
+            "imageIndex": 14,
+            "parts": {
+                "Vest": {
+                    "name": "Door-Kicker's Knock",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Spark"
+                },
+                "Backpack": {
+                    "name": "Festive Delivery",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Fireworks Show"
+                }
+            }
+        },
+        {
+            "name": "Habsburg Guard",
+            "imageIndex": 15,
+            "parts": {
+                "Vest": {
+                    "name": "Cherished",
+                    "coreAttribute": "armor",
+                    "talent": "Perfect Trauma"
+                },
+                "Backpack_TheCourier": {
+                    "name": "The Courier",
+                    "coreAttribute": "armor",
+                    "talent": "Perfect Creeping Death"
+                }
+            }
+        },
+        {
+            "name": "Hana-U Corporation",
+            "imageIndex": 16,
+            "parts": {
+                "Backpack": {
+                    "name": "Force Multiplier",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfect Combined Arms"
+                }
+            }
+        },
+        {
+            "name": "Murakami Industries",
+            "imageIndex": 20,
+            "parts": {
+                "Kneepad": {
+                    "name": "Emperor's Guard",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "armorRegen_0"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Overlord Armaments",
+            "imageIndex": 21,
+            "parts": {
+                "Kneepad": {
+                    "name": "Fox's Prayer",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "damageTOutOfCover"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Petrov Defense Group",
+            "imageIndex": 23,
+            "parts": {
+                "Vest": {
+                    "name": "Vedmedytsya Vest",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Braced"
+                },
+                "Glove": {
+                    "name": "Contractor's Gloves",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "damageToArmor"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Providence Defense",
+            "imageIndex": 24,
+            "parts": {
+                "Vest": {
+                    "name": "The Sacrifice",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Glass Cannon"
+                },
+                "Backpack": {
+                    "name": "The Gift",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Vigilance"
+                }
+            }
+        },
+        {
+            "name": "Richter & Kaiser GmbH",
+            "imageIndex": 25,
+            "parts": {
+                "Holster": {
+                    "name": "Forge",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "shieldHealth"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Sokolov Concern",
+            "imageIndex": 27,
+            "parts": {
+                "Glove": {
+                    "name": "Firm Handshake",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "statusEffects"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Uzina Getica",
+            "imageIndex": 29,
+            "parts": {
+                "Vest": {
+                    "name": "Closer",
+                    "coreAttribute": "armor",
+                    "talent": "Perfect Spotter"
+                },
+                "Backpack": {
+                    "name": "The Setup",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Opportunistic"
+                }
+            }
+        },
+        {
+            "name": "Walker, Harris & Co.",
+            "imageIndex": 30,
+            "parts": {
+                "Vest": {
+                    "name": "Chainkiller",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Headhunter"
+                },
+                "Backpack": {
+                    "name": "Matador",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Adrenaline Rush"
+                }
+            }
+        },
+        {
+            "name": "Wyvern Wear",
+            "imageIndex": 31,
+            "parts": {
+                "Holster": {
+                    "name": "Claws Out",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "meleeDamage",
+                        "pistolDamage"
+                    ],
+                    "minorAttributeSlotCount": 3
+                }
+            }
+        },
+        {
+            "name": "Yaahl Gear",
+            "imageIndex": 32,
+            "parts": {
+                "Mask": {
+                    "name": "The Hollow Man",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "healthDamage"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Legatus S.p.A.",
+            "imageIndex": 18,
+            "parts": {
+                "Mask": {
+                    "name": "Visionario",
+                    "fixedMinorAttributes": [
+                        "optimalRange"
+                    ],
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Vigil",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Versatile"
+                }
+            }
+        },
+        {
+            "name": "Lengmo",
+            "imageIndex": 19,
+            "parts": {
+                "Backpack": {
+                    "name": "Backbone",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Unstoppable Force"
+                },
+                "Vest": {
+                    "name": "Carpenter",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Mad Bomber"
+                }
+            }
+        },
+        {
+            "name": "Electrique",
+            "imageIndex": 9,
+            "parts": {
+                "Backpack": {
+                    "name": "Lavoisier",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfect Galvanize"
+                },
+                "Vest": {
+                    "name": "Henri",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfect Companion"
+                },
+                "Kneepad": {
+                    "name": "Snow Machine",
+                    "coreAttribute": "skillTier",
+                    "talent": "Flurry"
+                }
+            }
+        },
+        {
+            "name": "Palisade Steelworks",
+            "imageIndex": 22,
+            "parts": {
+                "Backpack": {
+                    "name": "Proxy",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Tamper Proof"
+                },
+                "Vest": {
+                    "name": "Combustor",
+                    "coreAttribute": "armor",
+                    "talent": "Perfectly Explosive Delivery"
+                }
+            }
+        },
+        {
+            "name": "Shiny Monkey",
+            "imageIndex": 26,
+            "parts": {
+                "Backpack": {
+                    "name": "Axel",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfect Energize"
+                },
+                "Kneepad": {
+                    "name": "Grease",
+                    "fixedMinorAttributes": [
+                        "statusEffects_0"
+                    ],
+                    "coreAttribute": "skillTier"
+                }
+            }
+        },
+        {
+            "name": "Imminence Armaments",
+            "imageIndex": 17,
+            "parts": {
+                "Backpack": {
+                    "name": "Cap'n",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Leadership"
+                },
+                "Kneepad": {
+                    "name": "Cloak",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "reducedThreat"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Zwiadowka Sp. z o.o.",
+            "imageIndex": 33,
+            "parts": {
+                "Vest": {
+                    "name": "Bober",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Entrench"
+                },
+                "Glove": {
+                    "name": "Eagle's Grasp",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "weaponHandling"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Urban Lookout",
+            "imageIndex": 28,
+            "parts": {
+                "Vest": {
+                    "name": "Sleight",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Protected Reload"
+                },
+                "Holster": {
+                    "name": "Spot-on",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "accuracy"
+                    ]
+                }
+            }
+        }
+    ],
+    "exoticSets": [
+        {
+            "name": "Tinkerer",
+            "imageIndex": 87,
+            "parts": {
+                "Mask": {
+                    "name": "Tinkerer",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Abridged"
+                }
+            }
+        },
+        {
+            "name": "The Catalyst",
+            "imageIndex": 84,
+            "parts": {
+                "Mask": {
+                    "name": "The Catalyst",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Chemical Agent"
+                }
+            }
+        },
+        {
+            "name": "Coyote's Mask",
+            "imageIndex": 86,
+            "parts": {
+                "Mask": {
+                    "name": "Coyote's Mask",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Pack Instincts"
+                }
+            }
+        },
+        {
+            "name": "Vile",
+            "imageIndex": 88,
+            "parts": {
+                "Mask": {
+                    "name": "Vile",
+                    "coreAttribute": "skillTier",
+                    "talent": "Toxic Delivery"
+                }
+            }
+        },
+        {
+            "name": "Catharsis",
+            "imageIndex": 85,
+            "parts": {
+                "Mask": {
+                    "name": "Catharsis",
+                    "coreAttribute": "armor",
+                    "talent": "Vicious Cycle"
+                }
+            }
+        },
+        {
+            "name": "Beacon",
+            "imageIndex": 64,
+            "parts": {
+                "Vest": {
+                    "name": "Beacon",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Bond"
+                }
+            }
+        },
+        {
+            "name": "Collector",
+            "imageIndex": 65,
+            "parts": {
+                "Vest": {
+                    "name": "Collector",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Hoarder"
+                }
+            }
+        },
+        {
+            "name": "Provocator",
+            "imageIndex": 66,
+            "parts": {
+                "Vest": {
+                    "name": "Provocator",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "armorRegen_1",
+                        "hazardProtection"
+                    ],
+                    "talent": "Challenger"
+                }
+            }
+        },
+        {
+            "name": "Ridgeway's Pride",
+            "imageIndex": 67,
+            "parts": {
+                "Vest": {
+                    "name": "Ridgeway's Pride",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Bleeding Edge"
+                }
+            }
+        },
+        {
+            "name": "Tardigrade",
+            "imageIndex": 68,
+            "parts": {
+                "Vest": {
+                    "name": "Tardigrade",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "armorRegen_1",
+                        "explosiveResistance"
+                    ],
+                    "talent": "Ablative Nano-Plating"
+                }
+            }
+        },
+        {
+            "name": "Imperial Dynasty",
+            "imageIndex": 76,
+            "parts": {
+                "Holster": {
+                    "name": "Imperial Dynasty",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "statusEffects_1",
+                        "hazardProtection"
+                    ],
+                    "talent": "Dragon's Glare"
+                }
+            }
+        },
+        {
+            "name": "Shocker Punch",
+            "imageIndex": 78,
+            "parts": {
+                "Holster": {
+                    "name": "Shocker Punch",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "explosiveResistance",
+                        "hazardProtection"
+                    ],
+                    "talent": "Defibrillator"
+                }
+            }
+        },
+        {
+            "name": "Waveform",
+            "imageIndex": 79,
+            "parts": {
+                "Holster": {
+                    "name": "Waveform",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "skillDamage",
+                        "skillHaste"
+                    ],
+                    "talent": "Alternating Current"
+                }
+            }
+        },
+        {
+            "name": "Centurion's Scabbard",
+            "imageIndex": 74,
+            "parts": {
+                "Holster": {
+                    "name": "Centurion's Scabbard",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Counter"
+                }
+            }
+        },
+        {
+            "name": "Dodge City",
+            "imageIndex": 75,
+            "parts": {
+                "Holster": {
+                    "name": "Dodge City",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Quick Draw"
+                }
+            }
+        },
+        {
+            "name": "Nimble Holster",
+            "imageIndex": 77,
+            "parts": {
+                "Holster": {
+                    "name": "Nimble Holster",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Bob and Weave"
+                }
+            }
+        },
+        {
+            "name": "Acosta's Go Bag",
+            "imageIndex": 60,
+            "parts": {
+                "Backpack": {
+                    "name": "Acosta's Go Bag",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "skillDamage",
+                        "skillHaste"
+                    ],
+                    "talent": ["One in Hand", "Two in the Bag"]
+                }
+            }
+        },
+        {
+            "name": "Birdie's Quick Fix",
+            "imageIndex": 61,
+            "parts": {
+                "Backpack": {
+                    "name": "Birdie's Quick Fix",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "skillHaste",
+                        "repairSkills"
+                    ],
+                    "talent": "Combat Medic"
+                }
+            }
+        },
+        {
+            "name": "Memento",
+            "imageIndex": 62,
+            "parts": {
+                "Backpack": {
+                    "name": "Memento",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "armorRegen_1",
+                        "skillTier"
+                    ],
+                    "talent": "Kill Confirmed"
+                }
+            }
+        },
+        {
+            "name": "NinjaBike Backpack",
+            "imageIndex": 63,
+            "parts": {
+                "Backpack": {
+                    "name": "NinjaBike Backpack",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "armorRegen_1",
+                        "skillTier"
+                    ],
+                    "talent": "Resourceful"
+                }
+            }
+        },
+        {
+            "name": "BTSU Data Gloves",
+            "imageIndex": 69,
+            "parts": {
+                "Glove": {
+                    "name": "BTSU Data Gloves",
+                    "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "skillHaste",
+                        "repairSkills"
+                    ],
+                    "talent": "Transference Overclock"
+                }
+            }
+        },
+        {
+            "name": "Bloody Knuckles",
+            "imageIndex": 71,
+            "parts": {
+                "Glove": {
+                    "name": "Bloody Knuckles",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Over the Top"
+                }
+            }
+        },
+        {
+            "name": "Rugged Gauntlets",
+            "imageIndex": 73,
+            "parts": {
+                "Glove": {
+                    "name": "Rugged Gauntlets",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Iron Grip"
+                }
+            }
+        },
+        {
+            "name": "Exodus",
+            "imageIndex": 70,
+            "parts": {
+                "Glove": {
+                    "name": "Exodus",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Smoke Screen"
+                }
+            }
+        },
+        {
+            "name": "Overdogs",
+            "imageIndex": 72,
+            "parts": {
+                "Glove": {
+                    "name": "Overdogs",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Weakest Link"
+                }
+            }
+        },
+        {
+            "name": "Acosta's Kneepads",
+            "imageIndex": 80,
+            "parts": {
+                "Kneepads": {
+                    "name": "Acosta's Kneepads",
+                    "coreAttribute": "armor",
+                    "talent": "Escape Plan"
+                }
+            }
+        },
+        {
+            "name": "Blacklister Kneepads",
+            "imageIndex": 81,
+            "parts": {
+                "Kneepads": {
+                    "name": "Blacklister Kneepads",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Ostracize"
+                }
+            }
+        },
+        {
+            "name": "Sawyer's Kneepads",
+            "imageIndex": 83,
+            "parts": {
+                "Kneepads": {
+                    "name": "Sawyer's Kneepads",
+                    "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "explosiveResistance",
+                        "health"
+                    ],
+                    "talent": "Stand Your Ground"
+                }
+            }
+        },
+        {
+            "name": "NinjaBike Kneepads",
+            "imageIndex": 82,
+            "parts": {
+                "Kneepads": {
+                    "name": "NinjaBike Kneepads",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
+                    "talent": "Parkour!"
+                }
+            }
+        }
+    ]
+}

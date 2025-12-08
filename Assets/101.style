@@ -1,0 +1,153 @@
+object TStyleContainer
+  object TLayout
+    StyleName = 'btnCustomStyleStyle1'
+    Position.X = 450.000000000000000000
+    Position.Y = 226.000000000000000000
+    Size.Width = 91.000000000000000000
+    Size.Height = 24.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+    TabOrder = 0
+    object TRectangle
+      StyleName = 'background'
+      Align = Contents
+      Fill.Color = claCoral
+      HitTest = False
+      Size.Width = 91.000000000000000000
+      Size.Height = 24.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Kind = None
+      XRadius = 3.000000000000000000
+      YRadius = 3.000000000000000000
+      object TRectangle
+        Align = Contents
+        Fill.Kind = Gradient
+        Fill.Gradient.Points = <
+          item
+            Color = x24F4F4F4
+            Offset = 0.000000000000000000
+          end
+          item
+            Color = x24EAEAEA
+            Offset = 0.499000012874603300
+          end
+          item
+            Color = x4E868686
+            Offset = 0.500000000000000000
+          end>
+        HitTest = False
+        Size.Width = 91.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Color = xC84F4F4F
+        XRadius = 3.000000000000000000
+        YRadius = 3.000000000000000000
+      end
+      object TColorAnimation
+        Duration = 0.200000002980232200
+        PropertyName = 'Fill.Color'
+        StartValue = claBlack
+        StopValue = xFFA5D9FF
+        Trigger = 'IsMouseOver=true'
+      end
+      object TColorAnimation
+        Duration = 0.200000002980232200
+        PropertyName = 'Fill.Color'
+        StartValue = xFFA5D9FF
+        StopValue = claBlack
+        Trigger = 'IsMouseOver=false'
+      end
+      object TInnerGlowEffect
+        Softness = 0.400000005960464500
+        GlowColor = xFF4F4848
+        Opacity = 0.899999976158142100
+        Trigger = 'IsPressed=true'
+        Enabled = False
+      end
+      object TRectangle
+        Align = Client
+        Fill.Kind = None
+        Locked = True
+        HitTest = False
+        Padding.Left = 1.000000000000000000
+        Padding.Top = 1.000000000000000000
+        Padding.Right = 1.000000000000000000
+        Padding.Bottom = 1.000000000000000000
+        Size.Width = 91.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Color = x96FCFCFC
+        XRadius = 2.000000000000000000
+        YRadius = 2.000000000000000000
+      end
+    end
+    object TText
+      StyleName = 'text'
+      Align = Client
+      Locked = True
+      HitTest = False
+      Padding.Left = 5.000000000000000000
+      Padding.Top = 3.000000000000000000
+      Padding.Right = 5.000000000000000000
+      Padding.Bottom = 3.000000000000000000
+      Size.Width = 91.000000000000000000
+      Size.Height = 24.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'button'
+      TextSettings.Font.Size = 16.000000000000000000
+    end
+    object TGlowEffect
+      Softness = 0.200000002980232200
+      GlowColor = x82005ACC
+      Opacity = 0.899999976158142100
+      Trigger = 'IsFocused=true'
+      Enabled = False
+    end
+  end
+  object TLayout
+    StyleName = 'newstyle1'
+    Align = Center
+    Size.Width = 290.000000000000000000
+    Size.Height = 68.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object TText
+      StyleName = 'TextItem'
+      Position.X = 3.000000000000000000
+      Position.Y = 4.000000000000000000
+      Size.Width = 149.000000000000000000
+      Size.Height = 56.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 16.000000000000000000
+    end
+    object TImage
+      StyleName = 'ImageItem'
+      MultiResBitmap = <
+        item
+        end>
+      Position.X = 156.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 128.000000000000000000
+      Size.Height = 55.000000000000000000
+      Size.PlatformDefault = False
+    end
+  end
+  object TLayout
+    StyleName = 'wListBoxItem'
+    Align = Center
+    Size.Width = 260.000000000000000000
+    Size.Height = 75.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+    TabOrder = 2
+    object TImage
+      StyleName = 'ImageW'
+      MultiResBitmap = <
+        item
+        end>
+      Size.Width = 106.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+    end
+  end
+end

@@ -1,0 +1,221 @@
+{
+  "weapon_stats": [
+    {
+      "id": 1,
+      "expertise_level": 26,
+      "attributes": {
+        "core": [
+          {
+            "type": "Assault Rifle Damage",
+            "value": 15
+          },
+          {
+            "type": "Health Damage",
+            "value": 21
+          }
+        ],
+        "minor": [
+          { "type": "Crit Hit Chance", "value": 9.5 },
+          { "type": "Crit Hit Damage", "value": 10 },
+          { "type": "Damage to Armor", "value": 6 },
+          { "type": "DMG to target out of cover", "value": 10 },
+          { "type": "Headshot Damage", "value": 10 },
+          { "type": "Magazine Size", "value": 12.5 },
+          { "type": "Optimal Range", "value": 24 },
+          { "type": "Rate of Fire", "value": 5 },
+          { "type": "Accuracy", "value": 12 },
+          { "type": "Reload Time", "value": 12 },
+          { "type": "Stability", "value": 12 },
+          { "type": "Swap Speed", "value": 15 }
+        ]
+      },
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 2,
+      "expertise_level": 26,
+      "attributes": {
+        "core": [
+          {
+            "type": "SMG Damage",
+            "value": 15
+          },
+          {
+            "type": "Critical Hit Chance",
+            "value": 21
+          }
+        ],
+        "minor": [
+          { "type": "Accuracy", "value": 12 },
+          { "type": "Crit Hit Damage", "value": 10 },
+          { "type": "Damage to Armor", "value": 6 },
+          { "type": "DMG to target out of cover", "value": 10 },
+          { "type": "Headshot Damage", "value": 10 },
+          { "type": "Health Damage", "value": 20 },
+          { "type": "Magazine Size", "value": 12.5 },
+          { "type": "Optimal Range", "value": 24 },
+          { "type": "Rate of Fire", "value": 5 },
+          { "type": "Reload Time", "value": 12 },
+          { "type": "Stability", "value": 12 },
+          { "type": "Swap Speed", "value": 15 }
+        ]
+      },
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 3,
+      "expertise_level": 26,
+      "attributes": {
+        "core": [
+          {
+            "type": "LMG Damage",
+            "value": 15
+          },
+          {
+            "type": "DMG to target out of cover",
+            "value": 12
+          }
+        ],
+        "minor": [
+          { "type": "Accuracy", "value": 12 },
+          { "type": "Crit Hit Chance", "value": 9.5 },
+          { "type": "Crit Hit Damage", "value": 6 },
+          { "type": "Damage to Armor", "value": 6 },
+          { "type": "Headshot Damage", "value": 10 },
+          { "type": "Health Damage", "value": 20 },
+          { "type": "Magazine Size", "value": 12.5 },
+          { "type": "Optimal Range", "value": 24 },
+          { "type": "Rate of Fire", "value": 5 },
+          { "type": "Reload Time", "value": 12 },
+          { "type": "Stability", "value": 12 },
+          { "type": "Swap Speed", "value": 15 }
+        ]
+      },
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 4,
+      "expertise_level": 26,
+      "attributes": {
+        "core": [
+          {
+            "type": "STG Damage",
+            "value": 15
+          },
+          {
+            "type": "Damage to Armor",
+            "value": 12
+          }
+        ],
+        "minor": [
+          { "type": "Accuracy", "value": 12 },
+          { "type": "Crit Hit Chance", "value": 9.5 },
+          { "type": "Crit Hit Damage", "value": 6 },
+          { "type": "DMG to target out of cover", "value": 10 },
+          { "type": "Headshot Damage", "value": 10 },
+          { "type": "Health Damage", "value": 20 },
+          { "type": "Magazine Size", "value": 12.5 },
+          { "type": "Optimal Range", "value": 24 },
+          { "type": "Rate of Fire", "value": 5 },
+          { "type": "Reload Time", "value": 12 },
+          { "type": "Stability", "value": 12 },
+          { "type": "Swap Speed", "value": 15 }
+        ]
+      },
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 5,
+      "expertise_level": 26,
+      "attributes": {
+        "core": [
+          {
+            "type": "Rifle Damage",
+            "value": 15
+          },
+          {
+            "type": "Critical Hit Damage",
+            "value": 17
+          }
+        ],
+        "minor": [
+          { "type": "Accuracy", "value": 12 },
+          { "type": "Crit Hit Chance", "value": 9.5 },
+          { "type": "Damage to Armor", "value": 6 },
+          { "type": "DMG to target out of cover", "value": 10 },
+          { "type": "Headshot Damage", "value": 10 },
+          { "type": "Health Damage", "value": 20 },
+          { "type": "Magazine Size", "value": 12.5 },
+          { "type": "Optimal Range", "value": 24 },
+          { "type": "Rate of Fire", "value": 5 },
+          { "type": "Reload Time", "value": 12 },
+          { "type": "Stability", "value": 12 },
+          { "type": "Swap Speed", "value": 15 }
+        ]
+      },
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 6,
+      "expertise_level": 26,
+      "attributes": {
+        "core": [
+          {
+            "type": "MMR Damage",
+            "value": 15
+          },
+          {
+            "type": "Headshot Damage",
+            "value": 111
+          }
+        ],
+        "minor": [
+          { "type": "Accuracy", "value": 12 },
+          { "type": "Crit Hit Chance", "value": 9.5 },
+          { "type": "Crit Hit Damage", "value": 6 },
+          { "type": "Damage to Armor", "value": 6 },
+          { "type": "DMG to target out of cover", "value": 10 },
+          { "type": "Health Damage", "value": 20 },
+          { "type": "Magazine Size", "value": 12.5 },
+          { "type": "Optimal Range", "value": 24 },
+          { "type": "Rate of Fire", "value": 5 },
+          { "type": "Reload Time", "value": 12 },
+          { "type": "Stability", "value": 12 },
+          { "type": "Swap Speed", "value": 15 }
+        ]
+      },
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 7,
+      "expertise_level": 26,
+      "attributes": {
+        "core": [
+          {
+            "type": "Pistol Damage",
+            "value": 15
+          },
+          {
+            "type": "none",
+            "value": 0
+          }
+        ],
+        "minor": [
+          { "type": "Crit Hit Chance", "value": 9.5 },
+          { "type": "Crit Hit Damage", "value": 10 },
+          { "type": "Damage to Armor", "value": 6 },
+          { "type": "DMG to target out of cover", "value": 10 },
+          { "type": "Headshot Damage", "value": 10 },
+          { "type": "Health Damage", "value": 20 },
+          { "type": "Magazine Size", "value": 12.5 },
+          { "type": "Optimal Range", "value": 24 },
+          { "type": "Rate of Fire", "value": 5 },
+          { "type": "Reload Time", "value": 12 },
+          { "type": "Accuracy", "value": 12 },
+          { "type": "Stability", "value": 12 }
+        ]
+      },
+      "pve_pvp_difference": false
+    }
+  ]
+}

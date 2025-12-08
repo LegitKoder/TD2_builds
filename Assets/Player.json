@@ -1,0 +1,30 @@
+{
+  "weaponDamageBonus": 10.5,
+  "armorBonus": 720000,
+  "skillTier": 6,
+  "criticalHitChance": 55.2,
+  "criticalHitDamage": 165.8,
+  "headshotDamage": 110.0,
+  "health": 250000,
+  "armorRegen": 15000,
+  "hazardProtection": 50.0,
+  "explosiveResistance": 25.0,
+  "protectionFromElites": 12.0,
+  "skillDamageBonus": 120.0,
+  "skillHaste": 50.0,
+  "skillDuration": 30.0,
+  "repairSkills": 0,
+  "statusEffects": 20.0,
+  "weaponHandling": 15.0,
+  "incomingRepairs": 0,
+  "equippedSkills": [
+    {
+      "skillId": "",
+      "variantName": ""
+    },
+    {
+      "skillId": "",
+      "variantName": ""
+    }
+  ]
+}

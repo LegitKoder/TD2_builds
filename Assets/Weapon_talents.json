@@ -1,0 +1,1758 @@
+{
+  "talents": [
+    {
+      "id": 1,
+      "name": "Behind You",
+      "description": "Amplifies weapon damage by 15% to enemies that are not targeting you.",
+      "type": "High-End",
+      "effects": {
+        "amplified_weapon_damage_bonus": 15
+      },
+      "conditions": {
+        "enemy_flanking": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 2,
+      "name": "Boomerang",
+      "description": "Critical hits have a 50% chance to return the bullet to the magazine. If a bullet is returned, the next shot has +40% increased damage.",
+      "type": "High-End",
+      "effects": {
+        "magazine_refill_chance": 50,
+        "next_shot_damage": 40
+      },
+      "conditions": {
+        "critical_hit": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 3,
+      "name": "Brazen",
+      "description": "Gives +15% armor and +15% weapon damage when in cover.",
+      "type": "High-End",
+      "effects": {
+        "armor": 15,
+        "weapon_damage_bonus": 15
+      },
+      "conditions": {
+        "in_cover": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 4,
+      "name": "BreadBasket",
+      "description": "Landing body shots adds bonus damage to subsequent headshots. Bonus lasts for 10 seconds.",
+      "type": "High-End",
+      "effects": {
+        "headshot_bonus_damage": 35
+      },
+      "conditions": {
+        "body_shots_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 5,
+      "name": "Close & Personal",
+      "description": "Killing a target within 7 meters grants +30% weapon damage for 10 seconds.",
+      "type": "High-End",
+      "effects": {
+        "weapon_damage_bonus": 30
+      },
+      "conditions": {
+        "kill_within_distance": 7
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 6,
+      "name": "Determined",
+      "description": "Killing an enemy refills 30% of your ammo capacity.",
+      "type": "High-End",
+      "effects": {
+        "ammo_refill_percentage": 30
+      },
+      "conditions": {
+        "enemy_killed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 7,
+      "name": "Eyeless",
+      "description": "Deal +20% weapon damage to blinded enemies.",
+      "type": "High-End",
+      "effects": {
+        "weapon_damage_bonus": 20
+      },
+      "conditions": {
+        "enemy_blinded": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 8,
+      "name": "Fast Hands",
+      "description": "Critical hits add a stack of 4% reload speed bonus for 5 seconds. Max stack is 10.",
+      "type": "High-End",
+      "effects": {
+        "reload_speed_bonus": 4,
+        "max_stacks": 10
+      },
+      "conditions": {
+        "critical_hit": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 9,
+      "name": "Finisher",
+      "description": "Swapping weapons within 3 seconds after a kill grants +15% critical hit chance and +20% critical hit damage for 10 seconds.",
+      "type": "High-End",
+      "effects": {
+        "critical_hit_chance": 15,
+        "critical_hit_damage": 20
+      },
+      "conditions": {
+        "kill_and_weapon_swap": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 10,
+      "name": "First Blood",
+      "description": "First shot fired from a full magazine deals 30% increased headshot damage.",
+      "type": "High-End",
+      "effects": {
+        "headshot_damage": 30
+      },
+      "conditions": {
+        "first_shot_full_magazine": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 11,
+      "name": "Flatline",
+      "description": "Amplifies weapon damage by 10% to pulsed enemies.",
+      "type": "High-End",
+      "effects": {
+        "weapon_damage_bonus": 10
+      },
+      "conditions": {
+        "enemy_pulsed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 12,
+      "name": "Frenzy",
+      "description": "Every 5 seconds of continuous fire grants +10% weapon damage and +5% rate of fire.",
+      "type": "High-End",
+      "effects": {
+        "weapon_damage_bonus": 10,
+        "rate_of_fire": 5
+      },
+      "conditions": {
+        "continuous_fire": 5
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 13,
+      "name": "Future Perfect",
+      "description": "Weapon kills grant +1 skill tier for 15 seconds. If already at skill tier 6, grants overcharge for 15 seconds.",
+      "type": "High-End",
+      "effects": {
+        "skill_tier_increase": 1,
+        "overcharge": 15
+      },
+      "conditions": {
+        "kill": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 14,
+      "name": "Ignited",
+      "description": "Deal +20% weapon damage to burning enemies.",
+      "type": "High-End",
+      "effects": {
+        "weapon_damage_bonus": 20
+      },
+      "conditions": {
+        "enemy_burning": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 15,
+      "name": "In Sync",
+      "description": "Hitting an enemy grants +10% skill damage for 5 seconds. Using a skill or damaging an enemy with a skill grants +10% weapon damage for 5 seconds.",
+      "type": "High-End",
+      "effects": {
+        "skill_damage": 10,
+        "weapon_damage_bonus": 10
+      },
+      "conditions": {
+        "enemy_hit": true,
+        "skill_used": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 16,
+      "name": "Killer",
+      "description": "Killing an enemy with a critical hit grants +40% critical hit damage for 10 seconds.",
+      "type": "High-End",
+      "effects": {
+        "critical_hit_damage": 40
+      },
+      "conditions": {
+        "critical_kill": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 17,
+      "name": "Lucky Shot",
+      "description": "Missed shots from cover have a 50% chance to return to the magazine.",
+      "type": "High-End",
+      "effects": {
+        "ammo_return_chance": 50
+      },
+      "conditions": {
+        "missed_shots_from_cover": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 18,
+      "name": "Measured",
+      "description": "The top half of the magazine has 20% rate of fire and -30% weapon damage. The bottom half of the magazine has -20% rate of fire and +30% weapon damage.",
+      "type": "High-End",
+      "effects": {
+        "rate_of_fire_top": 20,
+        "weapon_damage_top": -30,
+        "rate_of_fire_bottom": -20,
+        "weapon_damage_bottom": 30
+      },
+      "conditions": {},
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 19,
+      "name": "Naked",
+      "description": "+20% headshot damage when no armor is equipped.",
+      "type": "High-End",
+      "effects": {
+        "headshot_damage": 20
+      },
+      "conditions": {
+        "no_armor": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 20,
+      "name": "Near Sighted",
+      "description": "Gives +20% accuracy but reduces critical hit chance by 10%.",
+      "type": "High-End",
+      "effects": {
+        "accuracy": 20,
+        "critical_hit_chance": 10
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 21,
+      "name": "On Empty",
+      "description": "When your magazine is empty, gain +30% weapon handling for 10 seconds.",
+      "type": "High-End",
+      "effects": {
+        "weapon_handling": 30
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 22,
+      "name": "Optimist",
+      "description": "Weapon damage is increased by 3% for every 10% ammo missing from the magazine.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 23,
+      "name": "Outsider",
+      "description": "Gain +30% reload speed when you are outside of cover.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 24,
+      "name": "Overflowing",
+      "description": "Increases the weapon's magazine capacity by 20%.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 25,
+      "name": "Overwhelm",
+      "description": "Gain +10% damage for every enemy within 7 meters of you.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 26,
+      "name": "Perpetuation",
+      "description": "Headshots grant +50% status effect damage for 20 seconds.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 27,
+      "name": "Preservation",
+      "description": "Killing an enemy repairs 10% armor over 5 seconds. Headshot kills improve the repair to 15%.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 28,
+      "name": "Pummel",
+      "description": "Three consecutive kills without reloading grant +50% weapon damage for 30 seconds.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 29,
+      "name": "Pumped Up",
+      "description": "Reloading increases your weapon damage by 15% for 5 seconds.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 30,
+      "name": "Ranger",
+      "description": "Amplifies weapon damage by 2% for every 5 meters you are from the target.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 31,
+      "name": "Reformation",
+      "description": "Headshots increase skill repair and healing by 30% for 15 seconds.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 32,
+      "name": "Rifleman",
+      "description": "Landing headshots adds a stack of +10% weapon damage for 5 seconds. Max stack is 5.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 33,
+      "name": "Sadist",
+      "description": "Deal +20% weapon damage to bleeding enemies.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 34,
+      "name": "Salvage",
+      "description": "Headshot kills increase ammo capacity by 20%.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 35,
+      "name": "Sledgehammer",
+      "description": "Landing a grenade hit amplifies weapon damage by 10% for 5 seconds.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 36,
+      "name": "Spike",
+      "description": "Headshot kills grant +25% skill damage for 20 seconds.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 37,
+      "name": "Stabilize",
+      "description": "Increases stability by 15%.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 38,
+      "name": "Steady Handed",
+      "description": "Hits grant +1% weapon handling. Max stack is 15.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 39,
+      "name": "Strained",
+      "description": "Gain +10% critical hit damage for every 5% missing armor.",
+      "type": "High-End",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 40,
+      "name": "Thunder Strike",
+      "description": "Increases headshot damage by 25% when standing still for more than 3 seconds.",
+      "type": "High-End",
+      "effects": {
+        "headshot_damage": 25
+      },
+      "conditions": {
+        "standing_still_duration": 3
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 41,
+      "name": "Unhinged",
+      "description": "Increases weapon damage by 25%, but reduces stability by 10%.",
+      "type": "High-End",
+      "effects": {
+        "weapon_damage_bonus": 25,
+        "stability": -10
+      },
+      "conditions": {},
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 42,
+      "name": "Unwavering",
+      "description": "Gain +10% weapon damage while your armor is depleted.",
+      "type": "High-End",
+      "effects": {
+        "weapon_damage_bonus": 10
+      },
+      "conditions": {
+        "armor_depleted": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 43,
+      "name": "Vindictive",
+      "description": "Killing a status-affected enemy grants +20% critical hit chance for 10 seconds.",
+      "type": "High-End",
+      "effects": {
+        "critical_hit_chance": 20
+      },
+      "conditions": {
+        "status_effect_kill": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 44,
+      "name": "Future Perfection",
+      "description": "Weapon kills grant +1 skill tier for 15 seconds. If already at skill tier 6, grants overcharge for 15 seconds.",
+      "type": "Named",
+      "effects": {
+        "skill_tier_increase": 1,
+        "overcharge": 15
+      },
+      "conditions": {
+        "kill": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 45,
+      "name": "Hidden Rock",
+      "description": "Description for Hidden Rock.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 46,
+      "name": "Perfect Allegro",
+      "description": "Description for Perfect Allegro.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 47,
+      "name": "Perfect Boomerang",
+      "description": "Critical hits have a 50% chance to return the bullet to the magazine. If a bullet is returned, the next shot has +40% increased damage.",
+      "type": "Named",
+      "effects": {
+        "magazine_refill_chance": 50,
+        "next_shot_damage": 40
+      },
+      "conditions": {
+        "critical_hit": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 48,
+      "name": "Perfect Brazen",
+      "description": "Gives +15% armor and +15% weapon damage when in cover.",
+      "type": "Named",
+      "effects": {
+        "armor": 15,
+        "weapon_damage_bonus": 15
+      },
+      "conditions": {
+        "in_cover": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 49,
+      "name": "Perfect Bread Basket",
+      "description": "Landing body shots adds bonus damage to subsequent headshots. Bonus lasts for 10 seconds.",
+      "type": "Named",
+      "effects": {
+        "headshot_bonus_damage": 20
+      },
+      "conditions": {
+        "body_shots_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 50,
+      "name": "Perfect Determined",
+      "description": "Killing an enemy refills 30% of your ammo capacity.",
+      "type": "Named",
+      "effects": {
+        "ammo_refill_percentage": 30
+      },
+      "conditions": {
+        "enemy_killed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 51,
+      "name": "Perfect Distance",
+      "description": "Description for Perfect Distance.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 52,
+      "name": "Perfect Eyeless",
+      "description": "Deal +20% weapon damage to blinded enemies.",
+      "type": "Named",
+      "effects": {
+        "weapon_damage_bonus": 20
+      },
+      "conditions": {
+        "enemy_blinded": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 53,
+      "name": "Perfect Fast Hands",
+      "description": "Critical hits add a stack of 4% reload speed bonus for 5 seconds. Max stack is 10.",
+      "type": "Named",
+      "effects": {
+        "reload_speed_bonus": 4,
+        "max_stacks": 10
+      },
+      "conditions": {
+        "critical_hit": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 54,
+      "name": "Perfect Finisher",
+      "description": "Swapping weapons within 3 seconds after a kill grants +15% critical hit chance and +20% critical hit damage for 10 seconds.",
+      "type": "Named",
+      "effects": {
+        "critical_hit_chance": 15,
+        "critical_hit_damage": 20
+      },
+      "conditions": {
+        "kill_and_weapon_swap": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 55,
+      "name": "Perfect First Blood",
+      "description": "First shot fired from a full magazine deals 30% increased headshot damage.",
+      "type": "Named",
+      "effects": {
+        "headshot_damage": 30
+      },
+      "conditions": {
+        "first_shot_full_magazine": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 56,
+      "name": "Perfect Flatline",
+      "description": "Amplifies weapon damage by 10% to pulsed enemies.",
+      "type": "Named",
+      "effects": {
+        "weapon_damage_bonus": 10
+      },
+      "conditions": {
+        "enemy_pulsed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 57,
+      "name": "Perfect Frenzy",
+      "description": "Every 5 seconds of continuous fire grants +10% weapon damage and +5% rate of fire.",
+      "type": "Named",
+      "effects": {
+        "weapon_damage_bonus": 10,
+        "rate_of_fire": 5
+      },
+      "conditions": {
+        "continuous_fire": 5
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 58,
+      "name": "Perfect Jazz Hands",
+      "description": "Description for Perfect Jazz Hands.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 59,
+      "name": "Perfect Killer",
+      "description": "Killing an enemy with a critical hit grants +30% critical hit damage for 10 seconds.",
+      "type": "Named",
+      "effects": {
+        "critical_hit_damage": 30
+      },
+      "conditions": {
+        "critical_kill": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 60,
+      "name": "Perfect Lucky Shot",
+      "description": "Missed shots from cover have a 50% chance to return to the magazine.",
+      "type": "Named",
+      "effects": {
+        "ammo_return_chance": 50
+      },
+      "conditions": {
+        "missed_shots_from_cover": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 61,
+      "name": "Perfect Near Sighted",
+      "description": "Gives +20% accuracy but reduces critical hit chance by 10%.",
+      "type": "Named",
+      "effects": {
+        "accuracy": 20,
+        "critical_hit_chance": 10
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 62,
+      "name": "Perfect Optimist",
+      "description": "Weapon damage is increased by 3% for every 10% ammo missing from the magazine.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 63,
+      "name": "Perfect Outsider",
+      "description": "Gain +30% reload speed when you are outside of cover.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 64,
+      "name": "Perfect Overflowing",
+      "description": "Increases the weapon's magazine capacity by 20%.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 65,
+      "name": "Perfect Overwhelm",
+      "description": "Gain +10% damage for every enemy within 7 meters of you.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 66,
+      "name": "Perfect Perpetuation",
+      "description": "Headshots grant +50% status effect damage for 20 seconds.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 67,
+      "name": "Perfect Preservation",
+      "description": "Killing an enemy repairs 10% armor over 5 seconds. Headshot kills improve the repair to 15%.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 68,
+      "name": "Perfect Pummel",
+      "description": "Three consecutive kills without reloading grant +50% weapon damage for 30 seconds.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 69,
+      "name": "Perfect Pumped Up",
+      "description": "Reloading increases your weapon damage by 15% for 5 seconds.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 70,
+      "name": "Perfect Ranger",
+      "description": "Amplifies weapon damage by 2% for every 5 meters you are from the target.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 71,
+      "name": "Perfect Reformation",
+      "description": "Headshots increase skill repair and healing by 30% for 15 seconds.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 72,
+      "name": "Perfect Rifleman",
+      "description": "Landing headshots adds a stack of +10% weapon damage for 5 seconds. Max stack is 5.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 73,
+      "name": "Perfect Sadist",
+      "description": "Deal +20% weapon damage to bleeding enemies.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 74,
+      "name": "Perfect Salvage",
+      "description": "Headshot kills increase ammo capacity by 20%.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 75,
+      "name": "Perfect Spike",
+      "description": "Headshot kills grant +25% skill damage for 20 seconds.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 76,
+      "name": "Perfect Stabilize",
+      "description": "Increases stability by 15%.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 77,
+      "name": "Perfect Thunder Strike",
+      "description": "Increases headshot damage by 25% when standing still for more than 3 seconds.",
+      "type": "Named",
+      "effects": {
+        "headshot_damage": 25
+      },
+      "conditions": {
+        "standing_still_duration": 3
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 78,
+      "name": "Perfect Vindictive",
+      "description": "Killing a status-affected enemy grants +20% critical hit chance for 10 seconds.",
+      "type": "Named",
+      "effects": {
+        "critical_hit_chance": 20
+      },
+      "conditions": {
+        "status_effect_kill": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 79,
+      "name": "Perfected Sledgehammer",
+      "description": "Landing a grenade hit amplifies weapon damage by 10% for 5 seconds.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 80,
+      "name": "Perfectly Accurate",
+      "description": "Description for Perfectly Accurate.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 81,
+      "name": "Perfectly Behind You",
+      "description": "Deal +60% weapon damage to enemies that are not targeting you.",
+      "type": "Named",
+      "effects": {
+        "amplified_weapon_damage_bonus": 60
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 82,
+      "name": "Perfectly Close & Personal",
+      "description": "Description for Perfectly Close & Personal.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 83,
+      "name": "Perfectly Extra",
+      "description": "Description for Perfectly Extra.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 84,
+      "name": "Perfectly Ignited",
+      "description": "Description for Perfectly Ignited.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 85,
+      "name": "Perfectly In Sync",
+      "description": "Description for Perfectly In Sync.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 86,
+      "name": "Perfectly Measured",
+      "description": "Description for Perfectly Measured.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 87,
+      "name": "Perfectly Naked",
+      "description": "Description for Perfectly Naked.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 88,
+      "name": "Perfectly On Empty",
+      "description": "Description for Perfectly On Empty.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 89,
+      "name": "Perfectly Optimized",
+      "description": "Description for Perfectly Optimized.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 90,
+      "name": "Perfectly Steady Handed",
+      "description": "Description for Perfectly Steady Handed.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 91,
+      "name": "Perfectly Strained",
+      "description": "Description for Perfectly Strained.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 92,
+      "name": "Perfectly Unhinged",
+      "description": "Description for Perfectly Unhinged.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 93,
+      "name": "Perfectly Unwavering",
+      "description": "Description for Perfectly Unwavering.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 94,
+      "name": "Primer Rounds",
+      "description": "Description for Primer Rounds.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 95,
+      "name": "Swift",
+      "description": "Description for Swift.",
+      "type": "Named",
+      "effects": {
+        "effect_key": "effect_value"
+      },
+      "conditions": {
+        "condition_key": "condition_value"
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 96,
+      "name": "Actum Est",
+      "description": "Shooting an enemy gives 1 stack, at 100 stacks the next magazine is filled with shock ammo.",
+      "type": "Exotic",
+      "effects": {
+        "enemy_stagger": true,
+        "damage_reduction": 30
+      },
+      "conditions": {
+        "kill_triggered": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 97,
+      "name": "Adaptive Instincts",
+      "description": "Landing headshots increases your critical hit chance by 20%. Landing body shots increases your stability by 15%.",
+      "type": "Exotic",
+      "effects": {
+        "headshot_crit_chance": 20,
+        "bodyshot_stability": 15
+      },
+      "conditions": {
+        "headshots_landed": true,
+        "bodyshots_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 98,
+      "name": "Agonizing Bite",
+      "description": "Bleeding enemies receive 25% more damage from all sources.",
+      "type": "Exotic",
+      "effects": {
+        "damage_to_bleeding_enemies": 25
+      },
+      "conditions": {
+        "enemy_bleeding": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 99,
+      "name": "Ardent",
+      "description": "Firing for 10 consecutive seconds without reloading sets your weapon on fire, causing burning damage.",
+      "type": "Exotic",
+      "effects": {
+        "burning_damage": true
+      },
+      "conditions": {
+        "continuous_fire": 10
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 100,
+      "name": "Big Game Hunter",
+      "description": "Shots fired at targets more than 20 meters away deal 50% more damage.",
+      "type": "Exotic",
+      "effects": {
+        "long_range_damage_bonus": 50
+      },
+      "conditions": {
+        "distance": 20
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 101,
+      "name": "Binary Trigger",
+      "description": "This weapon is equipped with a binary trigger that fires on trigger pull and release.",
+      "type": "Exotic",
+      "effects": {
+        "fire_on_pull_and_release": true
+      },
+      "conditions": {},
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 102,
+      "name": "Breathe Free",
+      "description": "When suppressed, you take 20% less damage and regain 10% of your missing health every second.",
+      "type": "Exotic",
+      "effects": {
+        "damage_reduction": 20,
+        "health_regen": 10
+      },
+      "conditions": {
+        "suppressed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 103,
+      "name": "Bullet Hell",
+      "description": "Each bullet fired grants a 1% chance to instantly reload the magazine.",
+      "type": "Exotic",
+      "effects": {
+        "instant_magazine_reload_chance": 1
+      },
+      "conditions": {},
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 104,
+      "name": "Busy Little Bee",
+      "description": "For each enemy hit by a skill, increase weapon damage by 2% for 10 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "weapon_damage_bonus_per_enemy_hit": 2
+      },
+      "conditions": {
+        "enemies_hit_by_skill": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 105,
+      "name": "Capacitance",
+      "description": "Each shot landed increases your skill efficiency by 1% for 5 seconds, up to a maximum of 50%.",
+      "type": "Exotic",
+      "effects": {
+        "skill_efficiency_bonus_per_shot": 1,
+        "max_skill_efficiency_bonus": 50
+      },
+      "conditions": {
+        "shots_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 106,
+      "name": "Capitulate",
+      "description": "Dealing damage to an enemy applies a debuff that reduces their damage output by 10% for 5 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "damage_output_reduction": 10
+      },
+      "conditions": {
+        "damage_dealt_to_enemy": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 107,
+      "name": "Disruptor Rounds",
+      "description": "Disables enemy electronics and skills for 5 seconds on hit.",
+      "type": "Exotic",
+      "effects": {
+        "disable_skills_duration": 5
+      },
+      "conditions": {
+        "hit": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 108,
+      "name": "Doctor Home",
+      "description": "Killing an enemy heals all allies within 20 meters for 20% of their missing health.",
+      "type": "Exotic",
+      "effects": {
+        "ally_heal_on_kill": 20
+      },
+      "conditions": {
+        "enemy_killed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 109,
+      "name": "Eagle's Strike",
+      "description": "Headshots increase your critical hit damage by 10% for 15 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "crit_damage_on_headshot": 10
+      },
+      "conditions": {
+        "headshots_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 110,
+      "name": "Electromagnetic Accelerator",
+      "description": "Increases bullet velocity by 30%, allowing for more accurate long-range shots.",
+      "type": "Exotic",
+      "effects": {
+        "bullet_velocity_increase": 30
+      },
+      "conditions": {},
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 111,
+      "name": "Full Stop",
+      "description": "Killing an enemy instantly stops the magazine from depleting for 5 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "magazine_freeze_on_kill": true
+      },
+      "conditions": {
+        "enemy_killed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 112,
+      "name": "Geri and Freki",
+      "description": "Dealing damage with your primary weapon increases sidearm damage by 20% for 10 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "sidearm_damage_bonus": 20
+      },
+      "conditions": {
+        "primary_weapon_damage_dealt": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 113,
+      "name": "In Plain Sight",
+      "description": "You deal 10% more damage when enemies are unaware of your presence.",
+      "type": "Exotic",
+      "effects": {
+        "damage_to_unaware_enemies": 10
+      },
+      "conditions": {
+        "enemies_unaware": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 114,
+      "name": "Incessant Chatter",
+      "description": "Every shot landed increases rate of fire by 1%, stacking up to 30%. Missing a shot removes 10% of the stack.",
+      "type": "Exotic",
+      "effects": {
+        "rate_of_fire_bonus_per_shot": 1,
+        "max_rate_of_fire_bonus": 30,
+        "stack_reduction_on_miss": 10
+      },
+      "conditions": {
+        "shots_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 115,
+      "name": "Liberty or Death",
+      "description": "Landing a critical hit restores 10% of your missing armor.",
+      "type": "Exotic",
+      "effects": {
+        "armor_restore_on_crit_hit": 10
+      },
+      "conditions": {
+        "critical_hit_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 116,
+      "name": "Mosquito Song",
+      "description": "Enemies that you mark take 10% more damage from all sources.",
+      "type": "Exotic",
+      "effects": {
+        "damage_increase_on_marked_enemy": 10
+      },
+      "conditions": {
+        "enemy_marked": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 117,
+      "name": "Ortiz Assault Interface",
+      "description": "Using skills increases your weapon damage by 20% for 10 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "weapon_damage_bonus_on_skill_use": 20
+      },
+      "conditions": {
+        "skill_used": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 118,
+      "name": "Payment in Kind",
+      "description": "Dealing critical hits returns 2% of your missing ammo.",
+      "type": "Exotic",
+      "effects": {
+        "ammo_return_on_crit_hit": 2
+      },
+      "conditions": {
+        "critical_hit_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 119,
+      "name": "Plague of the Outcasts",
+      "description": "Hitting an enemy spreads the plague effect to nearby enemies, dealing 5% of the damage dealt.",
+      "type": "Exotic",
+      "effects": {
+        "damage_spread_to_nearby_enemies": 5
+      },
+      "conditions": {
+        "enemy_hit": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 120,
+      "name": "Regicide",
+      "description": "Dealing damage to bosses increases your overall damage by 25% for 10 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "boss_damage_bonus": 25
+      },
+      "conditions": {
+        "damage_to_boss": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 121,
+      "name": "Rule Them All",
+      "description": "Enemies within 10 meters of you deal 15% less damage.",
+      "type": "Exotic",
+      "effects": {
+        "enemy_damage_reduction": 15
+      },
+      "conditions": {
+        "enemies_within_range": 10
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 122,
+      "name": "Sandman",
+      "description": "Melee attacks apply a debuff to enemies, reducing their armor by 20% for 5 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "armor_reduction_on_melee": 20
+      },
+      "conditions": {
+        "melee_hit": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 123,
+      "name": "Septic Shock",
+      "description": "Landing a shot poisons the enemy, dealing 2% of their total health as damage over 5 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "poison_damage": 2
+      },
+      "conditions": {
+        "shots_landed": true
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    },
+    {
+      "id": 124,
+      "name": "The Trap",
+      "description": "Activating this weapon's special mode deploys a trap, immobilizing enemies within 10 meters for 3 seconds.",
+      "type": "Exotic",
+      "effects": {
+        "immobilization_duration": 3
+      },
+      "conditions": {
+        "special_mode_activated": true,
+        "enemies_within_range": 10
+      },
+      "specialization": null,
+      "pve_pvp_difference": false
+    }
+  ]
+}

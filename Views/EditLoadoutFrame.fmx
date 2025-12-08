@@ -1,0 +1,109 @@
+object EditLoadout: TEditLoadout
+  Align = Center
+  Size.Width = 291.000000000000000000
+  Size.Height = 124.000000000000000000
+  Size.PlatformDefault = False
+  object GridPanelLayout1: TGridPanelLayout
+    Align = Client
+    Size.Width = 291.000000000000000000
+    Size.Height = 124.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        ColumnSpan = 2
+        Control = Rename
+        Row = 0
+      end
+      item
+        Column = 0
+        ColumnSpan = 2
+        Control = EditLoadoutName
+        Row = 1
+      end
+      item
+        Column = 0
+        Control = Ok
+        Row = 2
+      end
+      item
+        Column = 1
+        Control = Cancel
+        Row = 2
+      end>
+    RowCollection = <
+      item
+        Value = 19.999999144025600000
+      end
+      item
+        Value = 40.000000427987200000
+      end
+      item
+        Value = 40.000000427987200000
+      end>
+    object Rename: TSkLabel
+      Anchors = []
+      Position.X = 91.694999694824220000
+      Position.Y = 2.899999618530273000
+      Size.Width = 107.610000610351600000
+      Size.Height = 19.000000000000000000
+      Size.PlatformDefault = False
+      Words = <
+        item
+          Text = 'Rename Loadout:'
+        end>
+    end
+    object EditLoadoutName: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Client
+      TabOrder = 1
+      Margins.Left = 7.000000000000000000
+      Margins.Top = 7.000000000000000000
+      Margins.Right = 7.000000000000000000
+      Margins.Bottom = 14.000000000000000000
+      Size.Width = 277.000000000000000000
+      Size.Height = 28.600002288818360000
+      Size.PlatformDefault = False
+    end
+    object Ok: TCornerButton
+      Align = Client
+      Margins.Left = 7.000000000000000000
+      Margins.Top = 7.000000000000000000
+      Margins.Right = 21.000000000000000000
+      Margins.Bottom = 7.000000000000000000
+      Sides = [Top, Left, Bottom, Right]
+      Size.Width = 117.500000000000000000
+      Size.Height = 35.599998474121090000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Ok'
+      TextSettings.Trimming = None
+      XRadius = 3.000000000000000000
+      YRadius = 3.000000000000000000
+    end
+    object Cancel: TCornerButton
+      Align = Client
+      Margins.Left = 21.000000000000000000
+      Margins.Top = 7.000000000000000000
+      Margins.Right = 7.000000000000000000
+      Margins.Bottom = 7.000000000000000000
+      Sides = [Top, Left, Bottom, Right]
+      Size.Width = 117.500000000000000000
+      Size.Height = 35.599998474121090000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'Cancel'
+      TextSettings.Trimming = None
+      XRadius = 3.000000000000000000
+      YRadius = 3.000000000000000000
+    end
+  end
+end

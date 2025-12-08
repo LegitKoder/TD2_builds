@@ -1,0 +1,58 @@
+[
+  {
+    "ID": 1,
+    "Name": "+6% Critical Hit Chance Mod",
+    "ModType": "gsmtOffensive",
+    "AttributeType": "gmetCriticalHitChance",
+    "AttributeValue": 6.0
+  },
+  {
+    "ID": 2,
+    "Name": "+12% Critical Hit Damage Mod",
+    "ModType": "gsmtOffensive",
+    "AttributeType": "gmetCriticalHitDamage",
+    "AttributeValue": 12.0
+  },
+  {
+    "ID": 3,
+    "Name": "+10% Headshot Damage Mod",
+    "ModType": "gsmtOffensive",
+    "AttributeType": "gmetHeadshotDamage",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 4,
+    "Name": "+13% Protection from Elites Mod",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetProtectionFromElites",
+    "AttributeValue": 13.0
+  },
+  {
+    "ID": 5,
+    "Name": "+18935 Armor on Kill Mod",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetArmorOnKillFlat",
+    "AttributeValue": 18935
+  },
+  {
+    "ID": 6,
+    "Name": "+12% Skill Haste Mod",
+    "ModType": "gsmtUtility",
+    "AttributeType": "gmetSkillHaste",
+    "AttributeValue": 12.0
+  },
+  {
+    "ID": 7,
+    "Name": "+10% Skill Duration Mod",
+    "ModType": "gsmtUtility",
+    "AttributeType": "gmetSkillDuration",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 8,
+    "Name": "+20% Repair Skills Mod",
+    "ModType": "gsmtUtility",
+    "AttributeType": "gmetRepairSkills",
+    "AttributeValue": 20.0
+  }
+]

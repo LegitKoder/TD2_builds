@@ -1,0 +1,119 @@
+object Form_Skills: TForm_Skills
+  Left = 0
+  Top = 0
+  Caption = 'Select a Skill'
+  ClientHeight = 480
+  ClientWidth = 800
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object LayoutRoot: TLayout
+    Align = Client
+    Size.Width = 800.000000000000000000
+    Size.Height = 480.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object ToolBar: TToolBar
+      Size.Width = 800.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object LabelTitle: TLabel
+        Align = Center
+        Size.Width = 84.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Size = 14.000000000000000000
+        Text = 'Select a Skill'
+        TabOrder = 0
+      end
+    end
+    object Splitter: TSplitter
+      Align = Left
+      Cursor = crHSplit
+      MinSize = 20.000000000000000000
+      Position.Y = 44.000000000000000000
+      Size.Width = 5.000000000000000000
+      Size.Height = 436.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object LayoutSkills: TLayout
+      Align = Left
+      Position.X = 5.000000000000000000
+      Position.Y = 44.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 436.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object ScrollBoxSkills: TScrollBox
+        Align = Client
+        Size.Width = 200.000000000000000000
+        Size.Height = 436.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 200.000000000000000000
+        Viewport.Height = 436.000000000000000000
+        object FlowLayoutSkills: TFlowLayout
+          Align = Top
+          Size.Width = 200.000000000000000000
+          Size.Height = 100.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Justify = Left
+          JustifyLastLine = Left
+          FlowDirection = LeftToRight
+        end
+      end
+    end
+    object LayoutDetails: TLayout
+      Align = Client
+      Size.Width = 595.000000000000000000
+      Size.Height = 436.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object ImageSkill: TImage
+        MultiResBitmap = <
+          item
+          end>
+        Align = Top
+        Size.Width = 595.000000000000000000
+        Size.Height = 128.000000000000000000
+        Size.PlatformDefault = False
+        WrapMode = Stretch
+      end
+      object LabelSkillName: TLabel
+        Align = Top
+        Position.Y = 128.000000000000000000
+        Size.Width = 595.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Size = 18.000000000000000000
+        TextSettings.HorzAlign = Center
+        Text = 'Skill Name'
+        TabOrder = 0
+      end
+      object LabelSkillDescription: TLabel
+        Align = Top
+        Position.Y = 153.000000000000000000
+        Size.Width = 595.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Skill Description'
+        TabOrder = 1
+      end
+      object ListViewVariants: TListView
+        ItemAppearanceClassName = 'TListItemAppearance'
+        ItemEditAppearanceClassName = 'TListItemShowCheckAppearance'
+        HeaderAppearanceClassName = 'TListHeaderObjects'
+        FooterAppearanceClassName = 'TListHeaderObjects'
+        Align = Client
+        Size.Width = 595.000000000000000000
+        Size.Height = 243.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+      end
+    end
+  end
+end
