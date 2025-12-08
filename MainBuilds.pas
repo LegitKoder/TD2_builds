@@ -278,9 +278,6 @@ type
     FGearSlotPlaceholders: array[0..5] of TBitmap;
     FAttributeInfos: TList<TAttributeCatalogEntry>;
     FSelectedAttributeIDs: TList<string>;
-    { for Skills_.json }
-    // FEquippedSkills: array[TSkillSlot] of TSkillVariantDefinition;
-    { for Skills.json }
     FEquippedSkills: array [TSkillSlot] of TEquippedSkill;
     FSelectedSpecialization: Game.Types.TSpecialization;
     FSpecializations: TDictionary<string, Game.Types.TSpecialization>;
@@ -308,9 +305,6 @@ type
     procedure UpdateWeaponUI(ASlot: Game.Types.TWeaponSlot; const W: TWeapon);
     // procedure UpdateGearSlotUI(AItemType: TItemType; const AGearPiece: TGearPiece);
     procedure UpdateGearSlotUI(const GearPiece: TGearPiece; SlotIndex: Integer);
-    { for Skills_.json }
-    // procedure UpdateSkillUI(ASlot: TSkillSlot; const ASkillVariant: TSkillVariantDefinition);
-    { for Skills.json }
     procedure UpdateSkillUI(ASlot: TSkillSlot;
       const ASkillVariant: TSkillVariant);
     procedure RefreshAllStats;

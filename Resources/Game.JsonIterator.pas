@@ -1633,11 +1633,11 @@ begin
     Result := sbtAttribute
   else if AttributeID = 'headshot_damage' then
     Result := sbtAttribute
-  else if AttributeID = 'damage_to_armor' then
+  else if (AttributeID = 'damage_to_armor') or (AttributeID = 'damageToArmor') then
     Result := sbtAttribute        // Was sbtMultiplicativeDamage, changed to sbtAttribute for consistency with CalcEngine
-  else if AttributeID = 'damage_to_health' then
+  else if (AttributeID = 'damage_to_health') or (AttributeID = 'damageToHealth') then
     Result := sbtAttribute        // Was sbtMultiplicativeDamage
-  else if AttributeID = 'damage_to_targets_out_of_cover' then
+  else if (AttributeID = 'damage_to_targets_out_of_cover') or (AttributeID = 'damageToTargetOutOfCover') then
     Result := sbtAttribute        // Was sbtMultiplicativeDamage
   else if AttributeID = 'skill_tier' then
     Result := sbtCoreAttribute
@@ -1778,6 +1778,13 @@ begin
                     end;
                   end;
                   It.Return;
+
+      if SameText(LBonusAttrID, 'damage_to_armor') then
+        LBonusAttrID := 'damageToArmor'
+      else if SameText(LBonusAttrID, 'damage_to_health') then
+        LBonusAttrID := 'damageToHealth'
+      else if SameText(LBonusAttrID, 'damage_to_targets_out_of_cover') then
+        LBonusAttrID := 'damageToTargetOutOfCover';
 
                   SB.AttributeID := LBonusAttrID;
                   if VarIsNumeric(LBonusValue) then
@@ -2314,6 +2321,27 @@ begin
           E := E + [Format('Weapon %s: no mod of type "%s" for slot %s',
             [W.Name, ModTypeKey, GetEnumName(TypeInfo(TModSlot), Ord(slot))])];
       end;
+  end;
+
+  // -- Gear Piece Definitions -> Fixed Minor Attributes --
+  var FAllPieceSetDefinitionsValues := FAllPieceSetDefinitions.Values.ToArray;
+  var PS: TPieceSet;
+  var Part: TPart;
+  var FixedID: string;
+  for I := 0 to High(FAllPieceSetDefinitionsValues) do
+  begin
+    PS := FAllPieceSetDefinitionsValues[I];
+    for J := 0 to High(PS.Parts) do
+    begin
+      Part := PS.Parts[J];
+      for K := 0 to High(Part.FixedMinorAttributeIDs) do
+      begin
+        FixedID := Part.FixedMinorAttributeIDs[K];
+        if not FFixedMinorAttributeDefinitions.ContainsKey(FixedID) then
+          E := E + [Format('PieceSet "%s" Part "%s": missing fixed minor attribute definition "%s"',
+            [PS.Name, Part.Name, FixedID])];
+      end;
+    end;
   end;
 
   ErrorList := E;
