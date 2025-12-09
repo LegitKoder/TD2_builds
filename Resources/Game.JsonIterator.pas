@@ -2391,6 +2391,7 @@ begin
         Piece.CoreAttribute := Default(TCoreAttribute);
         Piece.CoreAttribute.ID := Part.CoreAttributeID;
         Piece.CoreAttribute.AttrType := CoreAttrIDToEnum(Part.CoreAttributeID);
+        Piece.MinorAttributeSlotCount := Part.MinorAttributeSlotCount;
 
         if Length(Part.FixedMinorAttributeIDs) > 0 then
         begin
@@ -2481,6 +2482,7 @@ begin
         // Lien vers une définition plus détaillée si besoin
         Piece.CoreAttribute.AttrType := CoreAttrIDToEnum(Part.CoreAttributeID);
         // Les minor attributes, ModAttribute, Talent, Bonus sont "vides" ici, seront remplis lors du restore loadout
+        Piece.MinorAttributeSlotCount := Part.MinorAttributeSlotCount;
         Piece.Talent := Part.Talent;
         Piece.SetType := PieceSet.SetType;
         Piece.Bonuses := PieceSet.Bonuses; // Tous les bonus du set
