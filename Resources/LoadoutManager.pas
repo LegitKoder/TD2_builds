@@ -92,12 +92,22 @@ begin
           MinorArr.EndArray;
 
           var
+          MinorValArr := GearPieceObj.BeginArray('MinorAttributeValues');
+          for var K := 0 to High(GP.MinorAttributeValues) do
+          begin
+            MinorValArr.Add(GP.MinorAttributeValues[K]);
+          end;
+          MinorValArr.EndArray;
+
+          var
           FixedArr := GearPieceObj.BeginArray('FixedMinorAttributeIDs');
           for var FixedId in GP.FixedMinorAttributeIDs do
             FixedArr.Add(FixedId);
           FixedArr.EndArray;
 
           GearPieceObj.Add('ModIconIndex', GP.ModIconIndex);
+          GearPieceObj.Add('ModAttributeValue', GP.ModAttributeValue);
+          GearPieceObj.Add('ModAttributeTypeStr', GP.ModAttributeTypeStr);
 
           var
           IconArr := GearPieceObj.BeginArray('MinorIconIndices');
@@ -320,6 +330,18 @@ begin
                             [LIterator.AsString];
                         LIterator.Return;
                       end
+                      else if (SameText(LIterator.Key, 'MinorAttributeValues')) and
+                        (LIterator.&Type = TJsonToken.StartArray) then
+                      begin
+                        SetLength(LGearPiece.MinorAttributeValues, 0);
+                        LIterator.Recurse;
+                        while LIterator.Next and
+                          (LIterator.&Type <> TJsonToken.EndArray) do
+                          LGearPiece.MinorAttributeValues :=
+                            LGearPiece.MinorAttributeValues +
+                            [LIterator.AsDouble];
+                        LIterator.Return;
+                      end
                       else if (SameText(LIterator.Key, 'FixedMinorAttributeIDs')) and
                         (LIterator.&Type = TJsonToken.StartArray) then
                       begin
@@ -332,6 +354,8 @@ begin
                         LIterator.Return;
                       end
                       else if SameText(LIterator.Key, 'ModIconIndex') then LGearPiece.ModIconIndex := LIterator.AsInteger
+                      else if SameText(LIterator.Key, 'ModAttributeValue') then LGearPiece.ModAttributeValue := LIterator.AsDouble
+                      else if SameText(LIterator.Key, 'ModAttributeTypeStr') then LGearPiece.ModAttributeTypeStr := LIterator.AsString
                       else if (SameText(LIterator.Key, 'MinorIconIndices')) and (LIterator.&Type = TJsonToken.StartArray) then
                       begin
                          SetLength(LGearPiece.MinorIconIndices, 0);

@@ -1822,8 +1822,12 @@ begin
         SGearPiece.MinorAttributeTypeStrs[ic]));
       LGearPiece.MinorAttributes[ic].AttrType :=
         MinorAttributeTypeForDetails(LGearPiece.MinorAttributes[ic].MinorAttribute);
-      LGearPiece.MinorAttributes[ic].Value :=
-        GetDefaultMinorAttributeValue(LGearPiece.MinorAttributes[ic].MinorAttribute);
+
+      if (Length(SGearPiece.MinorAttributeValues) > ic) and (SGearPiece.MinorAttributeValues[ic] > 0) then
+        LGearPiece.MinorAttributes[ic].Value := SGearPiece.MinorAttributeValues[ic]
+      else
+        LGearPiece.MinorAttributes[ic].Value :=
+          GetDefaultMinorAttributeValue(LGearPiece.MinorAttributes[ic].MinorAttribute);
     end;
 
     // Icons
@@ -1877,6 +1881,16 @@ begin
         LGearPiece.ModAttribute.Value := 0;
         LGearPiece.ModID := 0;
       end;
+    end
+    else if (SGearPiece.ModAttributeTypeStr <> '') and (SGearPiece.ModAttributeValue > 0) then
+    begin
+      try
+        LGearPiece.ModAttribute.ModEffect := TGearModEffectType(GetEnumValue(TypeInfo(TGearModEffectType), SGearPiece.ModAttributeTypeStr));
+      except
+        LGearPiece.ModAttribute.ModEffect := gmetUnknown;
+      end;
+      LGearPiece.ModAttribute.Value := SGearPiece.ModAttributeValue;
+      LGearPiece.ModID := 0;
     end
     else
     begin
@@ -2636,10 +2650,16 @@ begin
       end
       else
         SGearPiece.ModID := 0;
+      SGearPiece.ModAttributeValue := LGearPiece.ModAttribute.Value;
+      SGearPiece.ModAttributeTypeStr := GetEnumName(TypeInfo(TGearModEffectType), Ord(LGearPiece.ModAttribute.ModEffect));
       SGearPiece.TalentName := LGearPiece.Talent;
       SetLength(SGearPiece.MinorAttributeTypeStrs, Length(LGearPiece.MinorAttributes));
+      SetLength(SGearPiece.MinorAttributeValues, Length(LGearPiece.MinorAttributes));
       for var j := 0 to High(LGearPiece.MinorAttributes) do
+      begin
         SGearPiece.MinorAttributeTypeStrs[j] := GetEnumName(TypeInfo(TMinorAttributeType), Ord(LGearPiece.MinorAttributes[j].MinorAttribute));
+        SGearPiece.MinorAttributeValues[j] := LGearPiece.MinorAttributes[j].Value;
+      end;
       SetLength(SGearPiece.FixedMinorAttributeIDs, Length(LGearPiece.FixedMinorAttributes));
       for var j := 0 to High(LGearPiece.FixedMinorAttributes) do
         SGearPiece.FixedMinorAttributeIDs[j] := LGearPiece.FixedMinorAttributes[j].ID;

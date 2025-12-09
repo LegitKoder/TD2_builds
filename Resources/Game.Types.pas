@@ -452,9 +452,12 @@ type
     CoreAttributeTypeStr: string;
     CoreAttributeValue: Double;
     MinorAttributeTypeStrs: TArray<string>;
+    MinorAttributeValues: TArray<Double>; // Persist actual values
     FixedMinorAttributeIDs: TArray<string>;
     MinorIconIndices: TArray<Integer>;   // new field
     ModID: Integer;
+    ModAttributeValue: Double;          // Persist custom mod value
+    ModAttributeTypeStr: string;        // Persist custom mod type
     ModIconIndex: Integer;               // new field
     TalentName: string;
     SetName: string;
