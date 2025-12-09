@@ -63,9 +63,19 @@ begin
     else if ContainsText(NormAttr, 'weapondamage') then Result := Result + DispStats.TotalWeaponDamage_AWD_Pct_Display * Weight
     else if ContainsText(NormAttr, 'accuracy') then Result := Result + DispStats.TotalHandling_Accuracy_Pct_Display * Weight
     else if ContainsText(NormAttr, 'stability') then Result := Result + DispStats.TotalHandling_Stability_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'reload') then Result := Result + DispStats.TotalHandling_ReloadSpeed_Pct_Display * Weight;
+    else if ContainsText(NormAttr, 'reload') then Result := Result + DispStats.TotalHandling_ReloadSpeed_Pct_Display * Weight
+    else if ContainsText(NormAttr, 'weaponhandling') then
+      Result := Result + (DispStats.TotalHandling_Accuracy_Pct_Display +
+                          DispStats.TotalHandling_Stability_Pct_Display +
+                          DispStats.TotalHandling_ReloadSpeed_Pct_Display) * Weight
+    else if ContainsText(NormAttr, 'health') then Result := Result + DispStats.TotalHealth_Display * Weight // Simplified scoring
+    else if ContainsText(NormAttr, 'armoronkill') or ContainsText(NormAttr, 'healthonkill') then Result := Result + DispStats.TotalArmorOnKillPct * Weight
+    else if ContainsText(NormAttr, 'incomingrepair') then Result := Result + DispStats.TotalIncomingRepairsPct * Weight
+    else if ContainsText(NormAttr, 'totalarmor') or ContainsText(NormAttr, 'armor') then Result := Result + DispStats.TotalArmor_Display * Weight
+    else if ContainsText(NormAttr, 'explosive') and ContainsText(NormAttr, 'resistance') then Result := Result + DispStats.TotalExplosiveResistancePct * Weight
+    else if ContainsText(NormAttr, 'hazard') then Result := Result + DispStats.TotalHazardProtectionPct * Weight
+    else if ContainsText(NormAttr, 'resistance') then Result := Result + 1.0 * Weight; // Generic resistance fallback
     // Add more...
-  end;
 end;
 
 function TBuildGenerator.GenerateBuilds(const AArchetype: TBuildArchetype;

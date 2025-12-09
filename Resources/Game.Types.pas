@@ -363,6 +363,11 @@ type
     TotalShieldHealthPct: Double;
     TotalMeleeDamagePct: Double;
     TotalScannerPulseHastePct: Double;
+    // Defensive Stats
+    TotalExplosiveResistancePct: Double;
+    TotalHazardProtectionPct: Double;
+    TotalIncomingRepairsPct: Double;
+    TotalProtectionFromElitesPct: Double;
 
   end;
 

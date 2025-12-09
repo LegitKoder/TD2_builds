@@ -224,11 +224,11 @@ begin
 
       // Defensive Minors (mostly for display or EHP, not direct DPS pools)
       madArmorRegen:
-        ; // Affects survivability, not DPS pools. Could be displayed.
+        ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + LMinorAttr.Value;
       madExplosiveResistance:
-        ; // Affects survivability.
+        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LMinorAttr.Value;
       madHazardProtection:
-        ; // Affects survivability.
+        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LMinorAttr.Value;
       madHealth:
         begin
           ADisplayStats.TotalHealth_Display := ADisplayStats.TotalHealth_Display
@@ -236,11 +236,11 @@ begin
           // Assuming Health is a flat value from minor attributes
         end;
       madIncomingRepairs:
-        ; // Affects healing.
+        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LMinorAttr.Value;
 
       // Utility Minors (mostly for skill builds or specific display stats)
       madRepairSkills:
-        ;
+        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LMinorAttr.Value;
       madSkillDamage:
         ;
       madSkillHaste:
@@ -382,17 +382,29 @@ begin
 
       // Defensive Mods (examples, expand as needed)
       gmetProtectionFromElites:
-        ; // Specific context, not general DPS.
+        ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LValueFraction * 100;
       gmetExplosiveResistance:
-        ;
+        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LValueFraction * 100;
 
       // Skill Mods (examples, expand as needed)
       gmetSkillHaste:
-        ;
+        ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LValueFraction * 100;
       gmetSkillDamage:
-        ;
+        ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LValueFraction * 100;
       gmetRepairSkills:
-        ;
+        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LValueFraction * 100;
+      gmetIncomingRepairs:
+        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LValueFraction * 100;
+      gmetArmorOnKillFlat:
+        ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LValueFraction * 100; // Assuming value is pct, usually is
+      gmetStatusEffectResistance:
+        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LValueFraction * 100;
+      gmetPulseResistance:
+        ; // Specific
+      gmetSkillDuration:
+        ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LValueFraction * 100;
+      gmetSkillHealth:
+        ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LValueFraction * 100;
     else
       // Handle other TGearModEffectType values if they impact general weapon DPS or display stats
     end;
@@ -620,11 +632,40 @@ begin
                 // Add more attribute mappings here based on common AttributeIDs from your JSON
               end;
             sbtSkillAttribute:
-              ; // e.g., Skill Haste, Skill Damage. Primarily for skill builds.
+              begin
+                if SameText(LSetBonus.AttributeID, 'skill_haste') then
+                   ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'skill_damage') then
+                   ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'repair_skills') then
+                   ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'status_effects') then
+                   ADisplayStats.TotalStatusEffectsPct := ADisplayStats.TotalStatusEffectsPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'skill_duration') then
+                   ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'skill_health') then
+                   ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LSetBonus.Value;
+              end;
             sbtDefenseAttribute:
-              ; // e.g., Armor Regen, Hazard Protection. Primarily for survivability.
+              begin
+                if SameText(LSetBonus.AttributeID, 'armor_regen') then
+                   ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'armor_on_kill') then
+                   ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'hazard_protection') then
+                   ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'health') then
+                   ADisplayStats.TotalHealth_Display := ADisplayStats.TotalHealth_Display + ((ADisplayStats.TotalArmor_Display + ADisplayStats.TotalHealth_Display) * (LSetBonus.Value / 100.0)) // Approximation if % Health
+                else if SameText(LSetBonus.AttributeID, 'incoming_repairs') then
+                   ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LSetBonus.Value;
+              end;
             sbtResistance:
-              ; // e.g., Explosive Resistance.
+               begin
+                 if SameText(LSetBonus.AttributeID, 'explosive_resistance') then
+                   ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LSetBonus.Value
+                 else if SameText(LSetBonus.AttributeID, 'protection_from_elites') then
+                   ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LSetBonus.Value;
+               end;
             sbtGearSetBonus, sbtExoticBonus, sbtTalent, sbtSpecial:
               begin
                 // These are often unique, named talents or complex mechanics.

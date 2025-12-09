@@ -2113,7 +2113,7 @@ begin
     for AttrID in FSelectedAttributeIDs do
     begin
       var N := NormalizeAttributeId(AttrID);
-      if N = 'armor_regen' then AddUnique(madArmorRegen)
+      if (N = 'armor_regen') or (N = 'armor_regen_pct') then AddUnique(madArmorRegen)
       else if N = 'critical_hit_chance' then AddUnique(madCriticalHitChance)
       else if N = 'critical_hit_damage' then AddUnique(madCriticalHitDamage)
       else if N = 'explosive_resistance' then AddUnique(madExplosiveResistance)
@@ -2125,8 +2125,16 @@ begin
       else if N = 'skill_damage' then AddUnique(madSkillDamage)
       else if N = 'skill_haste' then AddUnique(madSkillHaste)
       else if N = 'status_effects' then AddUnique(madStatusEffects)
-      else if N = 'weapon_handling' then AddUnique(madWeaponHandling);
-      // Other attributes (e.g., skill_duration, skill_tier) are not mapped to minor enums here.
+      else if N = 'weapon_handling' then AddUnique(madWeaponHandling)
+      // Map resistance subtypes to Hazard Protection if exact match not found in TMinorAttributeType
+      // TMinorAttributeType has: madExplosiveResistance, madHazardProtection.
+      // It does NOT have specific Disrupt/Pulse/Shock resistances.
+      // Usually, if a user wants "Shock Resistance", they might accept Hazard Protection (which covers all),
+      // or we can't enforce it as a minor attribute on standard gear because standard gear only rolls Hazard Protection.
+      // Specific resistances usually come from Mods or Brand Bonuses.
+      // So we map them to nothing here (relying on Brand weights) OR map to Hazard Protection if appropriate.
+      // For now, let's strictly map only what exists on gear minors.
+      ;
     end;
     Result := LList.ToArray;
   finally
