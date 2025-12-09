@@ -2165,10 +2165,6 @@ end;
 
 procedure TMainForm.BuildFromSelectedAttributes;
 var
-  LAllowedBrands: TList<string>;
-  LRequiredBrands: TDictionary<string, Integer>;
-  LBrandSet: TPieceSet;
-  LBonus: TSetBonus;
   AttrID: string;
   RequiredMinor: TArray<TMinorAttributeType>;
   SlotList: TList<TItemType>;
@@ -2199,17 +2195,15 @@ var
         for var AttrID in FSelectedAttributeIDs do
           AArchetype.AttributeWeights.AddOrSetValue(AttrID, 100.0); // High priority
 
-        if Assigned(AArchetype.RequiredCoreAttribute) then
-          AArchetype.RequiredCoreAttribute.Clear;
-        // Apply the constraints we calculated in the outer scope
-        AArchetype.RequiredBrandSets.Clear;
-        for var Pair in LRequiredBrands do
-            AArchetype.RequiredBrandSets.AddOrSetValue(Pair.Key, Pair.Value);
+        // Do NOT clear RequiredCoreAttribute here.
+        // If we clear it, we lose the "Tank" (Armor) or "Skill" (SkillTier) requirement set by GetTankBuildArchetype/etc.
+        // We want to keep that requirement so we generate a build of the correct archetype.
 
-        if not Assigned(AArchetype.AllowedBrandSets) then
-            AArchetype.AllowedBrandSets := TList<string>.Create;
-        AArchetype.AllowedBrandSets.Clear;
-        AArchetype.AllowedBrandSets.AddRange(LAllowedBrands);
+        // Also do NOT enforce AllowedBrandSets/RequiredBrandSets based on attributes.
+        // Strict enforcement often leads to "No builds found" if the brands providing the bonus
+        // don't match the Core Attribute (e.g. Red Bonus on Blue Core) or if multiple Gear Sets
+        // require too many slots (e.g. HSD on 3 sets = 9 pieces).
+        // Instead, we rely on AttributeWeights (set above) to prioritize brands that have the bonus.
 
         if (Length(RequiredMinor) > 0) and Assigned(AArchetype.RequiredAttributes) then
         begin
@@ -2234,101 +2228,34 @@ begin
   if FSelectedAttributeIDs.Count = 0 then
     Exit;
 
-  LAllowedBrands := TList<string>.Create;
-  LRequiredBrands := TDictionary<string, Integer>.Create(TIStringComparer.Ordinal);
+  // Try to generate builds using selected attribute(s) placed on mod-capable slots first, then fallback.
+  RequiredMinor := MapSelectedAttributesToMinorTypes;
+
+  // Build list of mod-capable slots
+  SlotList := TList<TItemType>.Create;
   try
-    if Assigned(DataJsonIterator) and Assigned(DataJsonIterator.AllPieceSetDefinitions) then
+    for var Slot := Low(TItemType) to itKneepads do
     begin
-      for LBrandSet in DataJsonIterator.AllPieceSetDefinitions.Values do
-      begin
-        var IsCandidate := False;
-        var ItemsNeeded := 0;
-        // Check Set Bonuses
-        for LBonus in LBrandSet.Bonuses do
-        begin
-          for AttrID in FSelectedAttributeIDs do
-          begin
-            if NormalizeAttributeId(AttrID) = NormalizeAttributeId(LBonus.AttributeID) then
-            begin
-              IsCandidate := True;
-//              Break;
-              if LBrandSet.SetType = stGearSet then
-              begin
-                if LBonus.ItemsRequired > ItemsNeeded then
-                  ItemsNeeded := LBonus.ItemsRequired;
-              end;
-              // Don't break here, need to check all selected attributes to find the highest requirement
-            end;
-          end;
-//          if IsCandidate then Break;
-        end;
-
-        // Check Fixed Minor Attributes (for Exotics, etc., which don't have piece requirements)
-        if not IsCandidate then
-        begin
-          for var Part in LBrandSet.Parts do
-          begin
-            if Length(Part.FixedMinorAttributeIDs) > 0 then
-            begin
-              for var FixedID in Part.FixedMinorAttributeIDs do
-              begin
-                for AttrID in FSelectedAttributeIDs do
-                begin
-                  if NormalizeAttributeId(AttrID) = NormalizeAttributeId(FixedID) then
-                  begin
-                    IsCandidate := True;
-                    Break;
-                  end;
-                end;
-                if IsCandidate then Break;
-              end;
-            end;
-            if IsCandidate then Break;
-          end;
-        end;
-
-        if IsCandidate then
-        begin
-          if (LBrandSet.SetType = stGearSet) and (ItemsNeeded > 0) then
-            LRequiredBrands.AddOrSetValue(LBrandSet.Name, ItemsNeeded)
-          else
-            LAllowedBrands.Add(LBrandSet.Name);
-        end;
-      end;
+      var Dummy: TGearPiece := Default(TGearPiece);
+      Dummy.ItemType := Slot;
+      if HasModSlot(Dummy) then
+        SlotList.Add(Slot);
     end;
+    ModSlots := SlotList.ToArray;
+    // If no mod-capable slots were found, default to backpack/chest/mask
+    if Length(ModSlots) = 0 then
+      ModSlots := TArray<TItemType>.Create(itBackpack, itChest, itMask);
 
-    // Try to generate builds using selected attribute(s) placed on mod-capable slots first, then fallback.
-    RequiredMinor := MapSelectedAttributesToMinorTypes;
-
-    // Build list of mod-capable slots
-    SlotList := TList<TItemType>.Create;
-    try
-      for var Slot := Low(TItemType) to itKneepads do
-      begin
-        var Dummy: TGearPiece := Default(TGearPiece);
-        Dummy.ItemType := Slot;
-        if HasModSlot(Dummy) then
-          SlotList.Add(Slot);
-      end;
-      ModSlots := SlotList.ToArray;
-      // If no mod-capable slots were found, default to backpack/chest/mask
-      if Length(ModSlots) = 0 then
-        ModSlots := TArray<TItemType>.Create(itBackpack, itChest, itMask);
-
-      if not BuildWithSlots(ModSlots) then
-      begin
-        // Fallback: allow any slots if mod-only placement was too strict
-        SetLength(AllSlots, Ord(itKneepads) + 1);
-        for i := Ord(Low(TItemType)) to Ord(itKneepads) do
-          AllSlots[i] := TItemType(i);
-        BuildWithSlots(AllSlots);
-      end;
-    finally
-      SlotList.Free;
+    if not BuildWithSlots(ModSlots) then
+    begin
+      // Fallback: allow any slots if mod-only placement was too strict
+      SetLength(AllSlots, Ord(itKneepads) + 1);
+      for i := Ord(Low(TItemType)) to Ord(itKneepads) do
+        AllSlots[i] := TItemType(i);
+      BuildWithSlots(AllSlots);
     end;
   finally
-    LAllowedBrands.Free;
-    LRequiredBrands.Free;
+    SlotList.Free;
   end;
 end;
 
