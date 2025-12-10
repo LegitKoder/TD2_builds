@@ -816,27 +816,27 @@
             "imageIndex": 14,
             "parts": {
                 "Mask": {
-                    "name": "Grupo Sombra S.A Mask",
+                    "name": "Grupo Sombra S.A. Mask",
                     "coreAttribute": "weaponDamage"
                 },
                 "Vest": {
-                    "name": "Grupo Sombra S.A Vest",
+                    "name": "Grupo Sombra S.A. Vest",
                     "coreAttribute": "weaponDamage"
                 },
                 "Holster": {
-                    "name": "Grupo Sombra S.A Holster",
+                    "name": "Grupo Sombra S.A. Holster",
                     "coreAttribute": "weaponDamage"
                 },
                 "Backpack": {
-                    "name": "Grupo Sombra S.A Backpack",
+                    "name": "Grupo Sombra S.A. Backpack",
                     "coreAttribute": "weaponDamage"
                 },
                 "Glove": {
-                    "name": "Grupo Sombra S.A Glove",
+                    "name": "Grupo Sombra S.A. Glove",
                     "coreAttribute": "weaponDamage"
                 },
                 "Kneepad": {
-                    "name": "Grupo Sombra S.A Kneepad",
+                    "name": "Grupo Sombra S.A. Kneepad",
                     "coreAttribute": "weaponDamage"
                 }
             },
@@ -2441,15 +2441,15 @@
                 },
                 "Backpack": {
                     "name": "Refactor Backpack",
-                    "coreAttribute": "skillTier"
+                    "coreAttribute": "armor"
                 },
                 "Glove": {
                     "name": "Refactor Glove",
-                    "coreAttribute": "skillTier"
+                    "coreAttribute": "armor"
                 },
                 "Kneepad": {
                     "name": "Refactor Kneepad",
-                    "coreAttribute": "skillTier"
+                    "coreAttribute": "armor"
                 }
             },
             "setBonuses": [
@@ -3077,7 +3077,7 @@
             }
         },
         {
-            "name": "Grupo Sombra S.A",
+            "name": "Grupo Sombra S.A.",
             "imageIndex": 14,
             "parts": {
                 "Vest": {
@@ -3676,11 +3676,11 @@
             }
         },
         {
-            "name": "NinjaBike Backpack",
+            "name": "NinjaBike Messenger Backpack",
             "imageIndex": 63,
             "parts": {
                 "Backpack": {
-                    "name": "NinjaBike Backpack",
+                    "name": "NinjaBike Messenger Backpack",
                     "coreAttribute": "weaponDamage",
                     "fixedMinorAttributes": [
                         "armorRegen_1",
