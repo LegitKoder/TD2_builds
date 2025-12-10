@@ -46,6 +46,9 @@ type
     function DetermineBonusType_Parser_Local(const AttributeID: string;
       out WeaponType: TWeaponFamily): TSetBonusType; // Added
 
+    procedure ParseWeaponModEffect(var EffectRecord: TWeaponModEffect;
+      var AIterator: TJSONIterator);
+
     procedure LoadWeaponsFromJson(const FileName: string);
     procedure LoadWeaponStats(const FileName: string);
     procedure LoadWeaponModsFromJson(const FileName: string);
@@ -1055,57 +1058,46 @@ end;
 
 { ─────────── 4/8  – weapon_mods.json ─────────── }
 
+procedure TDataJsonIterator.ParseWeaponModEffect(var EffectRecord: TWeaponModEffect;
+  var AIterator: TJSONIterator);
+begin
+  AIterator.Recurse; // Enter effect object
+  while AIterator.Next do
+  begin
+    if SameText(AIterator.Key, 'accuracy') then
+      EffectRecord.Accuracy := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'stability') then
+      EffectRecord.Stability := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'reload_time') or SameText(AIterator.Key, 'reload_speed') or SameText(AIterator.Key, 'reload_speed_bonus') then
+      EffectRecord.ReloadTime := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'critical_hit_chance') then
+      EffectRecord.CriticalHitChance := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'critical_hit_damage') then
+      EffectRecord.CriticalHitDamage := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'headshot_damage') or SameText(AIterator.Key, 'headshot_bonus_damage') then
+      EffectRecord.HeadshotDamage := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'weapon_damage') or SameText(AIterator.Key, 'weapon_damage_bonus') or SameText(AIterator.Key, 'amplified_weapon_damage_bonus') then
+      EffectRecord.WeaponDamage := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'rate_of_fire') then
+      EffectRecord.RateOfFire := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'optimal_range') then
+      EffectRecord.OptimalRange := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'weapon_handling') then
+      EffectRecord.WeaponHandling := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'extra_rounds') or SameText(AIterator.Key, 'magazine_size') then
+      EffectRecord.ExtraRounds := AIterator.AsDouble
+    else if SameText(AIterator.Key, 'melee_damage') then
+      EffectRecord.MeleeDamage := AIterator.AsDouble;
+  end;
+  AIterator.Return; // Exit effect object
+end;
+
 procedure TDataJsonIterator.LoadWeaponModsFromJson(const FileName: string);
 var
   It: TJSONIterator;
   JR: TJsonTextReader;
   SR: TStringReader;
   M: TWeaponMod; // Will be initialized for each mod object
-
-  // Helper to parse "bonus" or "drawback" objects into a TWeaponModEffect record
-  procedure ReadEffectStructure(var EffectRecord: TWeaponModEffect;
-    CurrentIterator: TJSONIterator);
-  begin
-    // Expects CurrentIterator to be at the StartObject of the effect structure
-    CurrentIterator.Recurse; // Enter effect object (e.g., bonus or drawback)
-    while CurrentIterator.Next do
-    // Loop through properties of the effect object
-    begin
-      // Map JSON keys to TWeaponModEffect fields
-      // Using SameText for case-insensitive key matching is a good idea
-      if SameText(CurrentIterator.Key, 'accuracy') then
-        EffectRecord.Accuracy := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'stability') then
-        EffectRecord.Stability := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'reload_time') then
-        EffectRecord.ReloadTime := CurrentIterator.AsDouble
-        // Assuming JSON key is 'reload_time'
-      else if SameText(CurrentIterator.Key, 'reload_speed') then
-        EffectRecord.ReloadTime := CurrentIterator.AsDouble
-        // Alias for ReloadTime
-      else if SameText(CurrentIterator.Key, 'critical_hit_chance') then
-        EffectRecord.CriticalHitChance := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'critical_hit_damage') then
-        EffectRecord.CriticalHitDamage := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'headshot_damage') then
-        EffectRecord.HeadshotDamage := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'weapon_damage') then
-        EffectRecord.WeaponDamage := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'rate_of_fire') then
-        EffectRecord.RateOfFire := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'optimal_range') then
-        EffectRecord.OptimalRange := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'weapon_handling') then
-        EffectRecord.WeaponHandling := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'extra_rounds') then
-        EffectRecord.ExtraRounds := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'melee_damage') then
-        EffectRecord.MeleeDamage := CurrentIterator.AsDouble;
-      // Add any other fields from TWeaponModEffect that are present in your JSON
-    end;
-    CurrentIterator.Return; // Exit effect object
-  end;
-
 begin
   try
     SR := TStringReader.Create(TFile.ReadAllText(FileName, TEncoding.UTF8));
@@ -1157,14 +1149,12 @@ begin
               else if (It.Key = 'bonus') and (It.&Type = TJsonToken.StartObject)
               then
               begin
-                // ShowMessage('      Found "bonus" object. Calling ReadEffectStructure...');
-                ReadEffectStructure(M.Bonus, It);
+                ParseWeaponModEffect(M.Bonus, It);
               end
               else if (It.Key = 'drawback') and
                 (It.&Type = TJsonToken.StartObject) then
               begin
-                // ShowMessage('      Found "drawback" object. Calling ReadEffectStructure...');
-                ReadEffectStructure(M.Drawback, It);
+                ParseWeaponModEffect(M.Drawback, It);
               end;
             end;
 
@@ -1198,80 +1188,6 @@ var
   JR: TJsonTextReader;
   SR: TStringReader;
   T: TWeaponTalent;
-
-  procedure ReadTalentEffectStructure(var EffectRecord: TWeaponModEffect;
-    CurrentIterator: TJSONIterator);
-  begin
-    CurrentIterator.Recurse;
-    // Enter effect object (e.g., "effects" or "drawback")
-    while CurrentIterator.Next do
-    begin
-      // ShowMessage('  Effect Key: ' + CurrentIterator.Key + ', Value: ' + CurrentIterator.CurrentValue.ToString); // DEBUG
-      if SameText(CurrentIterator.Key, 'accuracy') then
-        EffectRecord.Accuracy := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'stability') then
-        EffectRecord.Stability := CurrentIterator.AsDouble
-
-        // ReloadTime in TWeaponModEffect: positive means faster (reduces time)
-      else if SameText(CurrentIterator.Key, 'reload_speed_bonus') then
-        EffectRecord.ReloadTime := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'reload_time') then
-        EffectRecord.ReloadTime := CurrentIterator.AsDouble
-
-      else if SameText(CurrentIterator.Key, 'critical_hit_chance') then
-        EffectRecord.CriticalHitChance := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'critical_hit_damage') then
-        EffectRecord.CriticalHitDamage := CurrentIterator.AsDouble
-
-      else if SameText(CurrentIterator.Key, 'headshot_damage') then
-        EffectRecord.HeadshotDamage := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'headshot_bonus_damage') then
-        EffectRecord.HeadshotDamage := CurrentIterator.AsDouble // Alias
-
-        // Consolidate various weapon damage keys
-      else if SameText(CurrentIterator.Key, 'weapon_damage') then
-        EffectRecord.WeaponDamage := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'weapon_damage_bonus') then
-        EffectRecord.WeaponDamage := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'amplified_weapon_damage_bonus')
-      then
-        EffectRecord.WeaponDamage := CurrentIterator.AsDouble
-        // Note: "amplified" often means multiplicative. TWeaponModEffect treats all WeaponDamage as additive to a pool.
-        // This is a simplification for now. True amplified would need a separate field or handling in CalcEngine.
-
-      else if SameText(CurrentIterator.Key, 'rate_of_fire') then
-        EffectRecord.RateOfFire := CurrentIterator.AsDouble
-        // Assuming this is absolute RoF change from talents, not %
-
-      else if SameText(CurrentIterator.Key, 'optimal_range') then
-        EffectRecord.OptimalRange := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'weapon_handling') then
-        EffectRecord.WeaponHandling := CurrentIterator.AsDouble
-
-      else if SameText(CurrentIterator.Key, 'extra_rounds') then
-        EffectRecord.ExtraRounds := CurrentIterator.AsDouble
-      else if SameText(CurrentIterator.Key, 'magazine_size') then
-        EffectRecord.ExtraRounds := CurrentIterator.AsDouble
-        // Simplification: treat "magazine_size" as flat extra rounds.
-        // If it's a percentage, TWeaponModEffect needs a new field.
-      else if SameText(CurrentIterator.Key, 'melee_damage') then
-        EffectRecord.MeleeDamage := CurrentIterator.AsDouble
-
-        // Keys from your JSON that DO NOT map directly to TWeaponModEffect fields:
-        // 'armor' (from Brazen)
-        // 'max_stacks' (from Fast Hands)
-        // 'skill_tier_increase', 'overcharge' (from Future Perfect)
-        // 'skill_damage' (from In Sync - TWeaponModEffect has no skill damage field)
-        // 'ammo_return_chance' (from Lucky Shot)
-        // 'rate_of_fire_top', 'weapon_damage_top', 'rate_of_fire_bottom', 'weapon_damage_bottom' (from Measured)
-        // ... and many others, especially for exotic talents.
-        // These are ignored by this parser for direct stat application via TWeaponModEffect.
-        // Their primary effect is conveyed by the talent's description.
-          ; // Add more 'else if' for other direct stat mappings if they exist in JSON and TWeaponModEffect
-    end;
-    CurrentIterator.Return; // Exit effect object
-  end;
-
 begin
   try
     SR := TStringReader.Create(TFile.ReadAllText(FileName, TEncoding.UTF8));
@@ -1319,17 +1235,12 @@ begin
               else if (It.Key = 'effects') and
                 (It.&Type = TJsonToken.StartObject) then // JSON uses "effects"
               begin
-                // ShowMessage('      Found "effects" object. Calling ReadTalentEffectStructure...');
-                ReadTalentEffectStructure(T.Effect, It);
-                // T.Effect is TWeaponModEffect
+                ParseWeaponModEffect(T.Effect, It);
               end
               else if (It.Key = 'drawback') and
                 (It.&Type = TJsonToken.StartObject) then
-              // Assuming "drawback" exists and is similar
               begin
-                // ShowMessage('      Found "drawback" object. Calling ReadTalentEffectStructure...');
-                ReadTalentEffectStructure(T.Drawback, It);
-                // T.Drawback is TWeaponModEffect
+                ParseWeaponModEffect(T.Drawback, It);
               end;
             end; // End loop for properties of a talent object
 

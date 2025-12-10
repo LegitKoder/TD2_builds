@@ -1761,19 +1761,6 @@ begin
                   LGearPiece.FixedMinorAttributes[Len] := FixedDef;
                 end;
             end;
-            SetLength(LGearPiece.FixedMinorAttributes, 0);
-            if (Length(Part.FixedMinorAttributeIDs) > 0) and
-               Assigned(DataJsonIterator) and
-               Assigned(DataJsonIterator.FixedMinorAttributeDefinitions) then
-            begin
-              for var FixedId in Part.FixedMinorAttributeIDs do
-                if DataJsonIterator.FixedMinorAttributeDefinitions.TryGetValue(FixedId, FixedDef) then
-                begin
-                  var Len := Length(LGearPiece.FixedMinorAttributes);
-                  SetLength(LGearPiece.FixedMinorAttributes, Len + 1);
-                  LGearPiece.FixedMinorAttributes[Len] := FixedDef;
-                end;
-            end;
             Found := True;
             Break;
           end;
@@ -1830,21 +1817,7 @@ begin
           GetDefaultMinorAttributeValue(LGearPiece.MinorAttributes[ic].MinorAttribute);
     end;
 
-    // Icons
-    if Length(SGearPiece.FixedMinorAttributeIDs) > 0 then
-    begin
-      SetLength(LGearPiece.FixedMinorAttributes, 0);
-      if Assigned(DataJsonIterator) and
-         Assigned(DataJsonIterator.FixedMinorAttributeDefinitions) then
-        for var FixedId in SGearPiece.FixedMinorAttributeIDs do
-          if DataJsonIterator.FixedMinorAttributeDefinitions.TryGetValue(FixedId, FixedDef) then
-          begin
-            var Len := Length(LGearPiece.FixedMinorAttributes);
-            SetLength(LGearPiece.FixedMinorAttributes, Len + 1);
-            LGearPiece.FixedMinorAttributes[Len] := FixedDef;
-          end;
-    end;
-
+    // Icons & Fixed Attributes
     if Length(SGearPiece.FixedMinorAttributeIDs) > 0 then
     begin
       SetLength(LGearPiece.FixedMinorAttributes, 0);
@@ -2258,7 +2231,7 @@ begin
     begin
       // Fallback: allow any slots if mod-only placement was too strict
       SetLength(AllSlots, Ord(itKneepads) + 1);
-      for i := Ord(Low(TItemType)) to Ord(itKneepads) do
+      for var i := Ord(Low(TItemType)) to Ord(itKneepads) do
         AllSlots[i] := TItemType(i);
       BuildWithSlots(AllSlots);
     end;
