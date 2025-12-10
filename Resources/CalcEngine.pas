@@ -224,11 +224,11 @@ begin
 
       // Defensive Minors (mostly for display or EHP, not direct DPS pools)
       madArmorRegen:
-        ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + LMinorAttr.Value;
+        ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + (LMinorAttr.Value / 100.0);
       madExplosiveResistance:
-        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LMinorAttr.Value;
+        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + (LMinorAttr.Value / 100.0);
       madHazardProtection:
-        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LMinorAttr.Value;
+        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + (LMinorAttr.Value / 100.0);
       madHealth:
         begin
           ADisplayStats.TotalHealth_Display := ADisplayStats.TotalHealth_Display
@@ -236,11 +236,11 @@ begin
           // Assuming Health is a flat value from minor attributes
         end;
       madIncomingRepairs:
-        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LMinorAttr.Value;
+        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + (LMinorAttr.Value / 100.0);
 
       // Utility Minors (mostly for skill builds or specific display stats)
       madRepairSkills:
-        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LMinorAttr.Value;
+        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + (LMinorAttr.Value / 100.0);
       madSkillDamage:
         ;
       madSkillHaste:
@@ -382,29 +382,29 @@ begin
 
       // Defensive Mods (examples, expand as needed)
       gmetProtectionFromElites:
-        ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LValueFraction * 100;
+        ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LValueFraction;
       gmetExplosiveResistance:
-        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LValueFraction * 100;
+        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LValueFraction;
 
       // Skill Mods (examples, expand as needed)
       gmetSkillHaste:
-        ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LValueFraction * 100;
+        ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LValueFraction;
       gmetSkillDamage:
-        ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LValueFraction * 100;
+        ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LValueFraction;
       gmetRepairSkills:
-        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LValueFraction * 100;
+        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LValueFraction;
       gmetIncomingRepairs:
-        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LValueFraction * 100;
+        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LValueFraction;
       gmetArmorOnKillFlat:
-        ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LValueFraction * 100; // Assuming value is pct, usually is
+        ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LValueFraction; // Assuming value is pct, usually is
       gmetStatusEffectResistance:
-        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LValueFraction * 100;
+        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LValueFraction;
       gmetPulseResistance:
         ; // Specific
       gmetSkillDuration:
-        ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LValueFraction * 100;
+        ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LValueFraction;
       gmetSkillHealth:
-        ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LValueFraction * 100;
+        ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LValueFraction;
     else
       // Handle other TGearModEffectType values if they impact general weapon DPS or display stats
     end;
@@ -634,37 +634,37 @@ begin
             sbtSkillAttribute:
               begin
                 if SameText(LSetBonus.AttributeID, 'skill_haste') then
-                   ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LSetBonus.Value
+                   ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'skill_damage') then
-                   ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LSetBonus.Value
+                   ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'repair_skills') then
-                   ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LSetBonus.Value
+                   ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'status_effects') then
-                   ADisplayStats.TotalStatusEffectsPct := ADisplayStats.TotalStatusEffectsPct + LSetBonus.Value
+                   ADisplayStats.TotalStatusEffectsPct := ADisplayStats.TotalStatusEffectsPct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'skill_duration') then
-                   ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LSetBonus.Value
+                   ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'skill_health') then
-                   ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LSetBonus.Value;
+                   ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + (LSetBonus.Value / 100.0);
               end;
             sbtDefenseAttribute:
               begin
                 if SameText(LSetBonus.AttributeID, 'armor_regen') then
-                   ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + LSetBonus.Value
+                   ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'armor_on_kill') then
-                   ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LSetBonus.Value
+                   ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'hazard_protection') then
-                   ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LSetBonus.Value
+                   ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + (LSetBonus.Value / 100.0)
                 else if SameText(LSetBonus.AttributeID, 'health') then
                    ADisplayStats.TotalHealth_Display := ADisplayStats.TotalHealth_Display + ((ADisplayStats.TotalArmor_Display + ADisplayStats.TotalHealth_Display) * (LSetBonus.Value / 100.0)) // Approximation if % Health
                 else if SameText(LSetBonus.AttributeID, 'incoming_repairs') then
-                   ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LSetBonus.Value;
+                   ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + (LSetBonus.Value / 100.0);
               end;
             sbtResistance:
                begin
                  if SameText(LSetBonus.AttributeID, 'explosive_resistance') then
-                   ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LSetBonus.Value
+                   ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + (LSetBonus.Value / 100.0)
                  else if SameText(LSetBonus.AttributeID, 'protection_from_elites') then
-                   ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LSetBonus.Value;
+                   ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + (LSetBonus.Value / 100.0);
                end;
             sbtGearSetBonus, sbtExoticBonus, sbtTalent, sbtSpecial:
               begin
