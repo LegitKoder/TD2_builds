@@ -4,8 +4,9 @@ interface
 
 uses
   System.SysUtils, System.Generics.Defaults, System.Generics.Collections,
-  Game.Types, RecommendationEngine, Game.JsonIterator, CalcEngine,         // pour TPlayerAggregatedStats et les calculs
-  System.StrUtils;
+  System.StrUtils, System.Character, Game.Types, RecommendationEngine,
+  Game.JsonIterator, CalcEngine;         // pour TPlayerAggregatedStats et les calculs
+
 
 type
   TBuildGenerator = class
@@ -35,36 +36,89 @@ begin
   inherited;
 end;
 
+/// Normalise une clé d'attribut pour le scoring
+///  - lower case
+///  - suppression des espaces, '_' et '%'
+///  - ex: "Critical Hit Damage", "critical_hit_damage%", "CRIT Hit DMG"
+///    => "criticalhitdamage"
+function NormalizeAttrKey(const S: string): string;
+begin
+  Result := LowerCase(S.Trim);
+  Result := StringReplace(Result, ' ', '', [rfReplaceAll]);
+  Result := StringReplace(Result, '_', '', [rfReplaceAll]);
+  Result := StringReplace(Result, '%', '', [rfReplaceAll]);
+end;
+
 /// <summary>
 /// Calcule un score pour un build en fonction des statistiques agrégées et des attributs ciblés.
 /// Les poids sont ajustables selon l’importance de chaque attribut.
 /// </summary>
 function ScoreBuild(const AggStats: TPlayerAggregatedStats; const DispStats: TLoadoutAggregatedStats_Display; Weights: TDictionary<string, Double>): Double;
 var
-  NormAttr: string;
+  Attr, NormAttr: string;
   Weight: Double;
 begin
   Result := 0;
   if (Weights = nil) or (Weights.Count = 0) then Exit;
 
-  for var Attr in Weights.Keys do
+  for Attr in Weights.Keys do
   begin
-    Weight := Weights[Attr];
-    NormAttr := LowerCase(StringReplace(Attr, ' ', '', [rfReplaceAll]));
-    // Map attributes
-    if ContainsText(NormAttr, 'repairskills') then Result := Result + AggStats.TotalRepairSkills * Weight
-    else if ContainsText(NormAttr, 'skillhaste') then Result := Result + AggStats.TotalSkillHaste * Weight
-    else if ContainsText(NormAttr, 'skilldamage') then Result := Result + AggStats.TotalSkillDamage * Weight
-    else if ContainsText(NormAttr, 'statuseffects') then Result := Result + AggStats.TotalStatusEffects * Weight
-    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'chance') then Result := Result + DispStats.FinalCHC_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'damage') then Result := Result + DispStats.FinalCHD_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'headshot') then Result := Result + DispStats.FinalHSD_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'armorregen') then Result := Result + DispStats.TotalArmorRegenPct * Weight
-    else if ContainsText(NormAttr, 'weapondamage') then Result := Result + DispStats.TotalWeaponDamage_AWD_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'accuracy') then Result := Result + DispStats.TotalHandling_Accuracy_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'stability') then Result := Result + DispStats.TotalHandling_Stability_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'reload') then Result := Result + DispStats.TotalHandling_ReloadSpeed_Pct_Display * Weight;
-    // Add more...
+    Weight   := Weights[Attr];
+    NormAttr := NormalizeAttrKey(Attr);
+
+    // Skills
+    if ContainsText(NormAttr, 'repairskills') then
+      Result := Result + AggStats.TotalRepairSkills * Weight
+    else if ContainsText(NormAttr, 'skillhaste') then
+      Result := Result + AggStats.TotalSkillHaste * Weight
+    else if ContainsText(NormAttr, 'skilldamage') then
+      Result := Result + AggStats.TotalSkillDamage * Weight
+    else if ContainsText(NormAttr, 'statuseffects') then
+      Result := Result + AggStats.TotalStatusEffects * Weight
+
+    // Crit / HSD
+    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'chance') then
+      Result := Result + DispStats.FinalCHC_Pct_Display * Weight
+    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'damage') then
+      Result := Result + DispStats.FinalCHD_Pct_Display * Weight
+    else if ContainsText(NormAttr, 'headshot') then
+      Result := Result + DispStats.FinalHSD_Pct_Display * Weight
+
+    // Armor / tank
+    else if ContainsText(NormAttr, 'armorregen') then
+      Result := Result + DispStats.TotalArmorRegenPct * Weight
+    else if ContainsText(NormAttr, 'totalarmor') or
+            (ContainsText(NormAttr, 'armor') and not ContainsText(NormAttr, 'regen')) then
+      Result := Result + DispStats.TotalArmor_Display * Weight
+    else if ContainsText(NormAttr, 'health') then
+      Result := Result + DispStats.TotalHealth_Display * Weight
+    else if ContainsText(NormAttr, 'armoronkill') or
+            ContainsText(NormAttr, 'healthonkill') then
+      Result := Result + DispStats.TotalArmorOnKillPct * Weight
+    else if ContainsText(NormAttr, 'incomingrepair') then
+      Result := Result + DispStats.TotalIncomingRepairsPct * Weight
+
+    // Weapon damage / handling
+    else if ContainsText(NormAttr, 'weapondamage') then
+      Result := Result + DispStats.TotalWeaponDamage_AWD_Pct_Display * Weight
+    else if ContainsText(NormAttr, 'accuracy') then
+      Result := Result + DispStats.TotalHandling_Accuracy_Pct_Display * Weight
+    else if ContainsText(NormAttr, 'stability') then
+      Result := Result + DispStats.TotalHandling_Stability_Pct_Display * Weight
+    else if ContainsText(NormAttr, 'reload') then
+      Result := Result + DispStats.TotalHandling_ReloadSpeed_Pct_Display * Weight
+    else if ContainsText(NormAttr, 'weaponhandling') then
+      Result := Result + (DispStats.TotalHandling_Accuracy_Pct_Display +
+                          DispStats.TotalHandling_Stability_Pct_Display +
+                          DispStats.TotalHandling_ReloadSpeed_Pct_Display) * Weight
+
+    // Résistances génériques
+    else if ContainsText(NormAttr, 'explosiveresistance') then
+      Result := Result + DispStats.TotalExplosiveResistancePct * Weight
+    else if ContainsText(NormAttr, 'hazardprotection') then
+      Result := Result + DispStats.TotalHazardProtectionPct * Weight
+    else if ContainsText(NormAttr, 'resistance') then
+      Result := Result + 1.0 * Weight; // fallback générique
   end;
 end;
 

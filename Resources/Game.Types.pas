@@ -3,7 +3,7 @@
 interface
 
 uses
-  System.SysUtils, System.Math, System.Generics.Collections, FMX.Graphics;
+  System.SysUtils, {System.Math,} System.Generics.Collections;
 
 { ────────────  basic enumerations ──────────── }
 
@@ -18,7 +18,11 @@ type
   TBonusType = (btAdditive, btMultiplicative, btAmplified);
 
   /// Specialization families used by TD-2
-  TSpecialization = record
+  TSpecialization = class
+  private
+    FInherentWeaponTypeBonuses: TDictionary<TWeaponFamily, Double>;
+    FGeneralBonuses: TDictionary<string, Double>;
+  public
     Name: string;
     // Base weapon type bonuses inherent to the specialization (e.g., Gunner inherently gets +15% LMG Dmg).
     // These are the potential bonuses the player can choose from via checkboxes.
@@ -37,13 +41,9 @@ type
     // Other general bonuses not tied to the selectable weapon type checkboxes (e.g., +10% Skill Haste for Technician)
     // These could be a TDictionary<string, Double> or specific fields if few and fixed.
     GeneralBonuses: TDictionary<string, Double>;
-  end;
 
-  // Wrapper class to allow TSpecialization records to be stored in TObjectList or TComboBox.Items.Objects
-  TSpecializationWrapper = class(TObject)
-  public
-    Data: TSpecialization;
-    constructor Create(const AData: TSpecialization);
+    constructor Create;
+    destructor Destroy; override;
   end;
 
   /// four attachment rails recognised by the game
@@ -196,9 +196,10 @@ type
     ReloadSpeedPct: Double;
     AccuracyPct: Double;
     StabilityPct: Double;
+    AmmoPct: Double;
     // Defensive
     ArmorPct: Double; // Total Armor %
-    HealthFlat: Double; // Flat Health
+    HealthPct: Double; // Flat Health
     ExplosiveResistancePct: Double;
     HazardProtectionPct: Double;
     // Skill
@@ -209,7 +210,7 @@ type
     // Add other watch bonuses as needed
   end;
 
-  TItemType = (itMask, itBackpack, itChest, itGloves, itHolster, itKneepads, itUnknown);
+  TItemType = (itUnknown, itMask, itBackpack, itChest, itGloves, itHolster, itKneepads);
 
   TCoreAttributeType = (catWeaponDamage, catArmor, catSkillTier); // For Gear Core Attributes
 
@@ -229,7 +230,7 @@ type
 
   TSetBonusType = (sbtWeaponDamage, sbtWeaponTypeDamage, sbtCoreAttribute, sbtAttribute, sbtSkillAttribute, sbtDefenseAttribute, sbtResistance, sbtGearSetBonus, sbtExoticBonus, sbtTalent, sbtSpecial, sbtMultiplicativeDamage);
 
-  TSetType = (stBrandSet, stGearSet, stNamedSet, stExoticSet, stImprovised, stUnknown);
+  TSetType = (stBrandSet, stGearSet, stNamedSet, stExoticSet, stImprovised{, stUnknown});
 
   TCoreAttributeDefinition = record
     ID: string;       // e.g. "weaponDamage"
@@ -317,7 +318,7 @@ type
   TFullLoadoutInput = record
     ActiveWeaponConfig: TWeapon;
     EquippedGear: array[TItemType] of TGearPiece;
-    ChosenSpecialization: Game.Types.TSpecialization; // The full definition of the selected spec
+    ChosenSpecialization: Game.Types.TSpecialization; // mais maintenant class* The full definition of the selected spec
     // This array now stores which of the InherentWeaponTypeBonuses are *actually selected* by the user via checkboxes.
     ActivatedSpecWeaponTypeBonuses: TArray<TWeaponFamily>;
     WatchBonuses: TWatchBonuses; // Placeholder
@@ -363,7 +364,11 @@ type
     TotalShieldHealthPct: Double;
     TotalMeleeDamagePct: Double;
     TotalScannerPulseHastePct: Double;
-
+    // Defensive Stats
+    TotalExplosiveResistancePct: Double;
+    TotalHazardProtectionPct: Double;
+    TotalIncomingRepairsPct: Double;
+    TotalProtectionFromElitesPct: Double;
   end;
 
   { ────────────  Structures for Skills Stats ──────────── }
@@ -452,21 +457,28 @@ type
     CoreAttributeTypeStr: string;
     CoreAttributeValue: Double;
     MinorAttributeTypeStrs: TArray<string>;
+    MinorAttributeValues: TArray<Double>; // Persist actual values
     FixedMinorAttributeIDs: TArray<string>;
     MinorIconIndices: TArray<Integer>;   // new field
     ModID: Integer;
+    ModAttributeValue: Double;          // Persist custom mod value
+    ModAttributeTypeStr: string;        // Persist custom mod type
     ModIconIndex: Integer;               // new field
     TalentName: string;
     SetName: string;
     SetTypeStr: string;
   end;
 
-  TSerializableWeapon = record
+  TSerializableWeapon = class
+  public
     WeaponID: Integer;
     EquippedModIDs: TDictionary<TModSlot, Integer>;
     SelectedTalentID: Integer;
     SelectedMinorAttributeType: string;
-    ExpertiseLevel: integer;
+    ExpertiseLevel: Integer;
+
+    constructor Create;
+    destructor Destroy; override;
   end;
 
   TSerializableSkill = record
@@ -474,17 +486,26 @@ type
     VariantName: string;
   end;
 
-  TSerializableLoadout = record
+  TSerializableLoadout = class
+  public
     Name: string;
     GearPieces: TDictionary<TItemType, TSerializableGearPiece>;
     Weapons: TDictionary<TWeaponSlot, TSerializableWeapon>;
     Skills: TDictionary<TSkillSlot, TSerializableSkill>;
     SpecializationName: string;
     ActivatedSpecBonuses: TArray<TWeaponFamily>;
+
+    constructor Create;
+    destructor Destroy; override;
   end;
 
 function GetAttributeCatalog: TArray<TAttributeCatalogEntry>;
 function GetDefaultMinorAttributeValue(const AttrType: TMinorAttributeType): Double;
+// NEW
+function NormalizeAttrId(const S: string): string;
+//function AttrIdsMatch(const A, B: string): Boolean;
+function MinorAttributeCategory(const Attr: TMinorAttributeType): TMinorAttributeCat;
+function MinorAttrEnumToId(const AEnum: TMinorAttributeType): string;
 
 const
   // Valeurs max de la Keener's Watch (niveau 50/50)
@@ -514,8 +535,9 @@ const
     ReloadSpeedPct: MaxWatchReloadSpeedPct;
     AccuracyPct: MaxWatchAccuracyPct;
     StabilityPct: MaxWatchStabilityPct;
+    AmmoPct: MaxWatchAmmoPct;
     ArmorPct: MaxWatchArmorPct; // bonus % d’armure totale
-    HealthFlat: MaxWatchHealthPct;
+    HealthPct: MaxWatchHealthPct;
     ExplosiveResistancePct: MaxWatchExplosiveResistancePct;
     HazardProtectionPct: MaxWatchHazardProtectionPct;
     SkillDamagePct: MaxWatchSkillDamagePct;
@@ -556,7 +578,7 @@ const
     (ID: 'status_effects'; DisplayName: 'Status Effects'; Category: matUtility),
     (ID: 'skill_health'; DisplayName: 'Skill Health'; Category: matUtility),
     (ID: 'skill_efficiency'; DisplayName: 'Skill Efficiency'; Category: matUtility),
-    (ID: 'explosives_damage'; DisplayName: 'Explosives Damage'; Category: matOffensive),
+    (ID: 'explosive_damage'; DisplayName: 'Explosive Damage'; Category: matOffensive),
     (ID: 'shield_health'; DisplayName: 'Shield Health'; Category: matDefensive),
     (ID: 'health'; DisplayName: 'Health'; Category: matDefensive),
     (ID: 'hazard_protection'; DisplayName: 'Hazard Protection'; Category: matDefensive),
@@ -572,13 +594,7 @@ const
 
 implementation
 
-{ TSpecializationWrapper }
-
-constructor TSpecializationWrapper.Create(const AData: TSpecialization);
-begin
-  inherited Create;
-  Data := AData;
-end;
+{ TSpecialization }
 
 function GetAttributeCatalog: TArray<TAttributeCatalogEntry>;
 var
@@ -618,6 +634,137 @@ begin
   else
     Result := 0.0;
   end;
+end;
+
+function NormalizeAttrId(const S: string): string;
+var
+  C: Char;
+  L: string;
+begin
+  // Remove spaces, '_', '-', digits… keep only letters, lower-cased.
+  Result := '';
+  L := LowerCase(S);
+  for C in L do
+    if C in ['a'..'z'] then
+      Result := Result + C;
+end;
+
+//function NormalizeAttrId(const S: string): string;
+//var
+//  Tmp: string;
+//begin
+//  // Lowercase + remove spaces, underscores and hyphens
+//  Tmp := LowerCase(S);
+//  Tmp := StringReplace(Tmp, ' ', '', [rfReplaceAll]);
+//  Tmp := StringReplace(Tmp, '_', '', [rfReplaceAll]);
+//  Tmp := StringReplace(Tmp, '-', '', [rfReplaceAll]);
+//
+//  // Strip trailing digits (handles armorRegen0, statusEffects1, etc.)
+//  while (Tmp <> '') and CharInSet(Tmp[Length(Tmp)], ['0'..'9']) do
+//    Delete(Tmp, Length(Tmp), 1);
+//
+//  Result := Tmp;
+//end;
+
+//function AttrIdsMatch(const A, B: string): Boolean;
+//begin
+//  Result := (NormalizeAttrId(A) = NormalizeAttrId(B));
+//end;
+
+function MinorAttributeCategory(const Attr: TMinorAttributeType): TMinorAttributeCat;
+begin
+  case Attr of
+    // Offensive minors
+    madCriticalHitChance,
+    madCriticalHitDamage,
+    madHeadshotDamage,
+    madWeaponHandling:
+      Result := matOffensive;
+
+    // Utility minors
+    madSkillDamage,
+    madSkillHaste,
+    madStatusEffects,
+    madRepairSkills:
+      Result := matUtility;
+
+  else
+    // Everything else is defensive by default
+    Result := matDefensive;
+  end;
+end;
+
+function MinorAttrEnumToId(const AEnum: TMinorAttributeType): string;
+begin
+  // Canonical "minor attribute id" for mapping vs JSON.
+  // These are camelCase; we always compare via NormalizeAttrId(...) anyway.
+  case AEnum of
+    madArmorRegen:          Result := 'armorRegen';
+    madCriticalHitChance:   Result := 'criticalHitChance';
+    madCriticalHitDamage:   Result := 'criticalHitDamage';
+    madExplosiveResistance: Result := 'explosiveResistance';
+    madIncomingRepairs:     Result := 'incomingRepairs';
+    madHazardProtection:    Result := 'hazardProtection';
+    madHeadshotDamage:      Result := 'headshotDamage';
+    madHealth:              Result := 'health';
+    madRepairSkills:        Result := 'repairSkills';
+    madSkillDamage:         Result := 'skillDamage';
+    madSkillHaste:          Result := 'skillHaste';
+    madStatusEffects:       Result := 'statusEffects';
+    madWeaponHandling:      Result := 'weaponHandling';
+  else
+    Result := '';
+  end;
+end;
+
+{ TSpecialization }
+constructor TSpecialization.Create;
+begin
+  inherited;
+  FInherentWeaponTypeBonuses := TDictionary<TWeaponFamily, Double>.Create;
+  FGeneralBonuses            := TDictionary<string, Double>.Create;
+  InherentWeaponTypeBonuses := FInherentWeaponTypeBonuses;
+  GeneralBonuses            := FGeneralBonuses;
+end;
+
+destructor TSpecialization.Destroy;
+begin
+  FGeneralBonuses.Free;
+  FInherentWeaponTypeBonuses.Free;
+  inherited;
+end;
+
+constructor TSerializableWeapon.Create;
+begin
+  inherited Create;
+  EquippedModIDs := TDictionary<TModSlot, Integer>.Create;
+end;
+
+destructor TSerializableWeapon.Destroy;
+begin
+  EquippedModIDs.Free;
+  inherited Destroy;
+end;
+
+constructor TSerializableLoadout.Create;
+begin
+  inherited Create;
+  GearPieces := TDictionary<TItemType, TSerializableGearPiece>.Create;
+  Weapons   := TDictionary<TWeaponSlot, TSerializableWeapon>.Create;
+  Skills    := TDictionary<TSkillSlot, TSerializableSkill>.Create;
+  SetLength(ActivatedSpecBonuses, 0);
+end;
+
+destructor TSerializableLoadout.Destroy;
+var
+  W: TSerializableWeapon;
+begin
+  for W in Weapons.Values do
+    W.Free;
+  Weapons.Free;
+  Skills.Free;
+  GearPieces.Free;
+  inherited Destroy;
 end;
 
 end.

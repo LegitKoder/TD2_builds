@@ -29,7 +29,6 @@ type
     FAllPieceSetDefinitions: TDictionary<string, TPieceSet>;
     FCoreAttributeDefinitions: TDictionary<string, TCoreAttributeDefinition>;
     FFixedMinorAttributeDefinitions: TDictionary<string, TFixedMinorAttributeDefinition>;
-    // FSkills: TDictionary<string, TSkillDefinition>;
     FSkills: TDictionary<string, TSkillData>;
     FSpecializations: TDictionary<string, TSpecialization>;
     FPlayer: TPlayer; // Instance du joueur
@@ -77,6 +76,7 @@ type
       : TPieceSet;
     procedure ParseBonuses(var AIterator: TJSONIterator; var ASet: TPieceSet);
     procedure ParseParts(var AIterator: TJSONIterator; var ASet: TPieceSet);
+    function CanonicalBrandName(const Raw: string): string;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
@@ -115,6 +115,7 @@ type
     property Player: TPlayer read FPlayer;
     function FindGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
     function FindFullGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
+    function CoreAttrIDToEnum(const ID: string): TCoreAttributeType;
   end;
 
 var
@@ -233,6 +234,137 @@ begin
   // else raise EProgrammerNotFound.CreateFmt('Unknown Gear Mod Effect Type string: %s', [S]);
 end;
 
+// Helper function to map string to TSetType
+function TDataJsonIterator.StrToSetType_Parser(const S: string): TSetType;
+begin
+  if SameText(S, 'brandSets') then
+    Result := stBrandSet
+  else if SameText(S, 'gearSets') then
+    Result := stGearSet
+  else if SameText(S, 'namedSets') then
+    Result := stNamedSet
+  else if SameText(S, 'exoticSets') then
+    Result := stExoticSet
+  else if SameText(S, 'improvisedSets') then
+    Result := stImprovised
+  else
+    Result := stImprovised;
+end;
+
+// Helper to map string to TItemType
+function TDataJsonIterator.StrToItemType_Parser(const S: string): TItemType;
+var
+  L: string;
+begin
+  L := LowerCase(S);
+  if Copy(L, 1, 4) = 'mask' then
+    Result := itMask
+  else if Copy(L, 1, 8) = 'backpack' then
+    Result := itBackpack
+  else if Copy(L, 1, 4) = 'vest' then
+    Result := itChest
+  else if Copy(L, 1, 5) = 'glove' then
+    Result := itGloves
+  else if Copy(L, 1, 7) = 'holster' then
+    Result := itHolster
+  else if Copy(L, 1, 7) = 'kneepad' then
+    Result := itKneepads
+  else
+    Result := itUnknown;
+  // Default, or consider raising an error for unknown types
+end;
+
+// Helper to determine TSetBonusType based on AttributeID
+function TDataJsonIterator.DetermineBonusType_Parser_Local(const AttributeID
+  : string; out WeaponType: TWeaponFamily): TSetBonusType;
+var
+  NormalizedID: string;
+  UnderscorePos: Integer;
+begin
+  // Normalize the attribute ID by removing numeric suffixes (_0, _1, etc.)
+  NormalizedID := AttributeID;
+  UnderscorePos := NormalizedID.LastIndexOf('_');
+  if UnderscorePos > 0 then
+  begin
+    var Suffix := NormalizedID.Substring(UnderscorePos + 1);
+    var IsNumericSuffix := True;
+    if Suffix.IsEmpty then
+      IsNumericSuffix := False
+    else
+      for var C in Suffix do
+      begin
+        if not CharInSet(C, ['0'..'9']) then
+        begin
+          IsNumericSuffix := False;
+          Break;
+        end;
+      end;
+    if IsNumericSuffix then
+      NormalizedID := NormalizedID.Substring(0, UnderscorePos);
+  end;
+
+  WeaponType := wcUnknown;
+  if NormalizedID = 'weapon_damage' then
+    Result := sbtWeaponDamage
+  else if AttributeID = 'assault_rifle_damage' then
+  begin
+    Result := sbtWeaponTypeDamage;
+    WeaponType := wcAR;
+  end
+  else if AttributeID = 'smg_damage' then
+  begin
+    Result := sbtWeaponTypeDamage;
+    WeaponType := wcSMG;
+  end
+  else if AttributeID = 'marksman_rifle_damage' then
+  begin
+    Result := sbtWeaponTypeDamage;
+    WeaponType := wcMMR;
+  end
+  else if AttributeID = 'rifle_damage' then
+  begin
+    Result := sbtWeaponTypeDamage;
+    WeaponType := wcRIFLE;
+  end
+  else if AttributeID = 'shotgun_damage' then
+  begin
+    Result := sbtWeaponTypeDamage;
+    WeaponType := wcSTG;
+  end
+  else if AttributeID = 'lmg_damage' then
+  begin
+    Result := sbtWeaponTypeDamage;
+    WeaponType := wcLMG;
+  end
+  else if AttributeID = 'pistol_damage' then
+  begin
+    Result := sbtWeaponTypeDamage;
+    WeaponType := wcPISTOL;
+  end
+  else if AttributeID = 'critical_hit_chance' then
+    Result := sbtAttribute
+  else if AttributeID = 'critical_hit_damage' then
+    Result := sbtAttribute
+  else if AttributeID = 'headshot_damage' then
+    Result := sbtAttribute
+  else if (AttributeID = 'damage_to_armor') or (AttributeID = 'damageToArmor') then
+    Result := sbtAttribute        // Was sbtMultiplicativeDamage, changed to sbtAttribute for consistency with CalcEngine
+  else if (AttributeID = 'damage_to_health') or (AttributeID = 'damageToHealth') then
+    Result := sbtAttribute        // Was sbtMultiplicativeDamage
+  else if (AttributeID = 'damage_to_targets_out_of_cover') or (AttributeID = 'damageToTargetOutOfCover') then
+    Result := sbtAttribute        // Was sbtMultiplicativeDamage
+  else if AttributeID = 'skill_tier' then
+    Result := sbtCoreAttribute
+  else if AttributeID = 'armor' then
+    Result := sbtCoreAttribute    // Add more specific sbtAttribute types here (e.g. skillHaste, armorRegen etc.)
+  else if (AttributeID = 'description') or (Pos('description_', AttributeID) = 1)
+  then
+    Result := sbtSpecial
+  else
+    Result := sbtSpecial;         // Default for unmapped complex talents or textual descriptions
+end;
+
+{
 function StrToSkillCategory(const S: string): TSkillCategory;
 begin
   if SameText(S, 'scOffensive') then
@@ -248,6 +380,39 @@ begin
   else
     Result := scOffensive; // Default to Offensive
 end;
+}
+
+// Helper function to convert Core Attribute ID string to enum
+function TDataJsonIterator.CoreAttrIDToEnum(const ID: string): TCoreAttributeType;
+begin
+  if SameText(ID, 'weaponDamage') then Exit(catWeaponDamage)
+  else if SameText(ID, 'armor') then Exit(catArmor)
+  else if SameText(ID, 'skillTier') then Exit(catSkillTier)
+  else Exit(catWeaponDamage); // default/fallback
+end;
+
+function TDataJsonIterator.CanonicalBrandName(const Raw: string): string;
+var
+  LOpenParen, LCloseParen: Integer;
+begin
+  Result := Trim(Raw);
+  if Result = '' then
+    Exit;
+
+  // Special hard-coded named items that belong to Walker, Harris & Co.
+  if SameText(Result, 'Matador') or SameText(Result, 'Chain Killer') then
+  begin
+    Result := 'Walker, Harris & Co.';
+    Exit;
+  end;
+
+  LOpenParen := Pos('(', Result);
+  LCloseParen := LastDelimiter(')', Result);
+  if (LOpenParen > 0) and (LCloseParen > LOpenParen) then
+    Result := Trim(Copy(Result, LOpenParen + 1, LCloseParen - LOpenParen - 1));
+end;
+
+
 
 constructor TDataJsonIterator.Create(AOwner: TComponent);
 var
@@ -267,10 +432,10 @@ begin
     TDictionary<string, TCoreAttributeDefinition>.Create;
   FFixedMinorAttributeDefinitions :=
     TDictionary<string, TFixedMinorAttributeDefinition>.Create;
-  // FSkills := TDictionary<string, TSkillDefinition>.Create;
-  if Assigned(FSkills) then
-    FSkills.Clear
-  else
+
+//  if Assigned(FSkills) then
+//    FSkills.Clear
+//  else
     FSkills := TDictionary<string, TSkillData>.Create;
 
   FSpecializations := TDictionary<string, TSpecialization>.Create;
@@ -294,6 +459,7 @@ begin
   FWeaponStats.Free;
   FMods.Free;
   FTalents.Free;
+
   if Assigned(FGearTalents) then
   begin
     for var SlotDict in FGearTalents.Values do
@@ -309,6 +475,8 @@ begin
   FCoreAttributeDefinitions.Free;
   FFixedMinorAttributeDefinitions.Free;
   FSkills.Free;
+  for var Spec in FSpecializations.Values do
+    Spec.Free;
   FSpecializations.Free;
   FPlayer.Free;
   inherited;
@@ -354,6 +522,7 @@ begin
   FWeaponStats.Clear;
   FMods.Clear;
   FTalents.Clear;
+
   if Assigned(FGearTalents) then
   begin
     for var SlotDict in FGearTalents.Values do
@@ -369,6 +538,9 @@ begin
   FCoreAttributeDefinitions.Clear;
   FFixedMinorAttributeDefinitions.Clear;
   FSkills.Clear;
+
+  for var Spec in FSpecializations.Values do
+    Spec.Free;
   FSpecializations.Clear;
 
   // recharger
@@ -689,7 +861,7 @@ begin
             Break;
           if It.&Type = TJsonToken.StartObject then
           begin
-            CurrentSpec := Default (TSpecialization);
+            CurrentSpec := TSpecialization.Create;
             BonusesDict := TDictionary<TWeaponFamily, Double>.Create;
             GeneralBonusesDict := TDictionary<string, Double>.Create;
 
@@ -731,9 +903,16 @@ begin
             CurrentSpec.GeneralBonuses := GeneralBonusesDict;
 
             if not CurrentSpec.Name.IsEmpty then
-              FSpecializations.AddOrSetValue(CurrentSpec.Name, CurrentSpec)
+            begin
+              FSpecializations.AddOrSetValue(CurrentSpec.Name, CurrentSpec);
+              CurrentSpec := nil;
+            end
             else
+            begin
               WriteLog(['Skipped invalid specialization data. Name is empty.']);
+              CurrentSpec.Free;
+              CurrentSpec := nil;
+            end;
           end;
         end;
       end;
@@ -741,6 +920,7 @@ begin
       FreeAndNil(It);
       FreeAndNil(JR);
       FreeAndNil(LSR);
+//      FreeAndNil(CurrentSpec);
     end;
   except
     on E: Exception do
@@ -1520,136 +1700,6 @@ begin
 end;
 
 { ─────────── 7/8  – brands.json (All Piece Sets) ─────────── }
-// Helper function to map string to TSetType
-function TDataJsonIterator.StrToSetType_Parser(const S: string): TSetType;
-begin
-  if SameText(S, 'brandSets') then
-    Result := stBrandSet
-  else if SameText(S, 'gearSets') then
-    Result := stGearSet
-  else if SameText(S, 'namedSets') then
-    Result := stNamedSet
-  else if SameText(S, 'exoticSets') then
-    Result := stExoticSet
-  else if SameText(S, 'improvisedSets') then
-    Result := stImprovised
-  else
-    Result := stUnknown;
-end;
-
-// Helper to map string to TItemType
-function TDataJsonIterator.StrToItemType_Parser(const S: string): TItemType;
-var
-  L: string;
-begin
-  L := LowerCase(S);
-  if Copy(L, 1, 4) = 'mask' then
-    Result := itMask
-  else if Copy(L, 1, 8) = 'backpack' then
-    Result := itBackpack
-  else if Copy(L, 1, 4) = 'vest' then
-    Result := itChest
-  else if Copy(L, 1, 5) = 'glove' then
-    Result := itGloves
-  else if Copy(L, 1, 7) = 'holster' then
-    Result := itHolster
-  else if Copy(L, 1, 7) = 'kneepad' then
-    Result := itKneepads
-  else
-    Result := itUnknown;
-  // Default, or consider raising an error for unknown types
-end;
-
-// Helper to determine TSetBonusType based on AttributeID
-function TDataJsonIterator.DetermineBonusType_Parser_Local(const AttributeID
-  : string; out WeaponType: TWeaponFamily): TSetBonusType;
-var
-  NormalizedID: string;
-  UnderscorePos: Integer;
-begin
-  // Normalize the attribute ID by removing numeric suffixes (_0, _1, etc.)
-  NormalizedID := AttributeID;
-  UnderscorePos := NormalizedID.LastIndexOf('_');
-  if UnderscorePos > 0 then
-  begin
-    var Suffix := NormalizedID.Substring(UnderscorePos + 1);
-    var IsNumericSuffix := True;
-    if Suffix.IsEmpty then
-      IsNumericSuffix := False
-    else
-      for var C in Suffix do
-      begin
-        if not CharInSet(C, ['0'..'9']) then
-        begin
-          IsNumericSuffix := False;
-          Break;
-        end;
-      end;
-    if IsNumericSuffix then
-      NormalizedID := NormalizedID.Substring(0, UnderscorePos);
-  end;
-
-  WeaponType := wcUnknown;
-  if NormalizedID = 'weapon_damage' then
-    Result := sbtWeaponDamage
-  else if AttributeID = 'assault_rifle_damage' then
-  begin
-    Result := sbtWeaponTypeDamage;
-    WeaponType := wcAR;
-  end
-  else if AttributeID = 'smg_damage' then
-  begin
-    Result := sbtWeaponTypeDamage;
-    WeaponType := wcSMG;
-  end
-  else if AttributeID = 'marksman_rifle_damage' then
-  begin
-    Result := sbtWeaponTypeDamage;
-    WeaponType := wcMMR;
-  end
-  else if AttributeID = 'rifle_damage' then
-  begin
-    Result := sbtWeaponTypeDamage;
-    WeaponType := wcRIFLE;
-  end
-  else if AttributeID = 'shotgun_damage' then
-  begin
-    Result := sbtWeaponTypeDamage;
-    WeaponType := wcSTG;
-  end
-  else if AttributeID = 'lmg_damage' then
-  begin
-    Result := sbtWeaponTypeDamage;
-    WeaponType := wcLMG;
-  end
-  else if AttributeID = 'pistol_damage' then
-  begin
-    Result := sbtWeaponTypeDamage;
-    WeaponType := wcPISTOL;
-  end
-  else if AttributeID = 'critical_hit_chance' then
-    Result := sbtAttribute
-  else if AttributeID = 'critical_hit_damage' then
-    Result := sbtAttribute
-  else if AttributeID = 'headshot_damage' then
-    Result := sbtAttribute
-  else if AttributeID = 'damage_to_armor' then
-    Result := sbtAttribute        // Was sbtMultiplicativeDamage, changed to sbtAttribute for consistency with CalcEngine
-  else if AttributeID = 'damage_to_health' then
-    Result := sbtAttribute        // Was sbtMultiplicativeDamage
-  else if AttributeID = 'damage_to_targets_out_of_cover' then
-    Result := sbtAttribute        // Was sbtMultiplicativeDamage
-  else if AttributeID = 'skill_tier' then
-    Result := sbtCoreAttribute
-  else if AttributeID = 'armor' then
-    Result := sbtCoreAttribute    // Add more specific sbtAttribute types here (e.g. skillHaste, armorRegen etc.)
-  else if (AttributeID = 'description') or (Pos('description_', AttributeID) = 1)
-  then
-    Result := sbtSpecial
-  else
-    Result := sbtSpecial;         // Default for unmapped complex talents or textual descriptions
-end;
-
 procedure TDataJsonIterator.LoadGearPieceSetFromJson(const FileName: string);
 var
   Reader: TJsonTextReader;
@@ -1665,11 +1715,11 @@ var
   V: Variant;
   WpnFam: TWeaponFamily;
   LCurrentCoreDef: TCoreAttributeDefinition;
-  LCurrentSetType: TSetType;
-  LCurrentSetCategoryKey: string;
+//  LCurrentSetType: TSetType;
+//  LCurrentSetCategoryKey: string;
   LBonusAttrID: string;           // Renamed to avoid confusion
   LBonusValue: Variant;
-  DictKey: string;
+//  DictKey: string;
 begin
   FAllPieceSetDefinitions.Clear;
 
@@ -1778,6 +1828,13 @@ begin
                     end;
                   end;
                   It.Return;
+
+                  if SameText(LBonusAttrID, 'damage_to_armor') then
+                    LBonusAttrID := 'damageToArmor'
+                  else if SameText(LBonusAttrID, 'damage_to_health') then
+                    LBonusAttrID := 'damageToHealth'
+                  else if SameText(LBonusAttrID, 'damage_to_targets_out_of_cover') then
+                    LBonusAttrID := 'damageToTargetOutOfCover';
 
                   SB.AttributeID := LBonusAttrID;
                   if VarIsNumeric(LBonusValue) then
@@ -2002,7 +2059,7 @@ var
   EffRec: TSkillEffectProperty;
 
   // --- helpers ---------------------------------------------------------------//
-  function StrToCategory(const S: string): TSkillCategory;
+  function StrToSkillCategory(const S: string): TSkillCategory;
   var
     L: string;
   begin
@@ -2030,7 +2087,7 @@ var
   var
     C: TSkillCategory;
   begin
-    C := StrToCategory(S);
+    C := StrToSkillCategory(S);
     // avoid duplicates
     for var Existing in AArr do
       if Existing = C then
@@ -2316,6 +2373,27 @@ begin
       end;
   end;
 
+  // -- Gear Piece Definitions -> Fixed Minor Attributes --
+  var FAllPieceSetDefinitionsValues := FAllPieceSetDefinitions.Values.ToArray;
+  var PS: TPieceSet;
+  var Part: TPart;
+  var FixedID: string;
+  for I := 0 to High(FAllPieceSetDefinitionsValues) do
+  begin
+    PS := FAllPieceSetDefinitionsValues[I];
+    for J := 0 to High(PS.Parts) do
+    begin
+      Part := PS.Parts[J];
+      for K := 0 to High(Part.FixedMinorAttributeIDs) do
+      begin
+        FixedID := Part.FixedMinorAttributeIDs[K];
+        if not FFixedMinorAttributeDefinitions.ContainsKey(FixedID) then
+          E := E + [Format('PieceSet "%s" Part "%s": missing fixed minor attribute definition "%s"',
+            [PS.Name, Part.Name, FixedID])];
+      end;
+    end;
+  end;
+
   ErrorList := E;
 end;
 
@@ -2326,15 +2404,6 @@ var
   Part: TPart;
   Found: Boolean;
   ParentBrandName: string;
-
-  // Helper function to convert Core Attribute ID string to enum
-  function CoreAttrIDToEnum(const ID: string): TCoreAttributeType;
-  begin
-    if SameText(ID, 'weaponDamage') then Exit(catWeaponDamage)
-    else if SameText(ID, 'armor') then Exit(catArmor)
-    else if SameText(ID, 'skillTier') then Exit(catSkillTier)
-    else Exit(catWeaponDamage); // default/fallback
-  end;
 
 begin
   Result := False;
@@ -2363,6 +2432,7 @@ begin
         Piece.CoreAttribute := Default(TCoreAttribute);
         Piece.CoreAttribute.ID := Part.CoreAttributeID;
         Piece.CoreAttribute.AttrType := CoreAttrIDToEnum(Part.CoreAttributeID);
+        Piece.MinorAttributeSlotCount := Part.MinorAttributeSlotCount;
 
         if Length(Part.FixedMinorAttributeIDs) > 0 then
         begin
@@ -2386,7 +2456,7 @@ begin
 
         // If it's a named item, the InitialPieceSet.Name is the key to its parent brand.
         // If it's not a named item, its InitialPieceSet is the source of truth for bonuses.
-        if Piece.SetType = stNamedSet then
+      { if Piece.SetType = stNamedSet then
         begin
           ParentBrandName := InitialPieceSet.Name;
         end
@@ -2395,6 +2465,20 @@ begin
           // For non-named items, their containing set is the source of truth for bonuses.
           Piece.SetName   := InitialPieceSet.Name;
           Piece.Bonuses   := InitialPieceSet.Bonuses;
+        end; }
+
+        if Piece.SetType = stNamedSet then
+        begin
+          // Extract the underlying brand from "The Hollow Man (Yaahl Gear)"
+          ParentBrandName := CanonicalBrandName(InitialPieceSet.Name);
+          Piece.SetName   := ParentBrandName; // so set name is always the brand
+        end
+        else
+        begin
+          // For pure brand / gear / exotic sets, the set that contains the part
+          // is the source of truth.
+          Piece.SetName := InitialPieceSet.Name;
+          Piece.Bonuses := InitialPieceSet.Bonuses;
         end;
 
         Found := True;
@@ -2453,6 +2537,7 @@ begin
         // Lien vers une définition plus détaillée si besoin
         Piece.CoreAttribute.AttrType := CoreAttrIDToEnum(Part.CoreAttributeID);
         // Les minor attributes, ModAttribute, Talent, Bonus sont "vides" ici, seront remplis lors du restore loadout
+        Piece.MinorAttributeSlotCount := Part.MinorAttributeSlotCount;
         Piece.Talent := Part.Talent;
         Piece.SetType := PieceSet.SetType;
         Piece.Bonuses := PieceSet.Bonuses; // Tous les bonus du set
@@ -2464,4 +2549,5 @@ begin
 end;
 
 end.
+
 

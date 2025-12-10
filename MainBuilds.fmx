@@ -16017,7 +16017,7 @@ object MainForm: TMainForm
       Margins.Bottom = 3.000000000000000000
       Position.X = 552.000000000000000000
       Position.Y = 3.000000000000000000
-      Size.Width = 91.000000000000000000
+      Size.Width = 120.000000000000000000
       Size.Height = 593.000000000000000000
       Size.PlatformDefault = False
       Visible = False
@@ -16046,14 +16046,14 @@ object MainForm: TMainForm
         end>
       object Layout_L_Header: TLayout
         Align = Client
-        Size.Width = 85.000000000000000000
+        Size.Width = 114.000000000000000000
         Size.Height = 17.719999313354490000
         Size.PlatformDefault = False
         TabOrder = 1
         object LabelLookupTitle: TLabel
           Align = Client
           AutoSize = True
-          Size.Width = 85.000000000000000000
+          Size.Width = 114.000000000000000000
           Size.Height = 17.719999313354490000
           Size.PlatformDefault = False
           Text = 'Attribute Lookup'
@@ -16067,7 +16067,7 @@ object MainForm: TMainForm
         FooterAppearanceClassName = 'TListHeaderObjects'
         Align = Client
         Anchors = []
-        Size.Width = 85.000000000000000000
+        Size.Width = 114.000000000000000000
         Size.Height = 563.280029296875000000
         Size.PlatformDefault = False
         TabOrder = 0
@@ -16075,6 +16075,7 @@ object MainForm: TMainForm
         ItemAppearanceObjects.ItemObjects.Text.Font.Size = 8.000000000000000000
         CanSwipeDelete = False
         OnItemClick = ListViewAttributesItemClick
+        OnSearchChange = ListViewAttributesSearchChange
         SearchVisible = True
       end
     end

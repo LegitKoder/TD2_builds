@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, System.Generics.Defaults,
-  Game.Types, Game.JsonIterator, System.StrUtils;
+  Game.Types, Game.JsonIterator, System.StrUtils, CalcEngine;
 
 type
   TBuildArchetype = record
@@ -91,19 +91,19 @@ begin
     Result := catWeaponDamage;
 end;
 
-function MinorAttributeCategory(const Attr: TMinorAttributeType)
-  : TMinorAttributeCat;
-begin
-  case Attr of
-    madCriticalHitChance, madCriticalHitDamage, madHeadshotDamage,
-      madWeaponHandling:
-      Result := matOffensive;
-    madSkillDamage, madSkillHaste, madStatusEffects, madRepairSkills:
-      Result := matUtility;
-  else
-    Result := matDefensive;
-  end;
-end;
+//function MinorAttributeCategory(const Attr: TMinorAttributeType)
+//  : TMinorAttributeCat;
+//begin
+//  case Attr of
+//    madCriticalHitChance, madCriticalHitDamage, madHeadshotDamage,
+//      madWeaponHandling:
+//      Result := matOffensive;
+//    madSkillDamage, madSkillHaste, madStatusEffects, madRepairSkills:
+//      Result := matUtility;
+//  else
+//    Result := matDefensive;
+//  end;
+//end;
 
 function GetMaxPieceCount(ASetType: TSetType): Integer;
 begin
@@ -118,26 +118,27 @@ begin
   end;
 end;
 
-function MinorAttrEnumToId(const AEnum: TMinorAttributeType): string;
-begin
-  case AEnum of
-    madArmorRegen: Result := 'armorRegen';
-    madCriticalHitChance: Result := 'criticalHitChance';
-    madCriticalHitDamage: Result := 'criticalHitDamage';
-    madExplosiveResistance: Result := 'explosiveResistance';
-    madIncomingRepairs: Result := 'incomingRepairs';
-    madHazardProtection: Result := 'hazardProtection';
-    madHeadshotDamage: Result := 'headshotDamage';
-    madHealth: Result := 'health';
-    madRepairSkills: Result := 'repairSkills';
-    madSkillDamage: Result := 'skillDamage';
-    madSkillHaste: Result := 'skillHaste';
-    madStatusEffects: Result := 'statusEffects';
-    madWeaponHandling: Result := 'weaponHandling';
-  else
-    Result := '';
-  end;
-end;
+//function MinorAttrEnumToId(const AEnum: TMinorAttributeType): string;
+//begin
+//  case AEnum of
+//    madArmorRegen: Result := 'armorRegen';
+//    madCriticalHitChance: Result := 'criticalHitChance';
+//    madCriticalHitDamage: Result := 'criticalHitDamage';
+//    madExplosiveResistance: Result := 'explosiveResistance';
+//    madIncomingRepairs: Result := 'incomingRepairs';
+//    madHazardProtection: Result := 'hazardProtection';
+//    madHeadshotDamage: Result := 'headshotDamage';
+//    madHealth: Result := 'health';
+//    madRepairSkills: Result := 'repairSkills';
+//    madSkillDamage: Result := 'skillDamage';
+//    madSkillHaste: Result := 'skillHaste';
+//    madStatusEffects: Result := 'statusEffects';
+//    madWeaponHandling: Result := 'weaponHandling';
+//  else
+//    Result := '';
+//  end;
+//end;
+
 
 { TRecommendationEngine }
 
@@ -200,19 +201,19 @@ var
   LIdx: Integer;
   SetWeightCache: TDictionary<string, Double>;
 
-  function NormalizeAttrId(const S: string): string;
-  begin
-    Result := LowerCase(StringReplace(StringReplace(StringReplace(S, ' ', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), '-', '', [rfReplaceAll]));
-  end;
-
   function AttrMatchesWeight(const AttrId, WeightKey: string): Boolean;
+  var
+    NormAttr, NormKey: string;
   begin
     Result := False;
     if AttrId = '' then
       Exit;
-    var NormAttr := NormalizeAttrId(AttrId);
-    var NormKey := NormalizeAttrId(WeightKey);
-    Result := (NormAttr <> '') and ((NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr)));
+
+    NormAttr := NormalizeAttrId(AttrId);
+    NormKey := NormalizeAttrId(WeightKey);
+
+    Result := (NormAttr <> '') and
+              ((NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr)));
   end;
 
   function GetSetWeight(const SetName: string; const Bonuses: TArray<TSetBonus>): Double;
@@ -256,12 +257,13 @@ begin
     for LBrandSet in FDataIterator.AllPieceSetDefinitions.Values do
     begin
       // Pre-compute the weight of this set once for later sorting
-      GetSetWeight(LBrandSet.Name, LBrandSet.Bonuses);
+      GetSetWeight(CalcEngine.CanonicalSetName(LBrandSet.Name), LBrandSet.Bonuses);
 
       for var LPart in LBrandSet.Parts do
       begin
         FillChar(LGearPiece, SizeOf(LGearPiece), 0);
-        LGearPiece.SetName := LBrandSet.Name;
+//        LGearPiece.SetName := LBrandSet.Name;
+        LGearPiece.SetName := CalcEngine.CanonicalSetName(LBrandSet.Name);
         LGearPiece.Name := LPart.Name;
         LGearPiece.ItemType := LPart.GearSlot;
         LGearPiece.SetType := LBrandSet.SetType;
@@ -288,9 +290,11 @@ begin
         end;
 
         // Strict Filter: Reject items that do not match the required core attribute for this slot
-        if AArchetype.RequiredCoreAttribute.ContainsKey(LPart.GearSlot) then
+        if Assigned(AArchetype.RequiredCoreAttribute) and
+           AArchetype.RequiredCoreAttribute.ContainsKey(LPart.GearSlot) then
         begin
-          if LGearPiece.CoreAttribute.AttrType <> AArchetype.RequiredCoreAttribute[LPart.GearSlot] then
+          if LGearPiece.CoreAttribute.AttrType <>
+             AArchetype.RequiredCoreAttribute[LPart.GearSlot] then
             Continue;
         end;
 
@@ -364,29 +368,42 @@ begin
     begin
       if LGearPiece.SetName <> '' then
       begin
-        LBrandSetCounts.TryGetValue(LGearPiece.SetName, LCount);
-        LBrandSetCounts.AddOrSetValue(LGearPiece.SetName, LCount + 1);
+//        LBrandSetCounts.TryGetValue(LGearPiece.SetName, LCount);
+//        LBrandSetCounts.AddOrSetValue(LGearPiece.SetName, LCount + 1);
+        LBrandName := CalcEngine.CanonicalSetName(LGearPiece.SetName);
+        if LBrandName <> '' then
+        begin
+          LBrandSetCounts.TryGetValue(LBrandName, LCount);
+          LBrandSetCounts.AddOrSetValue(LBrandName, LCount + 1);
+        end;
       end;
     end;
 
-    for LBrandName in AArchetype.RequiredBrandSets.Keys do
-    begin
-      if not LBrandSetCounts.TryGetValue(LBrandName, LCount) or (LCount < AArchetype.RequiredBrandSets[LBrandName]) then
+    // Required brands
+    if Assigned(AArchetype.RequiredBrandSets) then
+      for LBrandName in AArchetype.RequiredBrandSets.Keys do
       begin
-        Result := False;
-        Exit;
+        if not LBrandSetCounts.TryGetValue(LBrandName, LCount)
+           or (LCount < AArchetype.RequiredBrandSets[LBrandName]) then
+        begin
+          Result := False;
+          Exit;
+        end;
       end;
-    end;
 
-    for var LItemType in AArchetype.RequiredTalents.Keys do
-    begin
-      if (LItemType > itKneepads) then Continue;
-      if ABuild.GearPieces[Ord(LItemType)].Talent <> AArchetype.RequiredTalents[LItemType] then
+    // Required talents per slot
+    if Assigned(AArchetype.RequiredTalents) then
+      for var LItemType in AArchetype.RequiredTalents.Keys do
       begin
-        Result := False;
-        Exit;
+        if (LItemType > itKneepads) then
+          Continue;
+        if ABuild.GearPieces[Ord(LItemType)].Talent <>
+           AArchetype.RequiredTalents[LItemType] then
+        begin
+          Result := False;
+          Exit;
+        end;
       end;
-    end;
 
     LExoticCount := 0;
     for LGearPiece in ABuild.GearPieces do
@@ -409,15 +426,19 @@ begin
       Exit;
     end;
 
-    for var LItemType in AArchetype.RequiredCoreAttribute.Keys do
-    begin
-      if (LItemType > itKneepads) then Continue;
-      if ABuild.GearPieces[Ord(LItemType)].CoreAttribute.AttrType <> AArchetype.RequiredCoreAttribute[LItemType] then
+    // Required core attributes per slot
+    if Assigned(AArchetype.RequiredCoreAttribute) then
+      for var LItemType in AArchetype.RequiredCoreAttribute.Keys do
       begin
-        Result := False;
-        Exit;
+        if (LItemType > itKneepads) then
+          Continue;
+        if ABuild.GearPieces[Ord(LItemType)].CoreAttribute.AttrType <>
+           AArchetype.RequiredCoreAttribute[LItemType] then
+        begin
+          Result := False;
+          Exit;
+        end;
       end;
-    end;
 
   finally
     LBrandSetCounts.Free;
@@ -460,7 +481,7 @@ begin
     LHasNinjaBike := False;
     for LGearPiece in ABuild.GearPieces do
     begin
-      if SameText(LGearPiece.Name, 'NinjaBike Backpack') then
+      if SameText(LGearPiece.Name, 'NinjaBike Messenger Backpack') then
         LHasNinjaBike := True;
 
       if LGearPiece.SetType = stGearSet then
@@ -507,17 +528,18 @@ begin
     for var Req in LRequiredAttributes do
       LNeeded.Add(Req);
 
-    // Remove if present in Fixed
+    // Remove required attrs that are already satisfied by fixed minors
     if Length(AGearPiece.FixedMinorAttributes) > 0 then
     begin
       for LFixed in AGearPiece.FixedMinorAttributes do
       begin
         for LIndex := LNeeded.Count - 1 downto 0 do
         begin
-          if SameText(LFixed.ID, MinorAttrEnumToId(LNeeded[LIndex])) then
+          if NormalizeAttrId(LFixed.ID) =
+             NormalizeAttrId(MinorAttrEnumToId(LNeeded[LIndex])) then
           begin
             LNeeded.Delete(LIndex);
-            Break; // Consume one fixed attr for one requirement
+            Break; // one fixed attr covers one required attr
           end;
         end;
       end;
@@ -560,6 +582,7 @@ var
   LBrandTracked: Boolean;
   LCount: Integer;
   LRemainingSlots: Integer;
+  LBrandKey: string;
 begin
   if FGeneratedBuilds.Count >= AMaxBuilds then
     Exit;
@@ -581,7 +604,8 @@ begin
       Exit;
 
     // Check Max Piece Limit
-    if not ABrandCounts.TryGetValue(LGearPiece.SetName, LCount) then
+    LBrandKey := CalcEngine.CanonicalSetName(LGearPiece.SetName);
+    if not ABrandCounts.TryGetValue(LBrandKey, LCount) then
       LCount := 0;
 
     if LCount >= GetMaxPieceCount(LGearPiece.SetType) then
@@ -590,7 +614,7 @@ begin
     ACurrentBuild.GearPieces[Ord(ACurrentSlot)] := LGearPiece;
 
     // Track Count
-    ABrandCounts.AddOrSetValue(LGearPiece.SetName, LCount + 1);
+    ABrandCounts.AddOrSetValue(LBrandKey, LCount + 1);
 
     LRemainingSlots := Ord(itKneepads) - Ord(ACurrentSlot);
 
@@ -611,12 +635,12 @@ begin
     end;
 
     // Backtrack Count
-    if ABrandCounts.TryGetValue(LGearPiece.SetName, LCount) then
+    if ABrandCounts.TryGetValue(LBrandKey, LCount) then
     begin
       if LCount <= 1 then
-        ABrandCounts.Remove(LGearPiece.SetName)
+        ABrandCounts.Remove(LBrandKey)
       else
-        ABrandCounts.AddOrSetValue(LGearPiece.SetName, LCount - 1);
+        ABrandCounts.AddOrSetValue(LBrandKey, LCount - 1);
     end;
   end;
 end;

@@ -58,11 +58,9 @@ type
     TotalWeaponDamage: Double;
     BurstDPS: Double;
     SustainDPS: Double;
-    FinalCHC: Double; // Range 0.0 to 0.60
-    FinalCHD: Double;
-    // Represents total CHD (e.g., 1.25 for +125% total CHD from a base of 0.25)
-    FinalHSD: Double;
-    // Represents total HSD (e.g., 1.75 for +175% total HSD from a base of weapon's HSD)
+    FinalCHC: Double;     // Range 0.0 to 0.60
+    FinalCHD: Double;     // Represents total CHD (e.g., 1.25 for +125% total CHD from a base of 0.25)
+    FinalHSD: Double;     // Represents total HSD (e.g., 1.75 for +175% total HSD from a base of weapon's HSD)
     FinalRPM: Double;
     FinalMagazine: Double;
     FinalReloadSec: Double;
@@ -83,8 +81,8 @@ type
   end;
 
 function NewPool: TDamagePools; // helper
-procedure AddPct(List: TBreakList; const Name: string; Value: Double); // helper
 function ComputeDamage(const P: TDamagePools): TDamageResult;
+function CanonicalSetName(const Raw: string): string;
 
 // convenience wrappers � sums the dictionaries into one number
 function Sum(const List: TBreakList): Double;
@@ -113,6 +111,8 @@ function CalculateSkillPerformance(const ASkillVariant: TSkillVariant;
   const AIsOvercharged: Boolean; const AIsPvp: Boolean)
   : TDictionary<string, Double>;
 
+procedure AddPct(List: TBreakList; const Name: string; Value: Double); // helper
+
 procedure ApplyStatAttribute(const Attr: TAttribute; const SourcePrefix: string;
   var APools: TDamagePools; var FinalAcc, FinalStab, FinalOptRange: Double);
 
@@ -121,6 +121,33 @@ procedure ApplyModOrTalentEffect(const SourceName: string;
   var FinalAcc, FinalStab, FinalOptRange: Double);
 
 implementation
+
+
+function CanonicalSetName(const Raw: string): string;
+var
+  LOpenParen, LCloseParen: Integer;
+  LBrandName: string;
+begin
+  Result := Trim(Raw);
+  if Result = '' then
+    Exit;
+
+  if SameText(Result, 'Matador') or SameText(Result, 'Chain Killer') then
+    Exit('Walker, Harris & Co.');
+
+  LOpenParen := Pos('(', Result);
+  if LOpenParen = 0 then
+    Exit;
+
+  LCloseParen := LastDelimiter(')', Result);
+  if (LCloseParen <= LOpenParen) then
+    Exit;
+
+  LBrandName := Trim(Copy(Result, LOpenParen + 1,
+    LCloseParen - LOpenParen - 1));
+  if LBrandName <> '' then
+    Exit(LBrandName);
+end;
 
 // Forward declaration if ApplyGearPieceBonuses is used by a function declared before it in the interface
 // procedure ApplyGearPieceBonuses(const AGearPiece: TGearPiece; var APools: TDamagePools; var ADisplayStats: TLoadoutAggregatedStats_Display); // Not needed if only called by CalculateCompleteLoadoutPerformance
@@ -224,11 +251,11 @@ begin
 
       // Defensive Minors (mostly for display or EHP, not direct DPS pools)
       madArmorRegen:
-        ; // Affects survivability, not DPS pools. Could be displayed.
+        ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + LMinorAttr.Value;
       madExplosiveResistance:
-        ; // Affects survivability.
+        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LMinorAttr.Value;
       madHazardProtection:
-        ; // Affects survivability.
+        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LMinorAttr.Value;
       madHealth:
         begin
           ADisplayStats.TotalHealth_Display := ADisplayStats.TotalHealth_Display
@@ -236,11 +263,11 @@ begin
           // Assuming Health is a flat value from minor attributes
         end;
       madIncomingRepairs:
-        ; // Affects healing.
+        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LMinorAttr.Value;
 
       // Utility Minors (mostly for skill builds or specific display stats)
       madRepairSkills:
-        ;
+        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LMinorAttr.Value;
       madSkillDamage:
         ;
       madSkillHaste:
@@ -382,17 +409,29 @@ begin
 
       // Defensive Mods (examples, expand as needed)
       gmetProtectionFromElites:
-        ; // Specific context, not general DPS.
+        ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LValueFraction * 100;
       gmetExplosiveResistance:
-        ;
+        ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LValueFraction * 100;
 
       // Skill Mods (examples, expand as needed)
       gmetSkillHaste:
-        ;
+        ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LValueFraction * 100;
       gmetSkillDamage:
-        ;
+        ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LValueFraction * 100;
       gmetRepairSkills:
-        ;
+        ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LValueFraction * 100;
+      gmetIncomingRepairs:
+        ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LValueFraction * 100;
+      gmetArmorOnKillFlat:
+        ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LValueFraction * 100; // Assuming value is pct, usually is
+      gmetStatusEffectResistance:
+        ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LValueFraction * 100;
+      gmetPulseResistance:
+        ; // Specific
+      gmetSkillDuration:
+        ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LValueFraction * 100;
+      gmetSkillHealth:
+        ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LValueFraction * 100;
     else
       // Handle other TGearModEffectType values if they impact general weapon DPS or display stats
     end;
@@ -401,32 +440,6 @@ begin
   // Note: Gear Talents are not handled here. They are typically more complex and conditional,
   // and might be better handled at a higher level in CalculateCompleteLoadoutPerformance
   // or by directly adding to APools.B_Amp or other specific pools if they provide direct % damage.
-end;
-
-function CanonicalSetName(const Raw: string): string;
-var
-  LOpenParen, LCloseParen: Integer;
-  LBrandName: string;
-begin
-  Result := Trim(Raw);
-  if Result = '' then
-    Exit;
-
-  if SameText(Result, 'Matador') or SameText(Result, 'Chain Killer') then
-    Exit('Walker, Harris & Co.');
-
-  LOpenParen := Pos('(', Result);
-  if LOpenParen = 0 then
-    Exit;
-
-  LCloseParen := LastDelimiter(')', Result);
-  if (LCloseParen <= LOpenParen) then
-    Exit;
-
-  LBrandName := Trim(Copy(Result, LOpenParen + 1,
-    LCloseParen - LOpenParen - 1));
-  if LBrandName <> '' then
-    Exit(LBrandName);
 end;
 
 procedure ApplySetBonuses(const AEquippedGear: array of TGearPiece;
@@ -459,9 +472,6 @@ begin
         var Key := CanonicalSetName(LGearPiece.SetName);
         EquippedSetCounts.TryGetValue(Key, LCount);
         EquippedSetCounts.AddOrSetValue(Key, LCount + 1);
-//        EquippedSetCounts.TryGetValue(LGearPiece.SetName, LCount);
-//        // LCount will be 0 if not found
-//        EquippedSetCounts.AddOrSetValue(LGearPiece.SetName, LCount + 1);
       end;
     end;
 
@@ -620,11 +630,40 @@ begin
                 // Add more attribute mappings here based on common AttributeIDs from your JSON
               end;
             sbtSkillAttribute:
-              ; // e.g., Skill Haste, Skill Damage. Primarily for skill builds.
+              begin
+                if SameText(LSetBonus.AttributeID, 'skill_haste') then
+                   ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'skill_damage') then
+                   ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'repair_skills') then
+                   ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'status_effects') then
+                   ADisplayStats.TotalStatusEffectsPct := ADisplayStats.TotalStatusEffectsPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'skill_duration') then
+                   ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'skill_health') then
+                   ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LSetBonus.Value;
+              end;
             sbtDefenseAttribute:
-              ; // e.g., Armor Regen, Hazard Protection. Primarily for survivability.
+              begin
+                if SameText(LSetBonus.AttributeID, 'armor_regen') then
+                   ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'armor_on_kill') then
+                   ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'hazard_protection') then
+                   ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'health') then
+                   ADisplayStats.TotalHealth_Display := ADisplayStats.TotalHealth_Display + ((ADisplayStats.TotalArmor_Display + ADisplayStats.TotalHealth_Display) * (LSetBonus.Value / 100.0)) // Approximation if % Health
+                else if SameText(LSetBonus.AttributeID, 'incoming_repairs') then
+                   ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LSetBonus.Value;
+              end;
             sbtResistance:
-              ; // e.g., Explosive Resistance.
+               begin
+                 if SameText(LSetBonus.AttributeID, 'explosive_resistance') then
+                   ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LSetBonus.Value
+                 else if SameText(LSetBonus.AttributeID, 'protection_from_elites') then
+                   ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LSetBonus.Value;
+               end;
             sbtGearSetBonus, sbtExoticBonus, sbtTalent, sbtSpecial:
               begin
                 // These are often unique, named talents or complex mechanics.
@@ -1030,6 +1069,8 @@ var
   LExpertiseFraction: Double;
   LWatchBonusValue: Double;
   FinalLowLevelDmgResult: TDamageResult;
+  LGearArray: TArray<TGearPiece>;
+  k: TItemTYpe;
 begin
   Result := False; // Default to failure
 
@@ -1171,9 +1212,8 @@ begin
   // Since it's an enum-indexed static array, we can't pass it directly as open array of TGearPiece easily without casting or a helper.
   // Let's create a temporary dynamic array or pass slices if possible, or just change ApplySetBonuses signature.
   // Simpler: Iterate and build array.
-  var LGearArray: TArray<TGearPiece>;
-  SetLength(LGearArray, 6);
-  for var k := Low(TItemType) to itKneepads do
+  SetLength(LGearArray, Ord(itKneepads) + 1);
+  for k := Low(TItemType) to itKneepads do
     LGearArray[Ord(k)] := LoadoutInput.EquippedGear[k];
 
   ApplySetBonuses(LGearArray, AllPieceSetDefinitions,
@@ -1277,7 +1317,7 @@ begin
     (1 + LoadoutInput.WatchBonuses.ArmorPct / 100.0); // If watch armor is %
   AggregatedDisplayStats.TotalHealth_Display :=
     AggregatedDisplayStats.TotalHealth_Display +
-    LoadoutInput.WatchBonuses.HealthFlat; // If watch health is flat
+    LoadoutInput.WatchBonuses.HealthPct; // If watch health is flat
   // ... etc for other watch stats affecting display ...
 
   // --- Sanitize Final Pool Values (especially CHC) ---
@@ -1528,3 +1568,4 @@ begin
 end;
 
 end.
+
