@@ -49,7 +49,7 @@
             "value": 1.0
         },
         {
-            "id": "damageTOutOfCover",
+            "id": "damageOutOfCover",
             "type": "Damage To Target Out of Cover",
             "value": 8.0
         },
@@ -3140,7 +3140,7 @@
                     "name": "Fox's Prayer",
                     "coreAttribute": "weaponDamage",
                     "fixedMinorAttributes": [
-                        "damageTOutOfCover"
+                        "damageOutOfCover"
                     ]
                 }
             }

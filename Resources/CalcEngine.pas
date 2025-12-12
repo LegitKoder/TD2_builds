@@ -83,6 +83,7 @@ type
 function NewPool: TDamagePools; // helper
 function ComputeDamage(const P: TDamagePools): TDamageResult;
 function CanonicalSetName(const Raw: string): string;
+function RemoveAttributeSuffix(const ID: string): string;
 
 // convenience wrappers � sums the dictionaries into one number
 function Sum(const List: TBreakList): Double;
@@ -147,6 +148,34 @@ begin
     LCloseParen - LOpenParen - 1));
   if LBrandName <> '' then
     Exit(LBrandName);
+end;
+
+function RemoveAttributeSuffix(const ID: string): string;
+var
+  UnderscorePos: Integer;
+  Suffix: string;
+  IsNumeric: Boolean;
+  C: Char;
+begin
+  Result := ID;
+  UnderscorePos := Result.LastIndexOf('_');
+  if UnderscorePos > 0 then
+  begin
+    Suffix := Result.Substring(UnderscorePos + 1);
+    IsNumeric := True;
+    if Suffix.IsEmpty then
+      IsNumeric := False
+    else
+      for C in Suffix do
+        if not CharInSet(C, ['0'..'9']) then
+        begin
+          IsNumeric := False;
+          Break;
+        end;
+
+    if IsNumeric then
+      Result := Result.Substring(0, UnderscorePos);
+  end;
 end;
 
 // Forward declaration if ApplyGearPieceBonuses is used by a function declared before it in the interface
@@ -286,29 +315,30 @@ begin
       Continue;
 
     LValueFraction := LFixedAttr.Value / 100.0;
+    var LNormalizedID := RemoveAttributeSuffix(LFixedAttr.ID);
 
-    if SameText(LFixedAttr.ID, 'weaponDamage') then
+    if SameText(LNormalizedID, 'weaponDamage') then
     begin
       AddPct(APools.B_AWD, LSourcePrefix + 'Fixed ' + LFixedAttr.TypeName,
         LValueFraction);
       ADisplayStats.TotalWeaponDamage_AWD_Pct_Display :=
         ADisplayStats.TotalWeaponDamage_AWD_Pct_Display + LValueFraction;
     end
-    else if SameText(LFixedAttr.ID, 'damageToArmor') then
+    else if SameText(LNormalizedID, 'damageToArmor') then
     begin
       AddPct(APools.B_AH, LSourcePrefix + 'Fixed ' + LFixedAttr.TypeName,
         LValueFraction);
       ADisplayStats.TotalDamageToArmor_Pct_Display :=
         ADisplayStats.TotalDamageToArmor_Pct_Display + LValueFraction;
     end
-    else if SameText(LFixedAttr.ID, 'healthDamage') then
+    else if SameText(LNormalizedID, 'healthDamage') then
     begin
       AddPct(APools.B_AH, LSourcePrefix + 'Fixed ' + LFixedAttr.TypeName,
         LValueFraction);
       ADisplayStats.TotalDamageToHealth_Pct_Display :=
         ADisplayStats.TotalDamageToHealth_Pct_Display + LValueFraction;
     end
-    else if SameText(LFixedAttr.ID, 'damageOutOfCover') then
+    else if SameText(LNormalizedID, 'damageOutOfCover') then
     begin
       AddPct(APools.B_OOC, LSourcePrefix + 'Fixed ' + LFixedAttr.TypeName,
         LValueFraction);
@@ -316,13 +346,13 @@ begin
         ADisplayStats.TotalDamageToTargetOutOfCover_OOC_Pct_Display +
         LValueFraction;
     end
-    else if SameText(LFixedAttr.ID, 'headshotDamage') then
+    else if SameText(LNormalizedID, 'headshotDamage') then
     begin
       APools.HeadDmg := APools.HeadDmg + LValueFraction;
       ADisplayStats.FinalHSD_Pct_Display :=
         ADisplayStats.FinalHSD_Pct_Display + LValueFraction;
     end
-    else if SameText(LFixedAttr.ID, 'weaponHandling') then
+    else if SameText(LNormalizedID, 'weaponHandling') then
     begin
       ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
         ADisplayStats.TotalHandling_Accuracy_Pct_Display + (LValueFraction / 3);
@@ -332,44 +362,44 @@ begin
         ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display +
         (LValueFraction / 3);
     end
-    else if SameText(LFixedAttr.ID, 'accuracy') then
+    else if SameText(LNormalizedID, 'accuracy') then
     begin
       ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
         ADisplayStats.TotalHandling_Accuracy_Pct_Display + LValueFraction;
     end
-    else if SameText(LFixedAttr.ID, 'optimalRange') then
+    else if SameText(LNormalizedID, 'optimalRange') then
     begin
       ADisplayStats.TotalOptimalRangePct_Display :=
         ADisplayStats.TotalOptimalRangePct_Display + LValueFraction;
     end
-    else if SameText(LFixedAttr.ID, 'statusEffects') then
+    else if SameText(LNormalizedID, 'statusEffects') then
       ADisplayStats.TotalStatusEffectsPct :=
         ADisplayStats.TotalStatusEffectsPct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'skillHealth') then
+    else if SameText(LNormalizedID, 'skillHealth') then
       ADisplayStats.TotalSkillHealthPct :=
         ADisplayStats.TotalSkillHealthPct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'armorOnKill') then
+    else if SameText(LNormalizedID, 'armorOnKill') then
       ADisplayStats.TotalArmorOnKillPct :=
         ADisplayStats.TotalArmorOnKillPct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'armorRegen') then
+    else if SameText(LNormalizedID, 'armorRegen') then
       ADisplayStats.TotalArmorRegenPct :=
         ADisplayStats.TotalArmorRegenPct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'ammoCapacity') then
+    else if SameText(LNormalizedID, 'ammoCapacity') then
       ADisplayStats.TotalAmmoCapacityPct :=
         ADisplayStats.TotalAmmoCapacityPct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'reducedThreat') then
+    else if SameText(LNormalizedID, 'reducedThreat') then
       ADisplayStats.TotalReducedThreatPct :=
         ADisplayStats.TotalReducedThreatPct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'shieldHealth') then
+    else if SameText(LNormalizedID, 'shieldHealth') then
       ADisplayStats.TotalShieldHealthPct :=
         ADisplayStats.TotalShieldHealthPct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'meleeDamage') then
+    else if SameText(LNormalizedID, 'meleeDamage') then
       ADisplayStats.TotalMeleeDamagePct :=
         ADisplayStats.TotalMeleeDamagePct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'scannerPulseHaste') then
+    else if SameText(LNormalizedID, 'scannerPulseHaste') then
       ADisplayStats.TotalScannerPulseHastePct :=
         ADisplayStats.TotalScannerPulseHastePct + LFixedAttr.Value
-    else if SameText(LFixedAttr.ID, 'pistolDamage') then
+    else if SameText(LNormalizedID, 'pistolDamage') then
     begin
       AddPct(APools.B_SWD, LSourcePrefix + 'Fixed ' + LFixedAttr.TypeName,
         LValueFraction);
