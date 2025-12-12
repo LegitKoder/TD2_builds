@@ -298,6 +298,7 @@ begin
     // Sort each slot list to prioritize sets whose bonuses match weighted attributes
     if Assigned(AWeights) and (AWeights.Count > 0) then
       for LItemType := Low(TItemType) to itKneepads do
+      begin
         AGearPool[LItemType].Sort(
           TComparer<TGearPiece>.Construct(
             function(const L, R: TGearPiece): Integer
@@ -315,6 +316,20 @@ begin
               else
                 Result := 0;
             end));
+
+        // Heuristic Beam Search / Optimization:
+        // Limit the pool to the top K candidates per slot to prevent combinatorial explosion.
+        // If we have weights, we only care about the best-fitting items.
+        // Keeping top 15 ensures 15^6 = ~11 million combinations max, which is manageable
+        // with the FSearchIterations limit and pruning. Unbounded lists (e.g. 50 items) cause freezes.
+        if AGearPool[LItemType].Count > 15 then
+        begin
+          AGearPool[LItemType].Count := 15; // Truncate the list efficiently
+          // Note: TList.Count setter truncates the list and frees items if OwnsObjects is true.
+          // TDictionary<..., TList<...>> usually owns the list, but the list itself might not own TGearPiece if they are records.
+          // TGearPiece is a record, so no memory leak from truncation.
+        end;
+      end;
   finally
     SetWeightCache.Free;
   end;
