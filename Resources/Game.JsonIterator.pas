@@ -357,6 +357,46 @@ begin
     Result := sbtCoreAttribute
   else if AttributeID = 'armor' then
     Result := sbtCoreAttribute    // Add more specific sbtAttribute types here (e.g. skillHaste, armorRegen etc.)
+
+  // Skill Attributes
+  else if (AttributeID = 'skill_haste') or (AttributeID = 'skillHaste') then Result := sbtSkillAttribute
+  else if (AttributeID = 'skill_damage') or (AttributeID = 'skillDamage') then Result := sbtSkillAttribute
+  else if (AttributeID = 'repair_skills') or (AttributeID = 'repairSkills') then Result := sbtSkillAttribute
+  else if (AttributeID = 'status_effects') or (AttributeID = 'statusEffects') then Result := sbtSkillAttribute
+  else if (AttributeID = 'skill_duration') or (AttributeID = 'skillDuration') then Result := sbtSkillAttribute
+  else if (AttributeID = 'skill_health') or (AttributeID = 'skillHealth') then Result := sbtSkillAttribute
+  else if (AttributeID = 'explosive_damage') or (AttributeID = 'explosiveDamage') then Result := sbtSkillAttribute
+  else if (AttributeID = 'burn_damage') or (AttributeID = 'burnDamage') then Result := sbtSkillAttribute
+  else if (AttributeID = 'burn_duration') or (AttributeID = 'burnDuration') then Result := sbtSkillAttribute
+
+  // Defense Attributes
+  else if (AttributeID = 'armor_regen') or (AttributeID = 'armorRegen') then Result := sbtDefenseAttribute
+  else if (AttributeID = 'armor_on_kill') or (AttributeID = 'armorOnKill') then Result := sbtDefenseAttribute
+  else if (AttributeID = 'hazard_protection') or (AttributeID = 'hazardProtection') then Result := sbtDefenseAttribute
+  else if (AttributeID = 'health') then Result := sbtDefenseAttribute
+  else if (AttributeID = 'incoming_repairs') or (AttributeID = 'incomingRepairs') then Result := sbtDefenseAttribute
+
+  // Resistances
+  else if (AttributeID = 'explosive_resistance') or (AttributeID = 'explosiveResistance') then Result := sbtResistance
+  else if (AttributeID = 'protection_from_elites') or (AttributeID = 'protectionFromElites') then Result := sbtResistance
+  else if (AttributeID = 'pulse_resistance') or (AttributeID = 'pulseResistance') then Result := sbtResistance
+  else if (AttributeID = 'disrupt_resistance') or (AttributeID = 'disruptResistance') then Result := sbtResistance
+  else if (AttributeID = 'shock_resistance') or (AttributeID = 'shockResistance') then Result := sbtResistance
+  else if (AttributeID = 'burn_resistance') or (AttributeID = 'burnResistance') then Result := sbtResistance
+
+  // Weapon Handling & Misc
+  else if (AttributeID = 'accuracy') then Result := sbtAttribute
+  else if (AttributeID = 'stability') then Result := sbtAttribute
+  else if (AttributeID = 'reload_speed') or (AttributeID = 'reloadSpeed') then Result := sbtAttribute
+  else if (AttributeID = 'weapon_handling') or (AttributeID = 'weaponHandling') then Result := sbtAttribute
+  else if (AttributeID = 'ammo_capacity') or (AttributeID = 'ammoCapacity') then Result := sbtAttribute
+  else if (AttributeID = 'magazine_size') or (AttributeID = 'magazineSize') then Result := sbtAttribute
+  else if (AttributeID = 'swap_speed') or (AttributeID = 'swapSpeed') then Result := sbtAttribute
+  else if (AttributeID = 'optimal_range') or (AttributeID = 'optimalRange') then Result := sbtAttribute
+  else if (AttributeID = 'rate_of_fire') or (AttributeID = 'rateOfFire') then Result := sbtAttribute
+  else if (AttributeID = 'increased_threat') or (AttributeID = 'increasedThreat') then Result := sbtAttribute
+  else if (AttributeID = 'reduced_threat') or (AttributeID = 'reducedThreat') then Result := sbtAttribute
+
   else if (AttributeID = 'description') or (Pos('description_', AttributeID) = 1)
   then
     Result := sbtSpecial

@@ -569,13 +569,13 @@ begin
               end;
             sbtAttribute: // General attributes like CHC, CHD, HSD, etc.
               begin
-                if SameText(LSetBonus.AttributeID, 'criticalHitChance') then
+                if SameText(LSetBonus.AttributeID, 'criticalHitChance') or SameText(LSetBonus.AttributeID, 'critical_hit_chance') then
                 begin
                   APools.CHC := APools.CHC + LValueFraction;
                   ADisplayStats.FinalCHC_Pct_Display :=
                     ADisplayStats.FinalCHC_Pct_Display + LValueFraction;
                 end
-                else if SameText(LSetBonus.AttributeID, 'criticalHitDamage')
+                else if SameText(LSetBonus.AttributeID, 'criticalHitDamage') or SameText(LSetBonus.AttributeID, 'critical_hit_damage')
                 then
                 begin
                   AddPct(APools.B_CritHead,
@@ -583,13 +583,13 @@ begin
                   ADisplayStats.FinalCHD_Pct_Display :=
                     ADisplayStats.FinalCHD_Pct_Display + LValueFraction;
                 end
-                else if SameText(LSetBonus.AttributeID, 'headshotDamage') then
+                else if SameText(LSetBonus.AttributeID, 'headshotDamage') or SameText(LSetBonus.AttributeID, 'headshot_damage') then
                 begin
                   APools.HeadDmg := APools.HeadDmg + LValueFraction;
                   ADisplayStats.FinalHSD_Pct_Display :=
                     ADisplayStats.FinalHSD_Pct_Display + LValueFraction;
                 end
-                else if SameText(LSetBonus.AttributeID, 'damageToArmor') then
+                else if SameText(LSetBonus.AttributeID, 'damageToArmor') or SameText(LSetBonus.AttributeID, 'damage_to_armor') then
                 begin
                   AddPct(APools.B_AH, LSourcePrefix + LSetBonus.AttributeID,
                     LValueFraction);
@@ -597,7 +597,7 @@ begin
                     ADisplayStats.TotalDamageToArmor_Pct_Display +
                     LValueFraction;
                 end
-                else if SameText(LSetBonus.AttributeID, 'damageToHealth') then
+                else if SameText(LSetBonus.AttributeID, 'damageToHealth') or SameText(LSetBonus.AttributeID, 'damage_to_health') then
                 // Assuming B_AH covers both DTA and DTH
                 begin
                   AddPct(APools.B_AH, LSourcePrefix + LSetBonus.AttributeID,
@@ -607,7 +607,8 @@ begin
                     LValueFraction;
                 end
                 else if SameText(LSetBonus.AttributeID,
-                  'damageToTargetOutOfCover') then
+                  'damageToTargetOutOfCover') or SameText(LSetBonus.AttributeID,
+                  'damage_to_targets_out_of_cover') then
                 begin
                   AddPct(APools.B_OOC, LSourcePrefix + LSetBonus.AttributeID,
                     LValueFraction);
@@ -616,7 +617,7 @@ begin
                     TotalDamageToTargetOutOfCover_OOC_Pct_Display +
                     LValueFraction;
                 end
-                else if SameText(LSetBonus.AttributeID, 'weaponHandling') then
+                else if SameText(LSetBonus.AttributeID, 'weaponHandling') or SameText(LSetBonus.AttributeID, 'weapon_handling') then
                 begin
                   ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
                     ADisplayStats.TotalHandling_Accuracy_Pct_Display +
@@ -627,8 +628,29 @@ begin
                   ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display :=
                     ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display +
                     (LValueFraction / 3);
-                end;
-                // Add more attribute mappings here based on common AttributeIDs from your JSON
+                end
+                else if SameText(LSetBonus.AttributeID, 'accuracy') then
+                   ADisplayStats.TotalHandling_Accuracy_Pct_Display := ADisplayStats.TotalHandling_Accuracy_Pct_Display + LValueFraction
+                else if SameText(LSetBonus.AttributeID, 'stability') then
+                   ADisplayStats.TotalHandling_Stability_Pct_Display := ADisplayStats.TotalHandling_Stability_Pct_Display + LValueFraction
+                else if SameText(LSetBonus.AttributeID, 'reload_speed') or SameText(LSetBonus.AttributeID, 'reloadSpeed') then
+                   ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display := ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display + LValueFraction
+                else if SameText(LSetBonus.AttributeID, 'ammo_capacity') or SameText(LSetBonus.AttributeID, 'ammoCapacity') then
+                   ADisplayStats.TotalAmmoCapacityPct := ADisplayStats.TotalAmmoCapacityPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'magazine_size') or SameText(LSetBonus.AttributeID, 'magazineSize') then
+                   begin
+                     APools.Magazine := APools.Magazine * (1 + LValueFraction);
+                   end
+                else if SameText(LSetBonus.AttributeID, 'rate_of_fire') or SameText(LSetBonus.AttributeID, 'rateOfFire') then
+                   APools.RPM := APools.RPM * (1 + LValueFraction)
+                else if SameText(LSetBonus.AttributeID, 'swap_speed') or SameText(LSetBonus.AttributeID, 'swapSpeed') then
+                   begin end // No display stat for swap speed currently
+                else if SameText(LSetBonus.AttributeID, 'optimal_range') or SameText(LSetBonus.AttributeID, 'optimalRange') then
+                   ADisplayStats.TotalOptimalRangePct_Display := ADisplayStats.TotalOptimalRangePct_Display + LValueFraction
+                else if SameText(LSetBonus.AttributeID, 'increased_threat') or SameText(LSetBonus.AttributeID, 'increasedThreat') then
+                   begin end // No display stat
+                else if SameText(LSetBonus.AttributeID, 'reduced_threat') or SameText(LSetBonus.AttributeID, 'reducedThreat') then
+                   ADisplayStats.TotalReducedThreatPct := ADisplayStats.TotalReducedThreatPct + LSetBonus.Value;
               end;
             sbtSkillAttribute:
               begin
@@ -643,7 +665,13 @@ begin
                 else if SameText(LSetBonus.AttributeID, 'skill_duration') then
                    ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LSetBonus.Value
                 else if SameText(LSetBonus.AttributeID, 'skill_health') then
-                   ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LSetBonus.Value;
+                   ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'explosive_damage') or SameText(LSetBonus.AttributeID, 'explosiveDamage') then
+                   ADisplayStats.TotalExplosiveDamagePct := ADisplayStats.TotalExplosiveDamagePct + LSetBonus.Value
+                else if SameText(LSetBonus.AttributeID, 'burn_damage') or SameText(LSetBonus.AttributeID, 'burnDamage') then
+                   begin end // Specific status damage, maybe add to status effects or track separately?
+                else if SameText(LSetBonus.AttributeID, 'burn_duration') or SameText(LSetBonus.AttributeID, 'burnDuration') then
+                   begin end; // Specific status duration
               end;
             sbtDefenseAttribute:
               begin
@@ -663,7 +691,13 @@ begin
                  if SameText(LSetBonus.AttributeID, 'explosive_resistance') then
                    ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LSetBonus.Value
                  else if SameText(LSetBonus.AttributeID, 'protection_from_elites') then
-                   ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LSetBonus.Value;
+                   ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LSetBonus.Value
+                 else if SameText(LSetBonus.AttributeID, 'shock_resistance') then
+                    ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + (LSetBonus.Value / 5) // Rough approximation
+                 else if SameText(LSetBonus.AttributeID, 'pulse_resistance') then
+                    begin end // Specific
+                 else if SameText(LSetBonus.AttributeID, 'disrupt_resistance') then
+                    begin end; // Specific
                end;
             sbtGearSetBonus, sbtExoticBonus, sbtTalent, sbtSpecial:
               begin
