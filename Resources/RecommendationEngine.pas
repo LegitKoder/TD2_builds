@@ -33,6 +33,7 @@ type
     function GetRequiredTalent(const AItemType: TItemType; const AArchetype: TBuildArchetype): string;
     function IsExoticWeapon(const AWeaponName: string): Boolean;
     function IsValidGearSetCombination(const ABuild: TGearLoadout): Boolean;
+    function PotentialGearSetIssues(const ABrandCounts: TDictionary<string, Integer>; RemainingSlots: Integer): Boolean;
     procedure GenerateBuildsRecursive(var ACurrentBuild: TGearLoadout;
       ACurrentSlot: TItemType; const AArchetype: TBuildArchetype;
       const AGearPool: TDictionary<TItemType, TList<TGearPiece>>;
@@ -472,6 +473,38 @@ begin
   end;
 end;
 
+function TRecommendationEngine.PotentialGearSetIssues(const ABrandCounts: TDictionary<string, Integer>; RemainingSlots: Integer): Boolean;
+var
+  LSetName: string;
+  LCount: Integer;
+  LSetDef: TPieceSet;
+  LNeededSlots: Integer;
+begin
+  // Checks if we have "orphaned" Gear Set pieces (count=1) that cannot be satisfied
+  // by the remaining slots (assuming min 2 pieces for Gear Sets).
+  Result := False;
+  LNeededSlots := 0;
+
+  for LSetName in ABrandCounts.Keys do
+  begin
+    LCount := ABrandCounts[LSetName];
+    // If we have exactly 1 piece, we need at least 1 more to make it valid
+    // (unless we have NinjaBike, but let's assume strict logic for now or update if needed).
+    // Note: We need to know if LSetName corresponds to a Gear Set (stGearSet).
+    if (LCount = 1) then
+    begin
+      if FDataIterator.AllPieceSetDefinitions.TryGetValue(LSetName, LSetDef) and
+         (LSetDef.SetType = stGearSet) then
+      begin
+        Inc(LNeededSlots);
+      end;
+    end;
+  end;
+
+  if LNeededSlots > RemainingSlots then
+    Result := True;
+end;
+
 function TRecommendationEngine.FindBestAttributesForPiece(var AGearPiece: TGearPiece; const AArchetype: TBuildArchetype): Boolean;
 var
   LRequiredAttributes: TArray<TMinorAttributeType>;
@@ -587,7 +620,8 @@ begin
     // Slots restants après celui-ci
     LRemainingSlots := Ord(itKneepads) - Ord(ACurrentSlot);
 
-    if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots) then
+    if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots) and
+       not PotentialGearSetIssues(ABrandCounts, LRemainingSlots) then
     begin
       if ACurrentSlot < itKneepads then
       begin
