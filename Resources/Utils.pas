@@ -19,6 +19,7 @@ type
     class function BitmapFromPath(const APath: string): TBitmap; static;
   end;
 
+function RemoveAttributeSuffix(const ID: string): string;
 function GetMaxGearModValue(AEffectType: TGearModEffectType): Double;
 function GetCompatibleModEffects(ASlotType: TGearModType)
   : TArray<TGearModEffectType>;
@@ -114,6 +115,34 @@ begin
     end;
     FBitmapCache.Add(APath, Bmp); // nil is OK, avoids re-load
     Result := Bmp;
+  end;
+end;
+
+function RemoveAttributeSuffix(const ID: string): string;
+var
+  UnderscorePos: Integer;
+  Suffix: string;
+  IsNumeric: Boolean;
+  C: Char;
+begin
+  Result := ID;
+  UnderscorePos := Result.LastIndexOf('_');
+  if UnderscorePos > 0 then
+  begin
+    Suffix := Result.Substring(UnderscorePos + 1);
+    IsNumeric := True;
+    if Suffix.IsEmpty then
+      IsNumeric := False
+    else
+      for C in Suffix do
+        if not CharInSet(C, ['0'..'9']) then
+        begin
+          IsNumeric := False;
+          Break;
+        end;
+
+    if IsNumeric then
+      Result := Result.Substring(0, UnderscorePos);
   end;
 end;
 

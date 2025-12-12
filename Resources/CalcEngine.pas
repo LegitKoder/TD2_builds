@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, System.TypInfo, System.Generics.Collections, Game.Types,
-  Math, Game.JsonIterator;
+  Math, Game.JsonIterator, Utils;
 
 const
   BASE_CHD  = 0.25; // 25%
@@ -83,7 +83,6 @@ type
 function NewPool: TDamagePools; // helper
 function ComputeDamage(const P: TDamagePools): TDamageResult;
 function CanonicalSetName(const Raw: string): string;
-function RemoveAttributeSuffix(const ID: string): string;
 
 // convenience wrappers � sums the dictionaries into one number
 function Sum(const List: TBreakList): Double;
@@ -148,34 +147,6 @@ begin
     LCloseParen - LOpenParen - 1));
   if LBrandName <> '' then
     Exit(LBrandName);
-end;
-
-function RemoveAttributeSuffix(const ID: string): string;
-var
-  UnderscorePos: Integer;
-  Suffix: string;
-  IsNumeric: Boolean;
-  C: Char;
-begin
-  Result := ID;
-  UnderscorePos := Result.LastIndexOf('_');
-  if UnderscorePos > 0 then
-  begin
-    Suffix := Result.Substring(UnderscorePos + 1);
-    IsNumeric := True;
-    if Suffix.IsEmpty then
-      IsNumeric := False
-    else
-      for C in Suffix do
-        if not CharInSet(C, ['0'..'9']) then
-        begin
-          IsNumeric := False;
-          Break;
-        end;
-
-    if IsNumeric then
-      Result := Result.Substring(0, UnderscorePos);
-  end;
 end;
 
 // Forward declaration if ApplyGearPieceBonuses is used by a function declared before it in the interface
