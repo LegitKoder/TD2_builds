@@ -25,6 +25,7 @@ type
   private
     FDataIterator: TDataJsonIterator;
     FGeneratedBuilds: TList<TGearLoadout>;
+    FSearchIterations: Integer;
     procedure PreFilterGear(const AArchetype: TBuildArchetype;
       out AGearPool: TDictionary<TItemType, TList<TGearPiece>>;
       const AWeights: TDictionary<string, Double> = nil);
@@ -128,6 +129,7 @@ var
   LMaxBuilds: Integer;
 begin
   FGeneratedBuilds.Clear;
+  FSearchIterations := 0;
   LInitialBuild := Default(TGearLoadout);
   LRequiredBrands := CloneBrandRequirements(AArchetype.RequiredBrandSets);
   // Always create counts dictionary to track max piece limits
@@ -550,6 +552,11 @@ begin
   if FGeneratedBuilds.Count >= AMaxBuilds then
     Exit;
 
+  // Safety brake against infinite loops/massive combinations
+  Inc(FSearchIterations);
+  if FSearchIterations > 500000 then
+    Exit;
+
   // Défensif : on ne traite que les slots d'équipement réels
   if (ACurrentSlot < itMask) or (ACurrentSlot > itKneepads) then
     Exit;
@@ -563,7 +570,8 @@ begin
       Exit;
 
     // Check Max Piece Limit
-    LBrandKey := CalcEngine.CanonicalSetName(LGearPiece.SetName);
+    // Note: LGearPiece.SetName is already canonicalized in PreFilterGear
+    LBrandKey := LGearPiece.SetName;
     if not ABrandCounts.TryGetValue(LBrandKey, LCount) then
       LCount := 0;
 
