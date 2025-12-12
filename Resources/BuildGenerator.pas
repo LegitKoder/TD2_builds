@@ -142,7 +142,7 @@ begin
       var Stats: TPlayerAggregatedStats;
 
       FillChar(Input, SizeOf(Input), 0);
-      for var j := 0 to High(LBuild.GearPieces) do
+      for var j := Low(LBuild.GearPieces) to High(LBuild.GearPieces) do
         if LBuild.GearPieces[j].Name <> '' then
           Input.EquippedGear[TItemType(j)] := LBuild.GearPieces[j];
 

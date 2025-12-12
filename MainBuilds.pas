@@ -220,7 +220,6 @@ type
     Builds: TTabItem;
     Grid_Loadouts_options: TGridLayout;
     ListView1: TListView;
-    Edit1: TEdit;
     GridPanel_Options: TGridPanelLayout;
     Reset: TSpeedButton;
     ListViewAttributes: TListView;
@@ -271,15 +270,13 @@ type
   private
     { Private declarations }
     FGenerationContext: TCoreAttributeType;
-    FGearSlotIndex: Integer;
+    FGearSlotIndex: TItemType;
     FGeneratedBuilds: TList<TGearLoadout>;
     FPieceSets: TList<TPieceSet>;
-    FEquippedGearPieces: TArray<TGearPiece>;
-    FGearSlotPlaceholders: array[0..5] of TBitmap;
+    FEquippedGearPieces: array[TItemType] of TGearPiece;
+    FGearSlotPlaceholders: array[TItemType] of TBitmap;
     FAttributeInfos: TList<TAttributeCatalogEntry>;
     FSelectedAttributeIDs: TList<string>;
-    { for Skills_.json }
-    // FEquippedSkills: array[TSkillSlot] of TSkillVariantDefinition;
     { for Skills.json }
     FEquippedSkills: array [TSkillSlot] of TEquippedSkill;
     FSelectedSpecialization: Game.Types.TSpecialization;
@@ -306,10 +303,7 @@ type
     procedure ChooseSkillForSlot(ASlot: TSkillSlot);
     procedure UpdateSpecWeaponChkAvailability;
     procedure UpdateWeaponUI(ASlot: Game.Types.TWeaponSlot; const W: TWeapon);
-    // procedure UpdateGearSlotUI(AItemType: TItemType; const AGearPiece: TGearPiece);
-    procedure UpdateGearSlotUI(const GearPiece: TGearPiece; SlotIndex: Integer);
-    { for Skills_.json }
-    // procedure UpdateSkillUI(ASlot: TSkillSlot; const ASkillVariant: TSkillVariantDefinition);
+    procedure UpdateGearSlotUI(const GearPiece: TGearPiece; SlotIndex: TItemType);
     { for Skills.json }
     procedure UpdateSkillUI(ASlot: TSkillSlot;
       const ASkillVariant: TSkillVariant);
@@ -338,7 +332,7 @@ type
     function WeaponChk(WT: TWeaponFamily): TCheckBox;
   public
     { Public declarations }
-    property GearSlotIndex: Integer read FGearSlotIndex write FGearSlotIndex;
+    property GearSlotIndex: TItemType read FGearSlotIndex write FGearSlotIndex;
   end;
 
 var
@@ -427,14 +421,12 @@ end;
 
 function TMainForm.IsExoticGearEquipped: Boolean;
 var
-  GearPiece: TGearPiece;
-  I: Integer;
+  Slot: TItemType;
 begin
   Result := False;
-  for I := 0 to High(FEquippedGearPieces) do
+  for Slot := itMask to itKneepads do
   begin
-    GearPiece := FEquippedGearPieces[I];
-    if GearPiece.SetType = stExoticSet then
+    if FEquippedGearPieces[Slot].SetType = stExoticSet then
       Exit(True);
   end;
 end;
@@ -447,13 +439,11 @@ begin
 
   if (AGearPiece.SetType = stExoticSet) then
   begin
-    CurrentlyEquippedExoticInThisSlot := False;
-    if (FGearSlotIndex >= Low(FEquippedGearPieces)) and
-      (FGearSlotIndex <= High(FEquippedGearPieces)) then
-    begin
-      CurrentlyEquippedExoticInThisSlot :=
-        (FEquippedGearPieces[FGearSlotIndex].SetType = stExoticSet);
-    end;
+    // si on a un slot courant valide et que ce slot contient déjà un exotic
+    CurrentlyEquippedExoticInThisSlot :=
+      (FGearSlotIndex <> itUnknown) and
+      (FGearSlotIndex in [itMask .. itKneepads]) and
+      (FEquippedGearPieces[FGearSlotIndex].SetType = stExoticSet);
 
     if IsExoticGearEquipped and not CurrentlyEquippedExoticInThisSlot then
     begin
@@ -589,7 +579,20 @@ procedure TMainForm.UpdateSpecWeaponChkAvailability;
 var
   WF: TWeaponFamily;
   Used: Integer;
+  CanProvideBonus: Boolean;
 begin
+  // Si aucune spé sélectionnée → tout désactiver proprement
+  if not Assigned(FSelectedSpecialization) then
+  begin
+    for WF := Low(TWeaponFamily) to High(TWeaponFamily) do
+      if Assigned(WeaponChk(WF)) then
+      begin
+        WeaponChk(WF).IsChecked := False;
+        WeaponChk(WF).Enabled   := False;
+      end;
+    Exit;
+  end;
+
   Used := 0;
   for WF := Low(TWeaponFamily) to High(TWeaponFamily) do
     if Assigned(WeaponChk(WF)) and WeaponChk(WF).IsChecked then
@@ -597,12 +600,17 @@ begin
 
   for WF := Low(TWeaponFamily) to High(TWeaponFamily) do
     if Assigned(WeaponChk(WF)) then
-      WeaponChk(WF).Enabled := ((Used < MAX_SPEC_BONUS) or WeaponChk(WF)
-        .IsChecked) and
-        (Assigned(FSelectedSpecialization.InherentWeaponTypeBonuses) and
-        FSelectedSpecialization.InherentWeaponTypeBonuses.ContainsKey(WF));
-  // Ensure spec can actually provide this bonus
+    begin
+      // On ne touche au dictionnaire que si la spé est bien créée
+      CanProvideBonus := Assigned(FSelectedSpecialization.InherentWeaponTypeBonuses) and
+        FSelectedSpecialization.InherentWeaponTypeBonuses.ContainsKey(WF);
+
+      WeaponChk(WF).Enabled :=
+        ((Used < MAX_SPEC_BONUS) or WeaponChk(WF).IsChecked) and
+        CanProvideBonus;   // la spé doit pouvoir donner ce bonus
+    end;
 end;
+
 
 procedure TMainForm.UpdateWeaponUI(ASlot: Game.Types.TWeaponSlot;
   const W: TWeapon);
@@ -840,7 +848,7 @@ procedure TMainForm.EquipGear(const AGearSlot: TItemType);
 var
   LSelectedPiece: TGearPiece;
 begin
-  FGearSlotIndex := ord(AGearSlot); { 0-based }
+  FGearSlotIndex := AGearSlot; { 0-based }
   FormSlots.GearSlot := AGearSlot;
   // FormSlots.PieceSets is set inside FormSlots.PopulateBrands now, but we should update local FPieceSets reference if needed, or remove local FPieceSets.
   // For now, we let FormSlots handle its data population.
@@ -881,11 +889,14 @@ begin
     begin
       if not CanEquipGearPiece(LSelectedPiece) then
         Exit;
+
       FEquippedGearPieces[FGearSlotIndex] := LSelectedPiece;
 
       // Restore the data transfer logic for icon indices
       FEquippedGearPieces[FGearSlotIndex].SelectedModIconIndex := FormSlots.SelectedModAttributeImageIndex;
+
       SetLength(FEquippedGearPieces[FGearSlotIndex].SelectedMinorIconIndices, Length(FormSlots.FSelectedMinorAttributeImageIndices));
+
       for var i := 0 to High(FormSlots.FSelectedMinorAttributeImageIndices) do
         FEquippedGearPieces[FGearSlotIndex].SelectedMinorIconIndices[i] := FormSlots.FSelectedMinorAttributeImageIndices[i];
     end
@@ -894,250 +905,12 @@ begin
       FEquippedGearPieces[FGearSlotIndex] := Default (TGearPiece);
     end;
 
-//    ListBoxSetsChange(nil);
     UpdateGearSlotUI(FEquippedGearPieces[FGearSlotIndex], FGearSlotIndex);
     RefreshAllStats;
   end;
 end;
 
-//procedure TMainForm.UpdateGearSlotUI(const GearPiece: TGearPiece; SlotIndex: Integer);
-//var
-//  TargetComboBox: TComboBox;
-//  TargetImage: TImage;
-//  ImgIdx: Integer;
-//  LBI: TListBoxItem;
-//  CoreBtn, Minor1Btn, Minor2Btn, ModBtn: TCornerButton;
-//  SizeF: TSizeF;
-//  LogoBitmap: TBitmap;
-//
-//  function BuildFixedMinorText(const Piece: TGearPiece): string;
-//  var
-//    Attr: TFixedMinorAttributeDefinition;
-//    Segment: string;
-//  begin
-//    Result := '';
-//    for Attr in Piece.FixedMinorAttributes do
-//    begin
-//      Segment := Attr.TypeName;
-//      if not SameValue(Attr.Value, 0.0) then
-//        Segment := Segment + ' +' + FormatFloat('0.#', Attr.Value) + '%';
-//      if Result = '' then
-//        Result := 'Fixed: ' + Segment
-//      else
-//        Result := Result + ', ' + Segment;
-//    end;
-//  end;
-//begin
-//  // 1. Determine target UI controls for the slot
-//  case SlotIndex of
-//    0: begin TargetComboBox := Slot_gMask; TargetImage := Image_Mask; CoreBtn := M_Core_Atr; Minor1Btn := M_Atr1; Minor2Btn := M_Atr2; ModBtn := M_Mod; end;
-//    1: begin TargetComboBox := Slot_gBackPack; TargetImage := Image_Back; CoreBtn := B_Core_Atr; Minor1Btn := B_Atr1; Minor2Btn := B_Atr2; ModBtn := B_Mod; end;
-//    2: begin TargetComboBox := Slot_gVest; TargetImage := Image_Chest; CoreBtn := V_Core_Atr; Minor1Btn := V_Atr1; Minor2Btn := V_Atr2; ModBtn := V_Mod; end;
-//    3: begin TargetComboBox := Slot_gGlove; TargetImage := Image_Glove; CoreBtn := G_Core_Atr; Minor1Btn := G_Atr1; Minor2Btn := G_Atr2; ModBtn := G_Mod; end;
-//    4: begin TargetComboBox := Slot_gHolster; TargetImage := Image_Holster; CoreBtn := H_Core_Atr; Minor1Btn := H_Atr1; Minor2Btn := H_Atr2; ModBtn := H_Mod; end;
-//    5: begin TargetComboBox := Slot_gKneePad; TargetImage := Image_Kneepad; CoreBtn := K_Core_Atr; Minor1Btn := K_Atr1; Minor2Btn := K_Atr2; ModBtn := K_Mod; end;
-//  else
-//    Exit;
-//  end;
-//
-//  // Cache the placeholder art once so we can restore it when clearing a slot
-//  if Assigned(TargetImage) and (FGearSlotPlaceholders[SlotIndex] = nil) then
-//  begin
-//    FGearSlotPlaceholders[SlotIndex] := TBitmap.Create;
-//    FGearSlotPlaceholders[SlotIndex].Assign(TargetImage.Bitmap);
-//  end;
-//
-//  // 2. Update Gear Piece ComboBox (Icon and Background)
-//  TargetComboBox.BeginUpdate;
-//  try
-//    TargetComboBox.Clear;
-//    if GearPiece.Name = '' then
-//    begin
-//      TargetComboBox.StyleLookup := '';
-//      TargetComboBox.Hint := '(Empty)';
-//      if Assigned(TargetImage) then
-//      begin
-//        if Assigned(FGearSlotPlaceholders[SlotIndex]) then
-//          TargetImage.Bitmap.Assign(FGearSlotPlaceholders[SlotIndex]);
-//        TargetImage.Visible := True;
-//      end;
-//    end
-//    else
-//    begin
-//      // Déterminer l’index de l’icône dans TIMG_Sets
-//      ImgIdx := -1;
-//      if Assigned(DataJsonIterator) and Assigned(DataJsonIterator.AllPieceSetDefinitions) then
-//      begin
-//        var PS: TPieceSet;
-//        if DataJsonIterator.AllPieceSetDefinitions.TryGetValue(GearPiece.SetName, PS) then
-//          ImgIdx := PS.ImageIndex;
-//      end;
-//
-//      // Afficher le logo de marque en grand dans le TImage
-//      if Assigned(TargetImage) then
-//      begin
-//        // Adapter la taille de l'icône à celle du slot
-//        if (ImgIdx >= 0) and (ImgIdx < TIMG_Sets.Source.Count) then
-//        begin
-//          SizeF := TSizeF.Create(TargetImage.Width, TargetImage.Height);
-//          LogoBitmap := TIMG_Sets.Bitmap(SizeF, ImgIdx); // récupère l’icône à la bonne taille
-//          try
-//            TargetImage.Bitmap.Assign(LogoBitmap);       // copie dans l’image de destination
-//          finally
-//            // ne pas libérer LogoBitmap explicitement (voir doc):contentReference[oaicite:2]{index=2}
-//          end;
-//        end
-//        else if Assigned(FGearSlotPlaceholders[SlotIndex]) then
-//          TargetImage.Bitmap.Assign(FGearSlotPlaceholders[SlotIndex]);
-//        TargetImage.WrapMode := TImageWrapMode.Place;     // conserve les proportions
-//        TargetImage.Align := TAlignLayout.Contents;         // remplit toute la tuile
-//        TargetImage.Visible := True;
-//      end;
-//
-//      // Ajouter la marque dans le ComboBox (petit pictogramme facultatif)
-////      LBI := TListBoxItem.Create(TargetComboBox);
-////      LBI.Selectable := False;
-////      LBI.Height := TargetComboBox.Height;
-////      LBI.ImageIndex := ImgIdx;
-////      TargetComboBox.AddObject(LBI);
-//      TargetComboBox.ItemIndex := 0;
-//      TargetComboBox.Images := TIMG_Sets;
-//
-//      // Optionnel : info‑bulle et style en fonction du SetType
-//      var HintText := GearPiece.Name;
-//      var FixedHint := BuildFixedMinorText(GearPiece);
-//      if FixedHint <> '' then
-//        HintText := HintText + sLineBreak + FixedHint;
-//      TargetComboBox.Hint := HintText;
-//
-//      case GearPiece.SetType of
-//        stBrandSet, stImprovised: TargetComboBox.StyleLookup := 'HighEndSlot';
-//        stGearSet:  TargetComboBox.StyleLookup := 'GearSetSlot';
-//        stNamedSet: TargetComboBox.StyleLookup := 'NamedSlot';
-//        stExoticSet:TargetComboBox.StyleLookup := 'ExoticSlot';
-//      else
-//        TargetComboBox.StyleLookup := 'EmptySlot';
-//      end;
-//    end;
-//  finally
-//    TargetComboBox.EndUpdate;
-//  end;
-//
-//  // 3. Update Attribute and Mod Buttons
-//  // Core Attribute
-//  if Assigned(CoreBtn) then
-//  begin
-//    CoreBtn.ImageIndex := -1;
-//    CoreBtn.Text := '';
-//    if not GearPiece.CoreAttribute.ID.IsEmpty then
-//    begin
-//      CoreBtn.ImageIndex := ord(GearPiece.CoreAttribute.AttrType);
-//      CoreBtn.Text := Copy(GetEnumName(TypeInfo(TCoreAttributeType), ord(GearPiece.CoreAttribute.AttrType)), 4, 100);
-//    end;
-//  end;
-//
-//  // Minor Attributes
-//  var RandomCount := Length(FEquippedGearPieces[SlotIndex].MinorAttributes);
-//  var RandomIcons := FEquippedGearPieces[SlotIndex].SelectedMinorIconIndices;
-//  var FixedText := BuildFixedMinorText(FEquippedGearPieces[SlotIndex]);
-//  var FixedDisplayed := False;
-//
-//  if Assigned(Minor1Btn) then
-//  begin
-//    Minor1Btn.ImageIndex := -1;
-//    Minor1Btn.Text := '';
-//    Minor1Btn.Hint := '';
-//    Minor1Btn.Enabled := RandomCount > 0;
-//    if (RandomCount > 0) and (Length(RandomIcons) > 0) then
-//    begin
-//      Minor1Btn.ImageIndex := RandomIcons[0];
-//      Minor1Btn.Text :=
-//        GetEnumName(TypeInfo(TMinorAttributeType),
-//        ord(FEquippedGearPieces[SlotIndex].MinorAttributes[0].MinorAttribute));
-//    end
-//    else if (RandomCount = 0) and (FixedText <> '') then
-//    begin
-//      Minor1Btn.Text := FixedText;
-//      Minor1Btn.Enabled := False;
-//      Minor1Btn.Hint := FixedText;
-//      FixedDisplayed := True;
-//    end;
-//    if (FixedText <> '') and not FixedDisplayed then
-//    begin
-//      Minor1Btn.Hint := FixedText;
-//      Minor1Btn.ImageIndex := RandomIcons[0];
-//      Minor1Btn.Text :=
-//        GetEnumName(TypeInfo(TMinorAttributeType),
-//        ord(FEquippedGearPieces[SlotIndex].MinorAttributes[0].MinorAttribute));
-//    end
-//    else if (RandomCount = 0) and (FixedText <> '') then
-//    begin
-//      Minor1Btn.Text := FixedText;
-//      Minor1Btn.Enabled := False;
-//      Minor1Btn.Hint := FixedText;
-//      FixedDisplayed := True;
-//    end;
-//    if (FixedText <> '') and not FixedDisplayed then
-//      Minor1Btn.Hint := FixedText;
-//  end;
-//
-//  if Assigned(Minor2Btn) then
-//  begin
-//    Minor2Btn.ImageIndex := -1;
-//    Minor2Btn.Text := '';
-//    Minor2Btn.Hint := '';
-//    Minor2Btn.Enabled := RandomCount > 1;
-//    if (RandomCount > 1) and (Length(RandomIcons) > 1) then
-//    begin
-//      Minor2Btn.ImageIndex := RandomIcons[1];
-//      Minor2Btn.Text :=
-//        GetEnumName(TypeInfo(TMinorAttributeType),
-//        ord(FEquippedGearPieces[SlotIndex].MinorAttributes[1].MinorAttribute));
-//    end
-//    else if (RandomCount <= 1) and (FixedText <> '') and not FixedDisplayed then
-//    begin
-//      Minor2Btn.Text := FixedText;
-//      Minor2Btn.Enabled := False;
-//      Minor2Btn.Hint := FixedText;
-//      FixedDisplayed := True;
-//    end;
-//    if FixedText <> '' then
-//    begin
-//      Minor2Btn.Hint := FixedText;
-//      Minor2Btn.ImageIndex := RandomIcons[1];
-//      Minor2Btn.Text :=
-//        GetEnumName(TypeInfo(TMinorAttributeType),
-//        ord(FEquippedGearPieces[SlotIndex].MinorAttributes[1].MinorAttribute));
-//    end
-//    else if (RandomCount <= 1) and (FixedText <> '') and not FixedDisplayed then
-//    begin
-//      Minor2Btn.Text := FixedText;
-//      Minor2Btn.Enabled := False;
-//      Minor2Btn.Hint := FixedText;
-//      FixedDisplayed := True;
-//    end;
-//    if FixedText <> '' then
-//      Minor2Btn.Hint := FixedText;
-//  end;
-//
-//  // Mod Attribute
-//  if Assigned(ModBtn) then
-//  begin
-//    var HasSlot := HasModSlot(FEquippedGearPieces[SlotIndex]);
-//    ModBtn.Visible := HasSlot;
-//
-//    if HasSlot then
-//    begin
-//      ModBtn.ImageIndex := FEquippedGearPieces[SlotIndex].SelectedModIconIndex;
-//      if FEquippedGearPieces[SlotIndex].ModAttribute.ModEffect <> gmetUnknown then
-//        ModBtn.Text := '' // Or display mod name
-//      else
-//        ModBtn.Text := '';
-//    end;
-//  end;
-//end;
-
-procedure TMainForm.UpdateGearSlotUI(const GearPiece: TGearPiece; SlotIndex: Integer);
+procedure TMainForm.UpdateGearSlotUI(const GearPiece: TGearPiece; SlotIndex: TItemType);
 var
   TargetComboBox: TComboBox;
   TargetImage: TImage;
@@ -1183,14 +956,74 @@ var
   FixedCount: Integer;
   FixedSummary: string;
 begin
+  TargetComboBox := nil;
+  TargetImage    := nil;
+  CoreBtn        := nil;
+  Minor1Btn      := nil;
+  Minor2Btn      := nil;
+  ModBtn         := nil;
+
   { 1. Choix des contrôles cibles }
   case SlotIndex of
-    0: begin TargetComboBox := Slot_gMask;     TargetImage := Image_Mask;    CoreBtn := M_Core_Atr; Minor1Btn := M_Atr1; Minor2Btn := M_Atr2; ModBtn := M_Mod; end;
-    1: begin TargetComboBox := Slot_gBackPack; TargetImage := Image_Back;    CoreBtn := B_Core_Atr; Minor1Btn := B_Atr1; Minor2Btn := B_Atr2; ModBtn := B_Mod; end;
-    2: begin TargetComboBox := Slot_gVest;     TargetImage := Image_Chest;   CoreBtn := V_Core_Atr; Minor1Btn := V_Atr1; Minor2Btn := V_Atr2; ModBtn := V_Mod; end;
-    3: begin TargetComboBox := Slot_gGlove;    TargetImage := Image_Glove;   CoreBtn := G_Core_Atr; Minor1Btn := G_Atr1; Minor2Btn := G_Atr2; ModBtn := G_Mod; end;
-    4: begin TargetComboBox := Slot_gHolster;  TargetImage := Image_Holster; CoreBtn := H_Core_Atr; Minor1Btn := H_Atr1; Minor2Btn := H_Atr2; ModBtn := H_Mod; end;
-    5: begin TargetComboBox := Slot_gKneePad;  TargetImage := Image_Kneepad; CoreBtn := K_Core_Atr; Minor1Btn := K_Atr1; Minor2Btn := K_Atr2; ModBtn := K_Mod; end;
+    itMask:
+      begin
+        TargetComboBox := Slot_gMask;
+        TargetImage    := Image_Mask;
+        CoreBtn        := M_Core_Atr;
+        Minor1Btn      := M_Atr1;
+        Minor2Btn      := M_Atr2;
+        ModBtn         := M_Mod;
+      end;
+
+    itBackpack:
+      begin
+        TargetComboBox := Slot_gBackPack;
+        TargetImage    := Image_Back;
+        CoreBtn        := B_Core_Atr;
+        Minor1Btn      := B_Atr1;
+        Minor2Btn      := B_Atr2;
+        ModBtn         := B_Mod;
+      end;
+
+    itChest:
+      begin
+        TargetComboBox := Slot_gVest;
+        TargetImage    := Image_Chest;
+        CoreBtn        := V_Core_Atr;
+        Minor1Btn      := V_Atr1;
+        Minor2Btn      := V_Atr2;
+        ModBtn         := V_Mod;
+      end;
+
+    itGloves:
+      begin
+        TargetComboBox := Slot_gGlove;
+        TargetImage    := Image_Glove;
+        CoreBtn        := G_Core_Atr;
+        Minor1Btn      := G_Atr1;
+        Minor2Btn      := G_Atr2;
+        ModBtn         := G_Mod;
+      end;
+
+    itHolster:
+      begin
+        TargetComboBox := Slot_gHolster;
+        TargetImage    := Image_Holster;
+        CoreBtn        := H_Core_Atr;
+        Minor1Btn      := H_Atr1;
+        Minor2Btn      := H_Atr2;
+        ModBtn         := H_Mod;
+      end;
+
+    itKneepads:
+      begin
+        TargetComboBox := Slot_gKneePad;
+        TargetImage    := Image_Kneepad;
+        CoreBtn        := K_Core_Atr;
+        Minor1Btn      := K_Atr1;
+        Minor2Btn      := K_Atr2;
+        ModBtn         := K_Mod;
+      end;
   else
     Exit;
   end;
@@ -1471,13 +1304,10 @@ begin
     TargetComboBox.Clear;
     if ASkillVariant.VariantName.IsEmpty then
     begin
-      // TargetComboBox.Items.Clear;
       TargetComboBox.StyleLookup := '';
     end
     else
     begin
-      // TargetComboBox.Items.Clear;
-      // TargetComboBox.Items.Add(ASkillVariant.VariantName);
       LBI := TListBoxItem.Create(TargetComboBox);
       LBI.Height := TargetComboBox.Height;
 
@@ -1668,6 +1498,7 @@ var
   WeaponDisplays: array[TWeaponSlot] of TWeaponDisplay;
   WT: TWeaponFamily;
   WeaponSlot: TWeaponSlot;
+  GearSlot: TItemType;
   I, TotalSkillTiers: Integer;
 
   procedure CalculateAndDisplayWeapon(const ASlot: TWeaponSlot);
@@ -1751,12 +1582,12 @@ begin
 
   // Gear + comptage des skill tiers
   LInput.TotalSkillTiers := 0;
-  for I := Low(FEquippedGearPieces) to High(FEquippedGearPieces) do
+  for GearSlot := itMask to itKneepads do
   begin
-    if FEquippedGearPieces[I].Name <> '' then
+    if FEquippedGearPieces[GearSlot].Name <> '' then
     begin
-      LInput.EquippedGear[TItemType(I)] := FEquippedGearPieces[I];
-      if FEquippedGearPieces[I].CoreAttribute.AttrType = catSkillTier then
+      LInput.EquippedGear[GearSlot] := FEquippedGearPieces[GearSlot];
+      if FEquippedGearPieces[GearSlot].CoreAttribute.AttrType = catSkillTier then
         Inc(LInput.TotalSkillTiers);
     end;
   end;
@@ -1918,8 +1749,9 @@ var
 
 begin
   // Clear current loadout
-  for var il := Low(FEquippedGearPieces) to High(FEquippedGearPieces) do
+  for var il := itMask to itKneepads do
     FEquippedGearPieces[il] := Default(TGearPiece);
+
   for LWeaponSlot := Low(TWeaponSlot) to High(TWeaponSlot) do
   begin
     FSelectedWeapon[LWeaponSlot] := Default(TWeapon);
@@ -1974,7 +1806,7 @@ begin
 
     if not Found then
     begin
-      FEquippedGearPieces[Ord(LItemType)] := Default(TGearPiece);
+      FEquippedGearPieces[LItemType] := Default(TGearPiece);
       Continue; // go to next slot
     end;
 
@@ -2003,20 +1835,6 @@ begin
     LGearPiece.CoreAttribute.Value := SGearPiece.CoreAttributeValue;
 
     // Minor attributes
-//    SetLength(LGearPiece.MinorAttributes, Length(SGearPiece.MinorAttributeTypeStrs));
-//    for var ic := 0 to High(SGearPiece.MinorAttributeTypeStrs) do
-//    begin
-//      LGearPiece.MinorAttributes[ic].MinorAttribute :=
-//        TMinorAttributeType(GetEnumValue(TypeInfo(TMinorAttributeType),
-//        SGearPiece.MinorAttributeTypeStrs[ic]));
-//      LGearPiece.MinorAttributes[ic].AttrType :=
-//        MinorAttributeTypeForDetails(LGearPiece.MinorAttributes[ic].MinorAttribute);
-//
-//      if (Length(SGearPiece.MinorAttributeValues) > ic) and (SGearPiece.MinorAttributeValues[ic] > 0) then
-//        LGearPiece.MinorAttributes[ic].Value := SGearPiece.MinorAttributeValues[ic]
-//      else
-//        LGearPiece.MinorAttributes[ic].Value := GetDefaultMinorAttributeValue(LGearPiece.MinorAttributes[ic].MinorAttribute);
-//    end;
     SetLength(LGearPiece.MinorAttributes, Length(SGearPiece.MinorAttributeTypeStrs));
     for var ic := 0 to High(SGearPiece.MinorAttributeTypeStrs) do
     begin
@@ -2096,7 +1914,7 @@ begin
       LGearPiece.ModID := 0;
     end;
 
-    FEquippedGearPieces[Ord(LItemType)] := LGearPiece;
+    FEquippedGearPieces[LItemType] := LGearPiece;
   end;
 
   // Apply Weapons
@@ -2153,7 +1971,7 @@ begin
   for LWeaponSlot := Low(TWeaponSlot) to High(TWeaponSlot) do
     UpdateWeaponUI(LWeaponSlot, FSelectedWeapon[LWeaponSlot]);
 
-  for var ig := 0 to High(FEquippedGearPieces) do
+  for var ig := itMask to itKneepads do
     UpdateGearSlotUI(FEquippedGearPieces[ig], ig);
 
   for var LSkillSlot := Low(TSkillSlot) to High(TSkillSlot) do
@@ -2163,24 +1981,21 @@ end;
 
 procedure TMainForm.ApplyBuild(const ABuild: TGearLoadout);
 var
-  I: Integer;
+  Slot: TItemType;
   LWeaponSlot: TWeaponSlot;
 begin
   // Apply Gear
-  for I := 0 to High(ABuild.GearPieces) do
+  for Slot := itMask to itKneepads do
   begin
-    FEquippedGearPieces[I] := ABuild.GearPieces[I];
-    UpdateGearSlotUI(FEquippedGearPieces[I], I);
+    FEquippedGearPieces[Slot] := ABuild.GearPieces[Slot];
+    UpdateGearSlotUI(FEquippedGearPieces[Slot], Slot);
   end;
 
   // Apply Weapons
-  for LWeaponSlot := Low(TWeaponSlot) to High(TWeaponSlot) do
+  for LWeaponSlot := wsPrimary to wsSideArm do
   begin
-    if ord(LWeaponSlot) < Length(ABuild.Weapons) then
-    begin
-      FSelectedWeapon[LWeaponSlot] := ABuild.Weapons[LWeaponSlot];
-      UpdateWeaponUI(LWeaponSlot, ABuild.Weapons[LWeaponSlot]);
-    end;
+    FSelectedWeapon[LWeaponSlot] := ABuild.Weapons[LWeaponSlot];
+    UpdateWeaponUI(LWeaponSlot, ABuild.Weapons[LWeaponSlot]);
   end;
 
   RefreshAllStats;
@@ -2188,25 +2003,21 @@ end;
 
 procedure TMainForm.btnShowBestDpsBuildClick(Sender: TObject);
 begin
-//  GenerateAndApplyPredefinedBuild(GetDpsBuildArchetype);
   ShowSidePanel(catWeaponDamage);
 end;
 
 procedure TMainForm.btnShowBestTankBuildClick(Sender: TObject);
 begin
-//  GenerateAndApplyPredefinedBuild(GetTankBuildArchetype);
   ShowSidePanel(catArmor);
 end;
 
 procedure TMainForm.btnShowBestSkillBuildClick(Sender: TObject);
 begin
-//  GenerateAndApplyPredefinedBuild(GetSkillBuildArchetype);
   ShowSidePanel(catSkillTier);
 end;
 
 procedure TMainForm.btnShowBestSupportBuildClick(Sender: TObject);
 begin
-//  GenerateAndApplyPredefinedBuild(GetSupportBuildArchetype);
   ShowSidePanel(catSkillTier);
 end;
 
@@ -2361,8 +2172,6 @@ begin
 end;
 
 procedure TMainForm.BuildFromSelectedAttributes;
-//var
-//  AttrID: string;
 begin
   if FSelectedAttributeIDs.Count = 0 then
     Exit;
@@ -2397,9 +2206,9 @@ begin
   PopulateAttributesList;
 
   case AContext of
-    catWeaponDamage: LabelLookupTitle.Text := 'DPS Attributes Lookup';
-    catArmor: LabelLookupTitle.Text := 'Tank Attributes Lookup';
-    catSkillTier: LabelLookupTitle.Text := 'Skill/Support Attributes Lookup';
+    catWeaponDamage: LabelLookupTitle.Text := 'DPS Attr. Lookup';
+    catArmor: LabelLookupTitle.Text := 'Tank Attr. Lookup';
+    catSkillTier: LabelLookupTitle.Text := 'Skill/Support Attr. Lookup';
   end;
 end;
 
@@ -2600,27 +2409,46 @@ procedure TMainForm.DisplayGeneratedBuilds(ABuilds: TList<TGearLoadout>);
 var
   I: Integer;
   LItem: TListViewItem;
-  LBuildName: string;
+  LBuildName, LDetails: string;
   LGearPiece: TGearPiece;
+  TitleObj, DetailObj: TListItemText;
 begin
   if Assigned(FGeneratedBuilds) then
     FGeneratedBuilds.Free;
   FGeneratedBuilds := ABuilds;
 
-  ListView1.Items.Clear;
   ListView1.BeginUpdate;
   try
+    ListView1.Items.Clear;
+
     for I := 0 to FGeneratedBuilds.Count - 1 do
     begin
-      LBuildName := Format('Build %d (Score: %.1f): ', [I + 1, FGeneratedBuilds[I].Score]);
+      // Texte principal (titre)
+      LBuildName := Format('Build %d (Score: %.1f)', [I + 1, FGeneratedBuilds[I].Score]);
+
+      // Détail : liste des brands/sets trouvés
+      LDetails := '';
       for LGearPiece in FGeneratedBuilds[I].GearPieces do
-      begin
         if LGearPiece.Name <> '' then
-          LBuildName := LBuildName + LGearPiece.SetName + ', ';
-      end;
+          LDetails := LDetails + LGearPiece.SetName + ', ';
+      if LDetails <> '' then
+        SetLength(LDetails, Length(LDetails) - 2); // enlever la dernière virgule
+
       LItem := ListView1.Items.Add;
-      LItem.Text := Copy(LBuildName, 1, Length(LBuildName) - 2);
       LItem.Tag := I;
+
+      // 1) on remplit quand même Text / Detail au cas où
+      LItem.Text   := LBuildName;
+      LItem.Detail := LDetails;
+
+      // 2) on force les drawables du style
+      TitleObj := LItem.Objects.FindDrawable('Title') as TListItemText;
+      if Assigned(TitleObj) then
+        TitleObj.Text := LBuildName;
+
+      DetailObj := LItem.Objects.FindDrawable('Details') as TListItemText;
+      if Assigned(DetailObj) then
+        DetailObj.Text := LDetails;
     end;
   finally
     ListView1.EndUpdate;
@@ -2628,6 +2456,7 @@ begin
 
   Tab_Loadouts.ActiveTab := Builds;
 end;
+
 
 procedure TMainForm.ListView1ItemClick(const Sender: TObject; const AItem: TListViewItem);
 var
@@ -2647,7 +2476,7 @@ var
   LItemType: TItemType;
   LWeaponSlot: TWeaponSlot;
   SGearPiece: TSerializableGearPiece;
-  i: Integer;
+  Slot: TItemType;
 begin
   Result := TSerializableLoadout.Create;
   Result.Name := AName;
@@ -2665,10 +2494,10 @@ begin
   end;
 
   // Serialize Gear
-  for i := 0 to High(FEquippedGearPieces) do
+  for Slot := itMask to itKneepads do
   begin
-    LItemType := TItemType(i);
-    LGearPiece := FEquippedGearPieces[i];
+    LItemType := TItemType(Slot);
+    LGearPiece := FEquippedGearPieces[Slot];
     if LGearPiece.Name <> '' then
     begin
       SGearPiece.SetName    := LGearPiece.SetName;
@@ -2793,26 +2622,41 @@ end;
 
 procedure TMainForm.LoadoutListItemClickEx(const Sender: TObject;
   ItemIndex: Integer; const LocalClickPos: TPointF;
-const ItemObject: TListItemDrawable);
+  const ItemObject: TListItemDrawable);
+var
+  TextItem: TListItemText;
+  ItemRect: TRectF;
 begin
-  if ItemObject.Name = 'Title' then
-  begin
-    EditTitle.Text := (ItemObject as TListItemText).Text;
-    EditTitle.Position.X := LoadoutList.LocalToAbsolute
-      (PointF(0, ItemIndex * LoadoutList.ItemAppearance.ItemHeight)).X +
-      LocalClickPos.X;
-    EditTitle.Position.Y := LoadoutList.LocalToAbsolute
-      (PointF(0, ItemIndex * LoadoutList.ItemAppearance.ItemHeight)).Y +
-      LocalClickPos.Y;
-    EditTitle.Width := (ItemObject as TListItemText).Width;
-    EditTitle.Visible := True;
-    EditTitle.SetFocus;
-    EditTitle.Tag := ItemIndex;
-    // Store the item index in the Tag property
-  end
-  else
+  // 1) Sécurité de base
+  if (ItemObject = nil) then
     Exit;
+
+  if not (ItemObject is TListItemText) then
+    Exit;
+
+  if (ItemIndex < 0) or (ItemIndex >= LoadoutList.Items.Count) then
+    Exit;
+
+  TextItem := TListItemText(ItemObject);
+
+  // 2) On ne gère que le drawable "Title"
+  if not SameText(TextItem.Name, 'Title') then
+    Exit;
+
+  // 3) Mise en place de l’éditeur
+  EditTitle.Text := TextItem.Text;
+
+  // Option plus robuste que le calcul à partir de ItemHeight :
+  ItemRect := LoadoutList.GetItemRect(ItemIndex);
+  EditTitle.Position.X := ItemRect.Left + LocalClickPos.X;
+  EditTitle.Position.Y := ItemRect.Top  + LocalClickPos.Y;
+
+  EditTitle.Width   := TextItem.Width;
+  EditTitle.Visible := True;
+  EditTitle.Tag     := ItemIndex;  // pour retrouver l’item plus tard
+  EditTitle.SetFocus;
 end;
+
 
 procedure TMainForm.SaveClick(Sender: TObject);
 var
@@ -2897,7 +2741,7 @@ var
   Slot: TWeaponSlot;
   SkillSlot: TSkillSlot;
   WF: TWeaponFamily;
-  I: Integer;
+  I: TItemType;
 begin
   // Reset weapons (data + UI)
   FExoticWeaponSelected := False;
@@ -2911,7 +2755,7 @@ begin
   end;
 
   // Reset gear pieces
-  for I := Low(FEquippedGearPieces) to High(FEquippedGearPieces) do
+  for I := itMask to itKneepads do
   begin
     FEquippedGearPieces[I] := Default(TGearPiece);
     UpdateGearSlotUI(FEquippedGearPieces[I], I);
@@ -2941,7 +2785,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var
-  I: Integer;
+  Slot: TItemType;
 begin
   if DataJsonIterator = nil then // première Form seulement
   begin
@@ -2950,26 +2794,32 @@ begin
   end;
 
   SetSavedLoadouts(TLoadoutManager.LoadLoadouts);
+
   { 1) spécialisation + bonus armes + bonus watch }
   FSpecializations := TDictionary<string, TSpecialization>.Create;
   FillSpecializations;
   Slot_Specialization.ItemIndex := -1;
-  for var Slot := Low(TWeaponSlot) to High(TWeaponSlot) do
+
+  for var wSlot := Low(TWeaponSlot) to High(TWeaponSlot) do
   begin
-    FWeaponExpertiseLevels[Slot] := 0;
-    FWeaponSelectedTalentIDs[Slot] := 0;
+    FWeaponExpertiseLevels[wSlot] := 0;
+    FWeaponSelectedTalentIDs[wSlot] := 0;
+    FSelectedWeapon[WSlot] := Default(TWeapon);
   end;
 
   { 2) trois slots armes }
-  for var Slot := Low(TWeaponSlot) to High(TWeaponSlot) do
-    FSelectedWeapon[Slot] := Default (TWeapon);
+  for var wSlot := Low(TWeaponSlot) to High(TWeaponSlot) do
+    FSelectedWeapon[wSlot] := Default (TWeapon);
+
   FExoticWeaponSelected := False;
   FExoticWeaponSlot := wsNone;
 
-  // Initialize the GearPieces
-  SetLength(FEquippedGearPieces, 6);
-  for I := 0 to High(FEquippedGearPieces) do
-    FEquippedGearPieces[I] := Default (TGearPiece);
+  // Initialize the GearPieces (enum-indexed array)
+  for Slot := itMask to itKneepads do
+    FEquippedGearPieces[Slot] := Default (TGearPiece);
+
+  FGearSlotIndex := itUnknown;
+
   FPieceSets := TList<TPieceSet>.Create;
   FGeneratedBuilds := nil;
   FAttributeInfos := TList<TAttributeCatalogEntry>.Create;
@@ -2989,7 +2839,7 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 var
-  I: Integer;
+  I: TItemType;
 begin
   ClearSavedLoadouts;
 
@@ -3005,7 +2855,7 @@ begin
   FreeAndNil(FPieceSets);
   FreeAndNil(FAttributeInfos);
   FreeAndNil(FSelectedAttributeIDs);
-  for I := Low(FGearSlotPlaceholders) to High(FGearSlotPlaceholders) do
+  for I := itMask to itKneepads do
     FreeAndNil(FGearSlotPlaceholders[I]);
   Inherited;
 end;

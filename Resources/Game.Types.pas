@@ -309,7 +309,7 @@ type
   end;
 
   TGearLoadout = record
-    GearPieces: array[0..5] of TGearPiece; // Mask, Backpack, Chest, Gloves, Holster, Kneepads (0-indexed)
+    GearPieces: array[TItemType] of TGearPiece; // Mask, Backpack, Chest, Gloves, Holster, Kneepads (0-indexed)
     Weapons: array[TWeaponSlot] of TWeapon;
     // Primary, Secondary, Sidearm; wsNone slot remains unused
     Score: Double;

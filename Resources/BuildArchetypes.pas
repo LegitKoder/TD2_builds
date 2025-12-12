@@ -90,11 +90,10 @@ begin
   // Minor attributes we care about most (used by PreFilterGear weighting)
   // These keys should match AttributeID patterns from your JSON
   AArchetype.AttributeWeights.Add('criticalHitChance',       1.0);
-  AArchetype.AttributeWeights.Add('criticalHitDamage',       0.95);
-  AArchetype.AttributeWeights.Add('headshotDamage',          0.60);
-  AArchetype.AttributeWeights.Add('damageToArmor',           0.45);
-  AArchetype.AttributeWeights.Add('damageToTargetOutOfCover',0.80);
-  AArchetype.AttributeWeights.Add('weaponDamage',            0.70);
+  AArchetype.AttributeWeights.Add('criticalHitDamage',       1.0);
+  AArchetype.AttributeWeights.Add('headshotDamage',          1.0);
+  AArchetype.AttributeWeights.Add('weaponHandling',          1.0);
+  AArchetype.AttributeWeights.Add('weaponDamage',            1.0);
 
   // Optionally enforce required minors per slot
   // Example: all pieces prefer CHC/CHD

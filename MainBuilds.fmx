@@ -16340,63 +16340,49 @@ object MainForm: TMainForm
           FooterAppearanceClassName = 'TListHeaderObjects'
           Transparent = True
           Images = ImgListSpec
-          ItemSpaces.Top = 3.000000000000000000
-          ItemSpaces.Right = 7.000000000000000000
+          ItemSpaces.Left = 3.000000000000000000
+          ItemSpaces.Right = 0.000000000000000000
+          ItemSpaces.Bottom = 3.000000000000000000
+          SideSpace = 3
           Align = Client
           Size.Width = 153.000000000000000000
           Size.Height = 552.000000000000000000
           Size.PlatformDefault = False
           TabOrder = 0
-          ItemAppearance.ItemHeight = 40
-          ItemAppearance.ItemEditHeight = 40
+          ItemAppearance.ItemHeight = 45
+          ItemAppearance.ItemEditHeight = 45
           ItemAppearance.HeaderHeight = 12
           ItemAppearance.FooterHeight = 12
           ItemAppearanceObjects.ItemObjects.ObjectsCollection = <
             item
               AppearanceObjectName = 'Title'
               AppearanceClassName = 'TTextObjectAppearance'
+              Appearance.Font.Size = 10.000000000000000000
               Appearance.Font.StyleExt = {00070000000000000004000000}
               Appearance.TextAlign = Leading
               Appearance.TextColor = claBlack
-              Appearance.Width = 70.000000000000000000
-              Appearance.Height = 21.000000000000000000
+              Appearance.Height = 12.000000000000000000
             end
             item
               AppearanceObjectName = 'Details'
               AppearanceClassName = 'TTextObjectAppearance'
+              Appearance.Font.Size = 7.000000000000000000
               Appearance.TextAlign = Leading
+              Appearance.WordWrap = True
               Appearance.TextColor = claBlack
-              Appearance.Width = 70.000000000000000000
+              Appearance.Width = 139.000000000000000000
               Appearance.Height = 21.000000000000000000
-              Appearance.PlaceOffset.Y = 21.000000000000000000
+              Appearance.PlaceOffset.Y = 13.000000000000000000
             end
             item
               AppearanceObjectName = 'Spec_Icon'
               AppearanceClassName = 'TImageObjectAppearance'
-              Appearance.Width = 40.000000000000000000
+              Appearance.ScalingMode = Stretch
+              Appearance.Width = 50.000000000000000000
               Appearance.Height = 40.000000000000000000
-              Appearance.Align = Center
+              Appearance.Align = Trailing
               Appearance.VertAlign = Center
               Appearance.PlaceOffset.X = 25.000000000000000000
-            end
-            item
-              AppearanceObjectName = 'F_Ico'
-              AppearanceClassName = 'TImageObjectAppearance'
-              Appearance.Width = 20.000000000000000000
-              Appearance.Height = 20.000000000000000000
-              Appearance.Align = Trailing
-              Appearance.VertAlign = Center
-              Appearance.PlaceOffset.Y = 10.000000000000000000
-            end
-            item
-              AppearanceObjectName = 'Nb'
-              AppearanceClassName = 'TTextObjectAppearance'
-              Appearance.TextColor = claBlack
-              Appearance.Width = 20.000000000000000000
-              Appearance.Height = 20.000000000000000000
-              Appearance.Align = Trailing
-              Appearance.VertAlign = Center
-              Appearance.PlaceOffset.Y = -10.000000000000000000
             end>
           ItemAppearanceObjects.ItemEditObjects.ObjectsCollection = <
             item
@@ -16407,17 +16393,11 @@ object MainForm: TMainForm
           ItemAppearanceObjects.HeaderObjects.Text.Visible = False
           ItemAppearanceObjects.FooterObjects.Text.Height = 12.000000000000000000
           ItemAppearanceObjects.FooterObjects.Text.Visible = False
+          CanSwipeDelete = False
           OnItemClick = LoadoutListItemClick
           OnItemClickEx = LoadoutListItemClickEx
           DeleteButtonText = 'Del'
-          object Edit1: TEdit
-            Touch.InteractiveGestures = [LongTap, DoubleTap]
-            TabOrder = 0
-            Position.X = 24.000000000000000000
-            Position.Y = 320.000000000000000000
-            Visible = False
-            OnExit = EditTitleExit
-          end
+          SelectionCrossfade = True
         end
       end
     end

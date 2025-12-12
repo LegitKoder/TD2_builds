@@ -91,20 +91,6 @@ begin
     Result := catWeaponDamage;
 end;
 
-//function MinorAttributeCategory(const Attr: TMinorAttributeType)
-//  : TMinorAttributeCat;
-//begin
-//  case Attr of
-//    madCriticalHitChance, madCriticalHitDamage, madHeadshotDamage,
-//      madWeaponHandling:
-//      Result := matOffensive;
-//    madSkillDamage, madSkillHaste, madStatusEffects, madRepairSkills:
-//      Result := matUtility;
-//  else
-//    Result := matDefensive;
-//  end;
-//end;
-
 function GetMaxPieceCount(ASetType: TSetType): Integer;
 begin
   case ASetType of
@@ -117,28 +103,6 @@ begin
     Result := 6;
   end;
 end;
-
-//function MinorAttrEnumToId(const AEnum: TMinorAttributeType): string;
-//begin
-//  case AEnum of
-//    madArmorRegen: Result := 'armorRegen';
-//    madCriticalHitChance: Result := 'criticalHitChance';
-//    madCriticalHitDamage: Result := 'criticalHitDamage';
-//    madExplosiveResistance: Result := 'explosiveResistance';
-//    madIncomingRepairs: Result := 'incomingRepairs';
-//    madHazardProtection: Result := 'hazardProtection';
-//    madHeadshotDamage: Result := 'headshotDamage';
-//    madHealth: Result := 'health';
-//    madRepairSkills: Result := 'repairSkills';
-//    madSkillDamage: Result := 'skillDamage';
-//    madSkillHaste: Result := 'skillHaste';
-//    madStatusEffects: Result := 'statusEffects';
-//    madWeaponHandling: Result := 'weaponHandling';
-//  else
-//    Result := '';
-//  end;
-//end;
-
 
 { TRecommendationEngine }
 
@@ -171,9 +135,9 @@ begin
 
   PreFilterGear(AArchetype, LGearPool, AWeights);
   try
-    LMaxBuilds := 100;
+    LMaxBuilds := 25;
     if Assigned(AWeights) and (AWeights.Count > 0) then
-      LMaxBuilds := 500; // explore more combos when we need to rank by attributes
+      LMaxBuilds := 100; // explore more combos when we need to rank by attributes
     GenerateBuildsRecursive(LInitialBuild, itMask, AArchetype, LGearPool,
       LRequiredBrands, LBrandCounts, LMaxBuilds);
     Result := TList<TGearLoadout>.Create;
@@ -262,7 +226,6 @@ begin
       for var LPart in LBrandSet.Parts do
       begin
         FillChar(LGearPiece, SizeOf(LGearPiece), 0);
-//        LGearPiece.SetName := LBrandSet.Name;
         LGearPiece.SetName := CalcEngine.CanonicalSetName(LBrandSet.Name);
         LGearPiece.Name := LPart.Name;
         LGearPiece.ItemType := LPart.GearSlot;
@@ -397,7 +360,7 @@ begin
       begin
         if (LItemType > itKneepads) then
           Continue;
-        if ABuild.GearPieces[Ord(LItemType)].Talent <>
+        if ABuild.GearPieces[LItemType].Talent <>
            AArchetype.RequiredTalents[LItemType] then
         begin
           Result := False;
@@ -432,7 +395,7 @@ begin
       begin
         if (LItemType > itKneepads) then
           Continue;
-        if ABuild.GearPieces[Ord(LItemType)].CoreAttribute.AttrType <>
+        if ABuild.GearPieces[LItemType].CoreAttribute.AttrType <>
            AArchetype.RequiredCoreAttribute[LItemType] then
         begin
           Result := False;
@@ -587,13 +550,9 @@ begin
   if FGeneratedBuilds.Count >= AMaxBuilds then
     Exit;
 
-  if ACurrentSlot > itKneepads then
-  begin
-    if IsValidGearSetCombination(ACurrentBuild) and
-      MeetsBuildRequirements(ACurrentBuild, AArchetype) then
-      FGeneratedBuilds.Add(ACurrentBuild);
+  // Défensif : on ne traite que les slots d'équipement réels
+  if (ACurrentSlot < itMask) or (ACurrentSlot > itKneepads) then
     Exit;
-  end;
 
   if not AGearPool.ContainsKey(ACurrentSlot) then
     Exit;
@@ -611,15 +570,16 @@ begin
     if LCount >= GetMaxPieceCount(LGearPiece.SetType) then
       Continue;
 
-    ACurrentBuild.GearPieces[Ord(ACurrentSlot)] := LGearPiece;
+    // Place la pièce dans le slot courant
+    ACurrentBuild.GearPieces[ACurrentSlot] := LGearPiece;
 
-    // Track Count
+    // Track du nombre de pièces de ce brand
     ABrandCounts.AddOrSetValue(LBrandKey, LCount + 1);
 
+    // Slots restants après celui-ci
     LRemainingSlots := Ord(itKneepads) - Ord(ACurrentSlot);
 
-    if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands,
-      LRemainingSlots) then
+    if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots) then
     begin
       if ACurrentSlot < itKneepads then
       begin
@@ -629,8 +589,8 @@ begin
       end
       else
       begin
-        GenerateBuildsRecursive(ACurrentBuild, Succ(ACurrentSlot),
-          AArchetype, AGearPool, ARequiredBrands, ABrandCounts, AMaxBuilds);
+        if IsValidGearSetCombination(ACurrentBuild) and MeetsBuildRequirements(ACurrentBuild, AArchetype) then
+          FGeneratedBuilds.Add(ACurrentBuild);
       end;
     end;
 
