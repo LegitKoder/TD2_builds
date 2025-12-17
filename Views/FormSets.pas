@@ -315,12 +315,37 @@ function TFormSlots.FormatFixedMinorAttribute(const Attr
   : TFixedMinorAttributeDefinition): string;
 var
   ValueText: string;
+  NameText: string;
 begin
   if SameValue(Attr.Value, 0.0) then
     ValueText := ''
   else
-    ValueText := ' +' + FormatFloat('0.##', Attr.Value) + '%';
-  Result := Attr.TypeName + ValueText;
+    ValueText := '+' + FormatFloat('0.##', Attr.Value) + '% ';
+
+  // Prettify name
+  if SameText(Attr.ID, 'meleeDamage') then
+    NameText := 'Melee Damage'
+  else if SameText(Attr.ID, 'pistolDamage') then
+    NameText := 'Pistol Damage'
+  else if SameText(Attr.ID, 'damageTOutOfCover') then
+    NameText := 'Dmg to Target Out of Cover'
+  else if SameText(Attr.ID, 'armorOnKill') then
+    NameText := 'Armor on Kill'
+  else if SameText(Attr.ID, 'healthDamage') then
+    NameText := 'Health Damage'
+  else
+  begin
+    // Fallback: try to map to enum for nice name, otherwise use TypeName or ID
+    var EnumType: TMinorAttributeType;
+    if TryMapFixedMinorToEnum(Attr.ID, EnumType) then
+      NameText := MinorAttributeDetailsToString(EnumType)
+    else if Attr.TypeName <> '' then
+      NameText := Attr.TypeName
+    else
+      NameText := Attr.ID;
+  end;
+
+  Result := ValueText + NameText;
 end;
 
 procedure TFormSlots.ConfigureFixedMinorColumnVisibility(const HasFixed
@@ -356,6 +381,9 @@ var
   procedure AppendFixedDefinition(const ADef: TFixedMinorAttributeDefinition);
   var
     Len: Integer;
+    Cat: TMinorAttributeCat;
+    LowerID: string;
+    EnumType: TMinorAttributeType;
   begin
     Len := Length(FixedDefs);
     SetLength(FixedDefs, Len + 1);
@@ -363,6 +391,33 @@ var
 
     DisplayItem := TListBoxItem.Create(ListBoxFixedMinorAttributes);
     DisplayItem.Text := FormatFixedMinorAttribute(ADef);
+
+    // Determine ImageIndex (Category Color)
+    Cat := matOffensive; // Default
+    if TryMapFixedMinorToEnum(ADef.ID, EnumType) then
+      Cat := MinorAttributeTypeForDetails(EnumType)
+    else
+    begin
+      // Guess category for non-standard fixed attributes
+      LowerID := ADef.ID.ToLower;
+      if LowerID.Contains('armor') or LowerID.Contains('health') or
+         LowerID.Contains('protection') or LowerID.Contains('resistance') or
+         LowerID.Contains('incoming') then
+        Cat := matDefensive
+      else if LowerID.Contains('skill') or LowerID.Contains('repair') or
+              LowerID.Contains('haste') or LowerID.Contains('status') then
+        Cat := matUtility
+      else
+        Cat := matOffensive; // Default to red (Damage, Chance, etc.)
+    end;
+
+    // Map Category to ImageIndex (3: Off, 4: Def, 5: Util)
+    case Cat of
+      matOffensive: DisplayItem.ImageIndex := 3;
+      matDefensive: DisplayItem.ImageIndex := 4;
+      matUtility:   DisplayItem.ImageIndex := 5;
+    end;
+
     DisplayItem.Enabled := False;
     DisplayItem.HitTest := False;
     DisplayItem.CanFocus := False;
@@ -384,7 +439,7 @@ begin
           Def) then
         begin
           AppendFixedDefinition(Def);
-          if (Index < 2) and TryMapFixedMinorToEnum(Def.ID, MinorType) then
+          if TryMapFixedMinorToEnum(Def.ID, MinorType) then
             LockMinorAttributeInList(MinorType);
         end
         else
