@@ -215,6 +215,8 @@ begin
     Result := gmetStatusEffectResistance // Updated string and enum value
   else if SameText(S, 'gmetPulseResistance') then
     Result := gmetPulseResistance // Updated string and enum value
+  else if SameText(S, 'gmetExplosiveResistance') then
+    Result := gmetExplosiveResistance // Updated string and enum value
   else if SameText(S, 'gmetIncomingRepairs') then
     Result := gmetIncomingRepairs
     // Corrected original typo and used new enum gmetIncomingRepairs
@@ -353,6 +355,8 @@ begin
     Result := sbtAttribute        // Was sbtMultiplicativeDamage
   else if (AttributeID = 'damage_to_targets_out_of_cover') or (AttributeID = 'damageToTargetOutOfCover') then
     Result := sbtAttribute        // Was sbtMultiplicativeDamage
+  else if (AttributeID = 'health_damage') or (AttributeID = 'healthDamage') then
+    Result := sbtAttribute
   else if AttributeID = 'skill_tier' then
     Result := sbtCoreAttribute
   else if AttributeID = 'armor' then
@@ -371,9 +375,12 @@ begin
 
   // Defense Attributes
   else if (AttributeID = 'armor_regen') or (AttributeID = 'armorRegen') then Result := sbtDefenseAttribute
+  else if (AttributeID = 'armor_regen_pct') or (AttributeID = 'armorRegenPct') then Result := sbtDefenseAttribute
   else if (AttributeID = 'armor_on_kill') or (AttributeID = 'armorOnKill') then Result := sbtDefenseAttribute
+  else if (AttributeID = 'health_on_kill') or (AttributeID = 'healthOnKill') then Result := sbtDefenseAttribute
   else if (AttributeID = 'hazard_protection') or (AttributeID = 'hazardProtection') then Result := sbtDefenseAttribute
   else if (AttributeID = 'health') then Result := sbtDefenseAttribute
+  else if (AttributeID = 'total_armor') or (AttributeID = 'totalArmor') then Result := sbtDefenseAttribute
   else if (AttributeID = 'incoming_repairs') or (AttributeID = 'incomingRepairs') then Result := sbtDefenseAttribute
 
   // Resistances
@@ -1320,7 +1327,9 @@ var
       else if SameText(CurrentIterator.Key, 'extra_rounds') then
         EffectRecord.ExtraRounds := CurrentIterator.AsDouble
       else if SameText(CurrentIterator.Key, 'melee_damage') then
-        EffectRecord.MeleeDamage := CurrentIterator.AsDouble;
+        EffectRecord.MeleeDamage := CurrentIterator.AsDouble
+      else if SameText(CurrentIterator.Key, 'magazine_size') then
+        EffectRecord.ExtraRounds := CurrentIterator.AsDouble;
       // Add any other fields from TWeaponModEffect that are present in your JSON
     end;
     CurrentIterator.Return; // Exit effect object
@@ -1875,6 +1884,14 @@ begin
                     LBonusAttrID := 'damageToHealth'
                   else if SameText(LBonusAttrID, 'damage_to_targets_out_of_cover') then
                     LBonusAttrID := 'damageToTargetOutOfCover';
+
+      // Normalize common attributes to camelCase for internal consistency
+      if SameText(LBonusAttrID, 'damage_to_armor') then
+        LBonusAttrID := 'damageToArmor'
+      else if SameText(LBonusAttrID, 'damage_to_health') then
+        LBonusAttrID := 'damageToHealth'
+      else if SameText(LBonusAttrID, 'damage_to_targets_out_of_cover') then
+        LBonusAttrID := 'damageToTargetOutOfCover';
 
                   SB.AttributeID := LBonusAttrID;
                   if VarIsNumeric(LBonusValue) then
