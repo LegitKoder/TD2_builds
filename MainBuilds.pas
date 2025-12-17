@@ -993,6 +993,7 @@ var
   RandomIcons: TArray<Integer>;
   FixedCount: Integer;
   FixedSummary: string;
+  NextFixedIdx: Integer;
 begin
   TargetComboBox := nil;
   TargetImage    := nil;
@@ -1163,58 +1164,55 @@ begin
   // 2. Remplir Minor2 avec Random[1] si dispo, sinon Fixed[offset].
   // 3. Si "Claws Out" (3 attr, pas de mod), utiliser ModBtn pour le 3eme attr fixe.
 
-  var NextFixedIdx: Integer;
+  NextFixedIdx := 0;
+
+  // --- Slot 1 ---
+  if RandomCount >= 1 then
+    SetupAttrBtn(Minor1Btn, True, 0, -1)
+  else
   begin
-    NextFixedIdx := 0;
+    SetupAttrBtn(Minor1Btn, False, -1, NextFixedIdx);
+    Inc(NextFixedIdx);
+  end;
 
-    // --- Slot 1 ---
-    if RandomCount >= 1 then
-      SetupAttrBtn(Minor1Btn, True, 0, -1)
-    else
+  // --- Slot 2 ---
+  if RandomCount >= 2 then
+    SetupAttrBtn(Minor2Btn, True, 1, -1)
+  else
+  begin
+    SetupAttrBtn(Minor2Btn, False, -1, NextFixedIdx);
+    Inc(NextFixedIdx);
+  end;
+
+  // --- Slot 3 / Mod Slot ---
+  if Assigned(ModBtn) then
+  begin
+    var HasSlot := HasModSlot(GearPiece);
+    var UsedForAttribute := False;
+
+    // Si on a encore des attributs fixes à afficher et PAS de slot de mod (ex: Claws Out)
+    if (NextFixedIdx < FixedCount) and (not HasSlot) then
     begin
-      SetupAttrBtn(Minor1Btn, False, -1, NextFixedIdx);
-      Inc(NextFixedIdx);
+      SetupAttrBtn(ModBtn, False, -1, NextFixedIdx);
+      // On force l'apparence "disabled attribute" sur ce bouton mod
+      ModBtn.Visible := True;
+      ModBtn.ImageIndex := -1;
+      UsedForAttribute := True;
     end;
 
-    // --- Slot 2 ---
-    if RandomCount >= 2 then
-      SetupAttrBtn(Minor2Btn, True, 1, -1)
-    else
+    if not UsedForAttribute then
     begin
-      SetupAttrBtn(Minor2Btn, False, -1, NextFixedIdx);
-      Inc(NextFixedIdx);
-    end;
-
-    // --- Slot 3 / Mod Slot ---
-    if Assigned(ModBtn) then
-    begin
-      var HasSlot := HasModSlot(GearPiece);
-      var UsedForAttribute := False;
-
-      // Si on a encore des attributs fixes à afficher et PAS de slot de mod (ex: Claws Out)
-      if (NextFixedIdx < FixedCount) and (not HasSlot) then
+      // Comportement standard MOD
+      ModBtn.Visible := HasSlot;
+      // Les mods doivent rester cliquables
+      ModBtn.Enabled := True;
+      if HasSlot then
       begin
-        SetupAttrBtn(ModBtn, False, -1, NextFixedIdx);
-        // On force l'apparence "disabled attribute" sur ce bouton mod
-        ModBtn.Visible := True;
-        ModBtn.ImageIndex := -1;
-        UsedForAttribute := True;
-      end;
-
-      if not UsedForAttribute then
-      begin
-        // Comportement standard MOD
-        ModBtn.Visible := HasSlot;
-        // Les mods doivent rester cliquables
-        ModBtn.Enabled := True;
-        if HasSlot then
-        begin
-          ModBtn.ImageIndex := GearPiece.SelectedModIconIndex;
-          if GearPiece.ModAttribute.ModEffect <> gmetUnknown then
-            ModBtn.Text := ''
-          else
-            ModBtn.Text := '';
-        end;
+        ModBtn.ImageIndex := GearPiece.SelectedModIconIndex;
+        if GearPiece.ModAttribute.ModEffect <> gmetUnknown then
+          ModBtn.Text := ''
+        else
+          ModBtn.Text := '';
       end;
     end;
   end;

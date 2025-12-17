@@ -409,7 +409,15 @@ begin
   FSelectedGearPiece.FixedMinorAttributes := FixedDefs;
 
   FixedCount := Length(FSelectedGearPiece.FixedMinorAttributes);
-  MaxSlots := Max(FixedCount, 2);
+
+  // Use the slot count defined in the part, default to 2 if 0/missing
+  MaxSlots := APart.MinorAttributeSlotCount;
+  if MaxSlots = 0 then
+    MaxSlots := 2;
+
+  // Persist the corrected slot count to the selected piece so UpdateMinorAttributeList uses the correct value
+  FSelectedGearPiece.MinorAttributeSlotCount := MaxSlots;
+
   FRollableMinorLimit := Max(MaxSlots - FixedCount, 0);
 
   ConfigureFixedMinorColumnVisibility(FixedCount > 0);
