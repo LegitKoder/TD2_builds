@@ -950,6 +950,44 @@ var
       Result := Result + ' +' + FormatFloat('0.#', Attr.Value) + '%';
   end;
 
+  { Helper local pour configurer un bouton d'attribut }
+  procedure SetupAttrBtn(Btn: TCornerButton; IsRandom: Boolean; Index, FixedIdx: Integer);
+  var
+    RandomCount: Integer;
+    RandomIcons: TArray<Integer>;
+    FixedCount: Integer;
+  begin
+    if not Assigned(Btn) then Exit;
+
+    RandomCount  := Length(GearPiece.MinorAttributes);
+    RandomIcons  := GearPiece.SelectedMinorIconIndices;
+    FixedCount   := Length(GearPiece.FixedMinorAttributes);
+
+    Btn.Visible := True;
+    Btn.ImageIndex := -1;
+    Btn.Text := '';
+    // Btn.Hint := FixedSummary; // FixedSummary is local to main proc, assume blank or passed if needed
+
+    if IsRandom then
+    begin
+      Btn.Enabled := True;
+      if (Index >= 0) and (Index < RandomCount) then
+      begin
+        if Index < Length(RandomIcons) then
+          Btn.ImageIndex := RandomIcons[Index];
+        Btn.Text := GetEnumName(TypeInfo(TMinorAttributeType),
+          Ord(GearPiece.MinorAttributes[Index].MinorAttribute));
+      end;
+    end
+    else
+    begin
+      // Fixed Attribute
+      Btn.Enabled := False;
+      if (FixedIdx >= 0) and (FixedIdx < FixedCount) then
+        Btn.Text := FixedLine(GearPiece, FixedIdx);
+    end;
+  end;
+
 var
   RandomCount: Integer;
   RandomIcons: TArray<Integer>;
@@ -1118,35 +1156,7 @@ begin
   FixedCount   := Length(GearPiece.FixedMinorAttributes);
   FixedSummary := BuildFixedMinorText(GearPiece);
 
-  { Helper local pour configurer un bouton d'attribut }
-  procedure SetupAttrBtn(Btn: TCornerButton; IsRandom: Boolean; Index, FixedIdx: Integer);
-  begin
-    if not Assigned(Btn) then Exit;
-
-    Btn.Visible := True;
-    Btn.ImageIndex := -1;
-    Btn.Text := '';
-    Btn.Hint := FixedSummary;
-
-    if IsRandom then
-    begin
-      Btn.Enabled := True;
-      if (Index >= 0) and (Index < RandomCount) then
-      begin
-        if Index < Length(RandomIcons) then
-          Btn.ImageIndex := RandomIcons[Index];
-        Btn.Text := GetEnumName(TypeInfo(TMinorAttributeType),
-          Ord(GearPiece.MinorAttributes[Index].MinorAttribute));
-      end;
-    end
-    else
-    begin
-      // Fixed Attribute
-      Btn.Enabled := False;
-      if (FixedIdx >= 0) and (FixedIdx < FixedCount) then
-        Btn.Text := FixedLine(GearPiece, FixedIdx);
-    end;
-  end;
+  // Removed incorrectly placed nested procedure.
 
   // Stratégie :
   // 1. Remplir Minor1 avec Random[0] si dispo, sinon Fixed[0].
