@@ -351,20 +351,14 @@ end;
 procedure TFormSlots.ConfigureFixedMinorColumnVisibility(const HasFixed
   : Boolean);
 const
-  COL_WITH_FIXED: array [0 .. 2] of Double = (45.0, 25.0, 30.0);
-  COL_WITHOUT_FIXED: array [0 .. 2] of Double = (65.0, 0.0, 35.0);
+  COL_SINGLE_LIST: array [0 .. 2] of Double = (100.0, 0.0, 0.0);
 begin
-  if HasFixed then
+  // Always give full width to the main listbox, as we now merge fixed attributes into it.
+  if GridPanelLayout2.ColumnCollection.Count >= 3 then
   begin
-    GridPanelLayout2.ColumnCollection.Items[0].Value := COL_WITH_FIXED[0];
-    GridPanelLayout2.ColumnCollection.Items[1].Value := COL_WITH_FIXED[1];
-    GridPanelLayout2.ColumnCollection.Items[2].Value := COL_WITH_FIXED[2];
-  end
-  else
-  begin
-    GridPanelLayout2.ColumnCollection.Items[0].Value := COL_WITHOUT_FIXED[0];
-    GridPanelLayout2.ColumnCollection.Items[1].Value := COL_WITHOUT_FIXED[1];
-    GridPanelLayout2.ColumnCollection.Items[2].Value := COL_WITHOUT_FIXED[2];
+    GridPanelLayout2.ColumnCollection.Items[0].Value := COL_SINGLE_LIST[0];
+    GridPanelLayout2.ColumnCollection.Items[1].Value := COL_SINGLE_LIST[1];
+    GridPanelLayout2.ColumnCollection.Items[2].Value := COL_SINGLE_LIST[2];
   end;
 end;
 
@@ -372,13 +366,13 @@ procedure TFormSlots.ApplyFixedMinorAttributes(const APart: TPart);
 var
   FixedID: string;
   Def: TFixedMinorAttributeDefinition;
-  MinorType: TMinorAttributeType;
   DisplayItem: TListBoxItem;
   FixedCount: Integer;
   MaxSlots: Integer;
   FixedDefs: TArray<TFixedMinorAttributeDefinition>;
+  FixedHeader: TListBoxGroupHeader;
 
-  procedure AppendFixedDefinition(const ADef: TFixedMinorAttributeDefinition);
+  procedure AppendFixedDefinitionToMainList(const ADef: TFixedMinorAttributeDefinition);
   var
     Len: Integer;
     Cat: TMinorAttributeCat;
@@ -389,8 +383,9 @@ var
     SetLength(FixedDefs, Len + 1);
     FixedDefs[Len] := ADef;
 
-    DisplayItem := TListBoxItem.Create(ListBoxFixedMinorAttributes);
-    DisplayItem.Text := FormatFixedMinorAttribute(ADef);
+    DisplayItem := TListBoxItem.Create(ListBoxMinorAttributes);
+    DisplayItem.Text := FormatFixedMinorAttribute(ADef) + ' (Fixed)';
+    DisplayItem.Tag := -99; // Mark as Fixed Attribute
 
     // Determine ImageIndex (Category Color)
     Cat := matOffensive; // Default
@@ -408,7 +403,7 @@ var
               LowerID.Contains('haste') or LowerID.Contains('status') then
         Cat := matUtility
       else
-        Cat := matOffensive; // Default to red (Damage, Chance, etc.)
+        Cat := matOffensive;
     end;
 
     // Map Category to ImageIndex (3: Off, 4: Def, 5: Util)
@@ -418,51 +413,64 @@ var
       matUtility:   DisplayItem.ImageIndex := 5;
     end;
 
-    DisplayItem.Enabled := False;
-    DisplayItem.HitTest := False;
-    DisplayItem.CanFocus := False;
-    ListBoxFixedMinorAttributes.AddObject(DisplayItem);
+    // Visual locking
+    DisplayItem.HitTest := False;  // Prevent clicking/toggling by user
+    DisplayItem.IsSelected := True; // Make it look selected
+    DisplayItem.Selectable := False;
+
+    // Insert at the top (index 1 to be under the header if we add one, or 0)
+    // We'll add them after the "FIXED ATTRIBUTES" header which we will add at 0.
+    ListBoxMinorAttributes.InsertObject(1, DisplayItem);
   end;
 begin
-  ResetMinorAttributeSelections;
+  // 1. Reset the list to standard available attributes
+  PopulateMinorAttributes;
+  ListBoxFixedMinorAttributes.Visible := False; // Ensure the old list is hidden
 
-  ListBoxFixedMinorAttributes.BeginUpdate;
+  ListBoxMinorAttributes.BeginUpdate;
   try
-    ListBoxFixedMinorAttributes.Clear;
+    SetLength(FixedDefs, 0);
+
+    // 2. Resolve Fixed Attributes definitions
     if (Length(APart.FixedMinorAttributeIDs) > 0) and Assigned(DataJsonIterator)
       and Assigned(DataJsonIterator.FixedMinorAttributeDefinitions) then
     begin
       for var Index := 0 to High(APart.FixedMinorAttributeIDs) do
       begin
         FixedID := APart.FixedMinorAttributeIDs[Index];
-        if DataJsonIterator.FixedMinorAttributeDefinitions.TryGetValue(FixedID,
-          Def) then
-        begin
-          AppendFixedDefinition(Def);
-          if TryMapFixedMinorToEnum(Def.ID, MinorType) then
-            LockMinorAttributeInList(MinorType);
-        end
+        if DataJsonIterator.FixedMinorAttributeDefinitions.TryGetValue(FixedID, Def) then
+          AppendFixedDefinitionToMainList(Def)
         else
         begin
           Def := Default(TFixedMinorAttributeDefinition);
           Def.ID := FixedID;
           Def.TypeName := FixedID;
           Def.Value := 0.0;
-          AppendFixedDefinition(Def);
+          AppendFixedDefinitionToMainList(Def);
         end;
       end;
-    end;
-    if (Length(FixedDefs) = 0) and (Length(FSelectedGearPiece.FixedMinorAttributes) > 0) then
+    end
+    else if (Length(FSelectedGearPiece.FixedMinorAttributes) > 0) then
     begin
+      // Fallback if Part didn't have IDs but Piece has definitions (e.g. from existing loadout)
       for Def in FSelectedGearPiece.FixedMinorAttributes do
-        AppendFixedDefinition(Def);
+        AppendFixedDefinitionToMainList(Def);
     end;
+
+    // 3. Add Header if we have fixed attributes
+    if Length(FixedDefs) > 0 then
+    begin
+      FixedHeader := TListBoxGroupHeader.Create(ListBoxMinorAttributes);
+      FixedHeader.Text := 'FIXED ATTRIBUTES';
+      FixedHeader.Selectable := False;
+      ListBoxMinorAttributes.InsertObject(0, FixedHeader);
+    end;
+
   finally
-    ListBoxFixedMinorAttributes.EndUpdate;
+    ListBoxMinorAttributes.EndUpdate;
   end;
 
   FSelectedGearPiece.FixedMinorAttributes := FixedDefs;
-
   FixedCount := Length(FSelectedGearPiece.FixedMinorAttributes);
 
   // Use the slot count defined in the part, default to 2 if 0/missing
@@ -470,20 +478,12 @@ begin
   if MaxSlots = 0 then
     MaxSlots := 2;
 
-  // Persist the corrected slot count to the selected piece so UpdateMinorAttributeList uses the correct value
   FSelectedGearPiece.MinorAttributeSlotCount := MaxSlots;
-
   FRollableMinorLimit := Max(MaxSlots - FixedCount, 0);
 
-  ConfigureFixedMinorColumnVisibility(FixedCount > 0);
-  ListBoxFixedMinorAttributes.Visible := FixedCount > 0;
-  ListBoxMinorAttributes.Enabled := FRollableMinorLimit > 0;
-
-  if FRollableMinorLimit = 0 then
-  begin
-    ListBoxMinorAttributes.ClearSelection;
-    SetLength(FSelectedMinorAttributeImageIndices, 0);
-  end;
+  // Layout updates
+  ConfigureFixedMinorColumnVisibility(False); // Always hide the secondary column now
+  ListBoxMinorAttributes.Enabled := True; // Always enabled so we can see/scroll fixed attributes
 end;
 
 {$ENDREGION}
@@ -531,20 +531,22 @@ begin
   for iq := 0 to High(FSelectedMinorAttributeImageIndices) do
     FSelectedGearPiece.SelectedMinorIconIndices[iq] := FSelectedMinorAttributeImageIndices[iq];
 
-  // 1. Compter les attributs sélectionnés
+  // 1. Count selected ROLLABLE attributes only
   count := 0;
   for i := 0 to ListBoxMinorAttributes.Count - 1 do
-    if ListBoxMinorAttributes.ListItems[i].IsSelected then
+    if ListBoxMinorAttributes.ListItems[i].IsSelected and
+       (ListBoxMinorAttributes.ListItems[i].Tag <> -99) then
       Inc(count);
 
-  // 2. Allouer les tableaux
+  // 2. Allocate arrays for ROLLABLE attributes
   SetLength(FSelectedGearPiece.MinorAttributes, count);
   SetLength(FSelectedGearPiece.SelectedMinorIconIndices, count);
 
-  // 3. Remplir chaque entrée avec l’enum et l’icône
+  // 3. Fill entries
   idx := 0;
   for i := 0 to ListBoxMinorAttributes.Count - 1 do
-    if ListBoxMinorAttributes.ListItems[i].IsSelected then
+    if ListBoxMinorAttributes.ListItems[i].IsSelected and
+       (ListBoxMinorAttributes.ListItems[i].Tag <> -99) then
     begin
       enumType := StrToMinorAttributeType(ListBoxMinorAttributes.ListItems[i].Text);
       FSelectedGearPiece.MinorAttributes[idx].MinorAttribute := enumType;
@@ -1003,40 +1005,43 @@ end;
 
 procedure TFormSlots.ListBoxMinorAttributesClick(Sender: TObject);
 var
-  i, SelectedCount: Integer;
+  i, SelectedRollableCount: Integer;
   LastSelectedItem: TListBoxItem;
 begin
-  SelectedCount := 0;
+  SelectedRollableCount := 0;
   LastSelectedItem := nil;
 
+  // Count only manually selected items, ignoring fixed ones (Tag = -99)
   for i := 0 to ListBoxMinorAttributes.Count - 1 do
   begin
-    if ListBoxMinorAttributes.ListItems[i].IsSelected then
+    if ListBoxMinorAttributes.ListItems[i].IsSelected and
+       (ListBoxMinorAttributes.ListItems[i].Tag <> -99) then
     begin
-      Inc(SelectedCount);
+      Inc(SelectedRollableCount);
       LastSelectedItem := ListBoxMinorAttributes.ListItems[i];
     end;
   end;
 
-  if SelectedCount > FRemainingRollableSlots then
+  if SelectedRollableCount > FRemainingRollableSlots then
   begin
     if Assigned(LastSelectedItem) then
       LastSelectedItem.IsSelected := False;
     TDialogService.ShowMessage(Format('You can only select %d minor attributes for this item.', [FRemainingRollableSlots]));
+    Dec(SelectedRollableCount); // Adjust count after deselection
   end;
 
-  SelectedCount := 0;
+  // Update indices tracking (ignoring fixed attributes for this array)
+  SetLength(FSelectedMinorAttributeImageIndices, SelectedRollableCount);
+  var currentIdx := 0;
   for i := 0 to ListBoxMinorAttributes.Count - 1 do
   begin
-    if ListBoxMinorAttributes.ListItems[i].IsSelected then
+    if ListBoxMinorAttributes.ListItems[i].IsSelected and
+       (ListBoxMinorAttributes.ListItems[i].Tag <> -99) then
     begin
-       if SelectedCount >= Length(FSelectedMinorAttributeImageIndices) then
-        SetLength(FSelectedMinorAttributeImageIndices, SelectedCount + 1);
-      FSelectedMinorAttributeImageIndices[SelectedCount] := ListBoxMinorAttributes.ListItems[i].ImageIndex;
-      Inc(SelectedCount);
+      FSelectedMinorAttributeImageIndices[currentIdx] := ListBoxMinorAttributes.ListItems[i].ImageIndex;
+      Inc(currentIdx);
     end;
   end;
-  SetLength(FSelectedMinorAttributeImageIndices, SelectedCount);
 end;
 
 procedure TFormSlots.ListBoxModAttributesClick(Sender: TObject);
@@ -1253,31 +1258,29 @@ end;
 
 procedure TFormSlots.UpdateMinorAttributeList;
 var
-  FixedAttr: TFixedMinorAttributeDefinition;
   ListItem: TListBoxItem;
-  IsFixed: Boolean;
-  i, j: Integer;
+  i: Integer;
 begin
   FRemainingRollableSlots := FSelectedGearPiece.MinorAttributeSlotCount - Length(FSelectedGearPiece.FixedMinorAttributes);
-  Group_Attributes_Mods.Text := Format('Minor Attributes (Pick %d)', [FRemainingRollableSlots]);
-  ListBoxMinorAttributes.ClearSelection;
 
+  if FRemainingRollableSlots > 0 then
+    Group_Attributes_Mods.Text := Format('Minor Attributes (Pick %d)', [FRemainingRollableSlots])
+  else
+    Group_Attributes_Mods.Text := 'Minor Attributes (Fixed)';
+
+  // Only clear selection of rollable items. Keep Fixed items (Tag = -99) selected.
   for i := 0 to ListBoxMinorAttributes.Count - 1 do
   begin
     ListItem := ListBoxMinorAttributes.ListItems[i];
-    IsFixed := False;
-    for j := 0 to High(FSelectedGearPiece.FixedMinorAttributes) do
-    begin
-      if SameText(ListItem.Text, FSelectedGearPiece.FixedMinorAttributes[j].TypeName) then
-      begin
-        IsFixed := True;
-        break;
-      end;
-    end;
-    ListItem.Enabled := not IsFixed;
+    if ListItem.Tag <> -99 then
+      ListItem.IsSelected := False
+    else
+      ListItem.IsSelected := True; // Ensure fixed stay selected
   end;
 
-  ListBoxMinorAttributes.Enabled := FRemainingRollableSlots > 0;
+  // Do NOT disable the listbox if slots are 0, because we still want to see the Fixed Attributes
+  // We just rely on FRemainingRollableSlots in OnClick to prevent adding more.
+  ListBoxMinorAttributes.Enabled := True;
 end;
 
 end.
