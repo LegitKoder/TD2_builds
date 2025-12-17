@@ -1118,70 +1118,94 @@ begin
   FixedCount   := Length(GearPiece.FixedMinorAttributes);
   FixedSummary := BuildFixedMinorText(GearPiece);
 
-  if Assigned(Minor1Btn) then
+  { Helper local pour configurer un bouton d'attribut }
+  procedure SetupAttrBtn(Btn: TCornerButton; IsRandom: Boolean; Index, FixedIdx: Integer);
   begin
-    Minor1Btn.ImageIndex := -1;
-    Minor1Btn.Text := '';
-    Minor1Btn.Hint := '';
-    Minor1Btn.Enabled := True;
+    if not Assigned(Btn) then Exit;
 
-    if RandomCount >= 1 then
-    begin
-      if Length(RandomIcons) >= 1 then
-        Minor1Btn.ImageIndex := RandomIcons[0];
-      Minor1Btn.Text :=
-        GetEnumName(TypeInfo(TMinorAttributeType),
-        Ord(GearPiece.MinorAttributes[0].MinorAttribute));
-    end
-    else if FixedCount >= 1 then
-    begin
-      Minor1Btn.Text := FixedLine(GearPiece, 0);
-      Minor1Btn.Enabled := False;
-    end;
+    Btn.Visible := True;
+    Btn.ImageIndex := -1;
+    Btn.Text := '';
+    Btn.Hint := FixedSummary;
 
-    if FixedSummary <> '' then
-      Minor1Btn.Hint := FixedSummary;
-  end;
-
-  if Assigned(Minor2Btn) then
-  begin
-    Minor2Btn.ImageIndex := -1;
-    Minor2Btn.Text := '';
-    Minor2Btn.Hint := '';
-    Minor2Btn.Enabled := True;
-
-    if RandomCount >= 2 then
+    if IsRandom then
     begin
-      if Length(RandomIcons) >= 2 then
-        Minor2Btn.ImageIndex := RandomIcons[1];
-      Minor2Btn.Text :=
-        GetEnumName(TypeInfo(TMinorAttributeType),
-        Ord(GearPiece.MinorAttributes[1].MinorAttribute));
-    end
-    else if (RandomCount <= 1) and (FixedCount >= 2) then
-    begin
-      Minor2Btn.Text := FixedLine(GearPiece, 1);
-      Minor2Btn.Enabled := False;
+      Btn.Enabled := True;
+      if (Index >= 0) and (Index < RandomCount) then
+      begin
+        if Index < Length(RandomIcons) then
+          Btn.ImageIndex := RandomIcons[Index];
+        Btn.Text := GetEnumName(TypeInfo(TMinorAttributeType),
+          Ord(GearPiece.MinorAttributes[Index].MinorAttribute));
+      end;
     end
     else
-      Minor2Btn.Enabled := False;
-
-    if FixedSummary <> '' then
-      Minor2Btn.Hint := FixedSummary;
+    begin
+      // Fixed Attribute
+      Btn.Enabled := False;
+      if (FixedIdx >= 0) and (FixedIdx < FixedCount) then
+        Btn.Text := FixedLine(GearPiece, FixedIdx);
+    end;
   end;
 
-  { 5. Mod (slot de mod) }
-  if Assigned(ModBtn) then
+  // Stratégie :
+  // 1. Remplir Minor1 avec Random[0] si dispo, sinon Fixed[0].
+  // 2. Remplir Minor2 avec Random[1] si dispo, sinon Fixed[offset].
+  // 3. Si "Claws Out" (3 attr, pas de mod), utiliser ModBtn pour le 3eme attr fixe.
+
+  var NextFixedIdx: Integer;
   begin
-    var HasSlot := HasModSlot(GearPiece);
-    ModBtn.Visible := HasSlot;
-    if HasSlot then
+    NextFixedIdx := 0;
+
+    // --- Slot 1 ---
+    if RandomCount >= 1 then
+      SetupAttrBtn(Minor1Btn, True, 0, -1)
+    else
     begin
-      ModBtn.ImageIndex := GearPiece.SelectedModIconIndex;
-      if GearPiece.ModAttribute.ModEffect <> gmetUnknown then
-        ModBtn.Text := ''      // ou nom du mod si tu veux
-      else
-        ModBtn.Text := '';
+      SetupAttrBtn(Minor1Btn, False, -1, NextFixedIdx);
+      Inc(NextFixedIdx);
+    end;
+
+    // --- Slot 2 ---
+    if RandomCount >= 2 then
+      SetupAttrBtn(Minor2Btn, True, 1, -1)
+    else
+    begin
+      SetupAttrBtn(Minor2Btn, False, -1, NextFixedIdx);
+      Inc(NextFixedIdx);
+    end;
+
+    // --- Slot 3 / Mod Slot ---
+    if Assigned(ModBtn) then
+    begin
+      var HasSlot := HasModSlot(GearPiece);
+      var UsedForAttribute := False;
+
+      // Si on a encore des attributs fixes à afficher et PAS de slot de mod (ex: Claws Out)
+      if (NextFixedIdx < FixedCount) and (not HasSlot) then
+      begin
+        SetupAttrBtn(ModBtn, False, -1, NextFixedIdx);
+        // On force l'apparence "disabled attribute" sur ce bouton mod
+        ModBtn.Visible := True;
+        ModBtn.ImageIndex := -1;
+        UsedForAttribute := True;
+      end;
+
+      if not UsedForAttribute then
+      begin
+        // Comportement standard MOD
+        ModBtn.Visible := HasSlot;
+        // Les mods doivent rester cliquables
+        ModBtn.Enabled := True;
+        if HasSlot then
+        begin
+          ModBtn.ImageIndex := GearPiece.SelectedModIconIndex;
+          if GearPiece.ModAttribute.ModEffect <> gmetUnknown then
+            ModBtn.Text := ''
+          else
+            ModBtn.Text := '';
+        end;
+      end;
     end;
   end;
 end;
