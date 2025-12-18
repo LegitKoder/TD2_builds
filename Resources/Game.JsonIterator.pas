@@ -696,6 +696,7 @@ procedure TDataJsonIterator.ParseSetCategory(var AIterator: TJSONIterator;
   const ACategoryKey: string);
 var
   LSet: TPieceSet;
+  LFinalKey: string;
 begin
   AIterator.Recurse;
   while AIterator.Next and (AIterator.&Type <> TJsonToken.EndArray) do
@@ -703,8 +704,19 @@ begin
     if AIterator.&Type = TJsonToken.StartObject then
     begin
       LSet := ParseSetObject(AIterator, StrToSetType_Parser(ACategoryKey));
-      if not LSet.Name.IsEmpty then
-        FAllPieceSetDefinitions.AddOrSetValue(LSet.Name, LSet)
+
+      // Apply Naming Logic for Named Sets
+      LFinalKey := LSet.Name;
+      if (LSet.SetType = stNamedSet) and (Length(LSet.Parts) > 0) then
+      begin
+        // e.g., "The Hollow Man (Yaahl Gear)"
+        LFinalKey := Format('%s (%s)', [LSet.Parts[0].Name, LSet.Name]);
+        // Also update the piece's own name for consistency, as it's now the primary identifier
+        LSet.Name := LFinalKey;
+      end;
+
+      if not LFinalKey.IsEmpty then
+        FAllPieceSetDefinitions.AddOrSetValue(LFinalKey, LSet)
       else
         WriteLog(['Warning: Found unnamed piece set in category: ' +
           ACategoryKey]);
@@ -1755,20 +1767,6 @@ var
   It: TJSONIterator;
   SR: TStringReader;
   CurCat: string;
-  PS: TPieceSet;
-  SB: TSetBonus;
-  Part: TPart;
-  ItemsReq: Integer;
-  Bonus: TDictionary<string, Variant>;
-  AttrID: string;
-  V: Variant;
-  WpnFam: TWeaponFamily;
-  LCurrentCoreDef: TCoreAttributeDefinition;
-//  LCurrentSetType: TSetType;
-//  LCurrentSetCategoryKey: string;
-  LBonusAttrID: string;           // Renamed to avoid confusion
-  LBonusValue: Variant;
-//  DictKey: string;
 begin
   FAllPieceSetDefinitions.Clear;
 
@@ -1783,38 +1781,15 @@ begin
       begin
         if It.&Type = TJsonToken.StartArray then
         begin
-          It.Recurse; // Enter array
-          while It.Next and (It.&Type <> TJsonToken.EndArray) do
-          begin
-            if It.&Type = TJsonToken.StartObject then
-            begin
-              LCurrentCoreDef := Default (TCoreAttributeDefinition);
-              It.Recurse; // Enter object
-              while It.Next and (It.&Type <> TJsonToken.EndObject) do
-              begin
-                if SameText(It.Key, 'id') then
-                  LCurrentCoreDef.ID := It.AsString
-                else if SameText(It.Key, 'type') then
-                  LCurrentCoreDef.TypeName := It.AsString
-                else if SameText(It.Key, 'value') then
-                  LCurrentCoreDef.Value := It.AsDouble;
-              end;
-              It.Return; // Exit object
-              if not LCurrentCoreDef.ID.IsEmpty then
-                FCoreAttributeDefinitions.AddOrSetValue(LCurrentCoreDef.ID,
-                  LCurrentCoreDef);
-            end;
-          end;
-          It.Return; // Exit array
+          ParseCoreAttributes(It);
         end;
         Continue;
       end
       else if SameText(It.Key, 'fixedMinorAttributes') then
       begin
         if It.&Type = TJsonToken.StartArray then
-          ParseFixedMinorAttributes(It)
-        else
-          WriteLog(['Warning: \"fixedMinorAttributes\" must be an array. Ignored.']);
+          ParseFixedMinorAttributes(It);
+
         Continue;
       end;
 
