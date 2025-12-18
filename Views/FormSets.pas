@@ -395,7 +395,9 @@ var
     begin
       // Guess category for non-standard fixed attributes
       LowerID := ADef.ID.ToLower;
-      if LowerID.Contains('armor') or LowerID.Contains('health') or
+      if LowerID.Contains('damage') then
+        Cat := matOffensive
+      else if LowerID.Contains('armor') or LowerID.Contains('health') or
          LowerID.Contains('protection') or LowerID.Contains('resistance') or
          LowerID.Contains('incoming') then
         Cat := matDefensive
@@ -420,7 +422,7 @@ var
 
     // Insert at the top (index 1 to be under the header if we add one, or 0)
     // We'll add them after the "FIXED ATTRIBUTES" header which we will add at 0.
-    ListBoxMinorAttributes.InsertObject(1, DisplayItem);
+    ListBoxMinorAttributes.InsertObject(Len, DisplayItem);
   end;
 begin
   // 1. Reset the list to standard available attributes
