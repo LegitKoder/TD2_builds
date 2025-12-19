@@ -1766,6 +1766,13 @@ var
   Reader: TJsonTextReader;
   It: TJSONIterator;
   SR: TStringReader;
+  PS: TPieceSet;
+  SB: TSetBonus;
+  Part: TPart;
+  WpnFam: TWeaponFamily;
+  LCurrentCoreDef: TCoreAttributeDefinition;
+  LBonusAttrID: string; // Renamed to avoid confusion
+  LBonusValue: Variant;
   CurCat: string;
 begin
   FAllPieceSetDefinitions.Clear;

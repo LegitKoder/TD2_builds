@@ -125,7 +125,7 @@ object FormSlots: TFormSlots
         Size.Width = 313.000000000000000000
         Size.Height = 53.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 37
+        TabOrder = 38
         ColumnCollection = <
           item
             Value = 60.000000000000000000
@@ -231,7 +231,7 @@ object FormSlots: TFormSlots
         Size.Width = 313.000000000000000000
         Size.Height = 355.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 37
+        TabOrder = 38
         ColumnCollection = <
           item
             Value = 50.006237987507500000
@@ -527,7 +527,7 @@ object FormSlots: TFormSlots
         Size.Width = 172.000000000000000000
         Size.Height = 436.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 37
+        TabOrder = 38
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''

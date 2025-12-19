@@ -230,7 +230,6 @@
                     "itemsRequired": 1
                 },
                 {
-                    "incoming_repairs": 30,
                     "itemsRequired": 2
                 },
                 {
@@ -410,7 +409,6 @@
                     "itemsRequired": 2
                 },
                 {
-                    "incoming_repairs": 45,
                     "itemsRequired": 3
                 }
             ]
@@ -1056,7 +1054,7 @@
                     "coreAttribute": "armor"
                 },
                 "Kneepad": {
-                    "name": "Murakami Industries Kneepad",
+                    "name": "Lengmo Kneepad",
                     "coreAttribute": "armor"
                 }
             },
@@ -1301,32 +1299,32 @@
             "parts": {
                 "Mask": {
                     "name": "Richter & Kaiser GmbH Mask",
-                    "coreAttribute": "weaponDamage"
+                    "coreAttribute": "skillTier"
                 },
                 "Vest": {
                     "name": "Richter & Kaiser GmbH Vest",
-                    "coreAttribute": "weaponDamage"
+                    "coreAttribute": "skillTier"
                 },
                 "Holster": {
                     "name": "Richter & Kaiser GmbH Holster",
-                    "coreAttribute": "weaponDamage"
+                    "coreAttribute": "skillTier"
                 },
                 "Backpack": {
                     "name": "Richter & Kaiser GmbH Backpack",
-                    "coreAttribute": "weaponDamage"
+                    "coreAttribute": "skillTier"
                 },
                 "Glove": {
                     "name": "Richter & Kaiser GmbH Glove",
-                    "coreAttribute": "weaponDamage"
+                    "coreAttribute": "skillTier"
                 },
                 "Kneepad": {
                     "name": "Richter & Kaiser GmbH Kneepad",
-                    "coreAttribute": "weaponDamage"
+                    "coreAttribute": "skillTier"
                 }
             },
             "bonuses": [
                 {
-                    "incoming_repairs": 15,
+                    "incoming_repairss": 15,
                     "itemsRequired": 1
                 },
                 {
@@ -2604,31 +2602,31 @@
             ]
         },
         {
-            "name": "The Cavalier",
+            "name": "Cavalier",
             "imageIndex": 54,
             "parts": {
                 "Mask": {
-                    "name": "The Cavalier Mask",
+                    "name": "Cavalier Mask",
                     "coreAttribute": "armor"
                 },
                 "Vest": {
-                    "name": "The Cavalier Vest",
+                    "name": "Cavalier Vest",
                     "coreAttribute": "armor"
                 },
                 "Holster": {
-                    "name": "The Cavalier Holster",
+                    "name": "Cavalier Holster",
                     "coreAttribute": "armor"
                 },
                 "Backpack": {
-                    "name": "The Cavalier Backpack",
+                    "name": "Cavalier Backpack",
                     "coreAttribute": "armor"
                 },
                 "Glove": {
-                    "name": "The Cavalier Glove",
+                    "name": "Cavalier Glove",
                     "coreAttribute": "armor"
                 },
                 "Kneepad": {
-                    "name": "The Cavalier Kneepad",
+                    "name": "Cavalier Kneepad",
                     "coreAttribute": "armor"
                 }
             },
@@ -2643,7 +2641,7 @@
                 },
                 {
                     "title": "Charging",
-                    "description": "For every second spent outside of cover during combat, agents gain 5% reduced incoming skill damage, stacking up to 50%.",
+                    "description": "For each second spent out of cover during combat, agents will get 5% reduced incoming skill damage, max 50%.",
                     "itemsRequired": 4
                 }
             ]
@@ -3200,7 +3198,7 @@
                     "name": "Firm Handshake",
                     "coreAttribute": "weaponDamage",
                     "fixedMinorAttributes": [
-                        "statusEffects"
+                        "statusEffects_0"
                     ]
                 }
             }
@@ -3223,7 +3221,7 @@
         },
         {
             "name": "Walker, Harris & Co.",
-            "imageIndex": 30,
+            "imageIndex": 31,
             "parts": {
                 "Vest": {
                     "name": "Chainkiller",
@@ -3239,7 +3237,7 @@
         },
         {
             "name": "Wyvern Wear",
-            "imageIndex": 31,
+            "imageIndex": 32,
             "parts": {
                 "Holster": {
                     "name": "Claws Out",
@@ -3254,7 +3252,7 @@
         },
         {
             "name": "Yaahl Gear",
-            "imageIndex": 32,
+            "imageIndex": 33,
             "parts": {
                 "Mask": {
                     "name": "The Hollow Man",
@@ -3374,7 +3372,7 @@
         },
         {
             "name": "Zwiadowka Sp. z o.o.",
-            "imageIndex": 33,
+            "imageIndex": 34,
             "parts": {
                 "Vest": {
                     "name": "Bober",
@@ -3385,14 +3383,14 @@
                     "name": "Eagle's Grasp",
                     "coreAttribute": "weaponDamage",
                     "fixedMinorAttributes": [
-                        "weaponHandling"
+                        "weaponHandling_1"
                     ]
                 }
             }
         },
         {
             "name": "Urban Lookout",
-            "imageIndex": 28,
+            "imageIndex": 29,
             "parts": {
                 "Vest": {
                     "name": "Sleight",

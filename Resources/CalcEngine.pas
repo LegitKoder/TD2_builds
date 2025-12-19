@@ -77,6 +77,7 @@ type
     TotalStatusEffects: Double;
     TotalExplosiveDamage: Double;
     TotalRepairSkills: Double;
+    TotalSkillTier: Integer;
     // Add other aggregated stats as needed, e.g., DTA, DTOC
   end;
 
