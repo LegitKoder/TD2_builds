@@ -18,7 +18,8 @@ uses
   BuildGenerator in 'Resources\BuildGenerator.pas',
   RecommendationEngine in 'Resources\RecommendationEngine.pas',
   BuildArchetypes in 'Resources\BuildArchetypes.pas',
-  FormRecPrefs in 'Views\FormRecPrefs.pas' {FrmRecPrefs};
+  FormRecPrefs in 'Views\FormRecPrefs.pas' {FrmRecPrefs},
+  MainController in 'Controllers\MainController.pas';
 
 {$R *.res}
 
