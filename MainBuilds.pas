@@ -2424,9 +2424,11 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  // Prepare form for visual effects (Transparency)
+  Self.Fill.Kind := TBrushKind.None; // Ensure FMX background doesn't paint over DWM effect
+
   // Apply Mica/Acrylic Effect
   // Defaulting to Mica (weMica) and Dark Mode.
-  // Can be weAcrylic if preferred, but Mica is standard for main windows.
   TWindowEffects.ApplyEffect(Self, TWindowEffect.weMica, True);
 
   if DataJsonIterator = nil then // première Form seulement
