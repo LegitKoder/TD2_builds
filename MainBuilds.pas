@@ -26,7 +26,7 @@ uses
   Utils, Acrylic, FormSets, FormWeapons, FormSkills, BuildGenerator, RecommendationEngine, BuildArchetypes,
   {SubjectStand,} LoadoutManager, FormRecPrefs,
   Game.Types, Game.JsonIterator, CalcEngine, FMX.DialogService,
-  FMX.DialogService.Async, FMX.TabControl, FMX.SearchBox, MainController;
+  FMX.DialogService.Async, FMX.TabControl, FMX.SearchBox, MainController, WindowEffects;
 
 const
   MAX_SPEC_BONUS = 3;
@@ -2424,6 +2424,11 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  // Apply Mica/Acrylic Effect
+  // Defaulting to Mica (weMica) and Dark Mode.
+  // Can be weAcrylic if preferred, but Mica is standard for main windows.
+  TWindowEffects.ApplyEffect(Self, TWindowEffect.weMica, True);
+
   if DataJsonIterator = nil then // première Form seulement
   begin
     DataJsonIterator := TDataJsonIterator.Create(nil);

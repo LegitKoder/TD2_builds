@@ -19,7 +19,8 @@ uses
   RecommendationEngine in 'Resources\RecommendationEngine.pas',
   BuildArchetypes in 'Resources\BuildArchetypes.pas',
   FormRecPrefs in 'Views\FormRecPrefs.pas' {FrmRecPrefs},
-  MainController in 'Controllers\MainController.pas';
+  MainController in 'Controllers\MainController.pas',
+  WindowEffects in 'Resources\WindowEffects.pas';
 
 {$R *.res}
 
