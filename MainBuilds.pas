@@ -285,15 +285,8 @@ type
     FExoticWeaponSelected: Boolean;
     FExoticWeaponSlot: Game.Types.TWeaponSlot;
 
-    FSavedLoadouts: TDictionary<string, TSerializableLoadout>;
-
-    procedure ClearSavedLoadouts;
-    procedure SetSavedLoadouts(const ALoadouts: TDictionary<string, TSerializableLoadout>);
-
     function IsExoticGearEquipped: Boolean;
     function CanEquipGearPiece(const AGearPiece: TGearPiece): Boolean;
-    function GetCurrentLoadoutAsSerializable(const AName: string)
-      : TSerializableLoadout;
     procedure EquipGear(const AGearSlot: TItemType);
     procedure FillSpecializations;
     procedure ChooseWeaponForSlot(ASlot: Game.Types.TWeaponSlot;
@@ -1610,7 +1603,6 @@ end;
 procedure TMainForm.AddClick(Sender: TObject);
 var
   LLoadoutName: string;
-  LLoadout: TSerializableLoadout;
 begin
   TDialogService.InputQuery('New Loadout', ['Enter Loadout Name:'], [''],
     procedure(const AResult: TModalResult; const AValues: array of string)
@@ -1620,25 +1612,22 @@ begin
         LLoadoutName := AValues[0];
         if LLoadoutName <> '' then
         begin
-          if not Assigned(FSavedLoadouts) then
-            FSavedLoadouts := TDictionary<string, TSerializableLoadout>.Create;
+          // Save using Controller
+          var LActivatedBonuses: TArray<TWeaponFamily>;
+          SetLength(LActivatedBonuses, 0);
+          for var WT: TWeaponFamily := Low(TWeaponFamily) to High(TWeaponFamily) do
+            if Assigned(WeaponChk(WT)) and WeaponChk(WT).IsChecked then
+            begin
+              SetLength(LActivatedBonuses, Length(LActivatedBonuses) + 1);
+              LActivatedBonuses[High(LActivatedBonuses)] := WT;
+            end;
+          FController.ActivatedSpecBonuses := LActivatedBonuses;
 
-          if FSavedLoadouts.ContainsKey(LLoadoutName) then
-          begin
-            TDialogService.ShowMessage
-              ('A loadout with this name already exists.');
-            Exit;
-          end;
-
-          LLoadout := GetCurrentLoadoutAsSerializable(LLoadoutName);
-          FSavedLoadouts.Add(LLoadoutName, LLoadout);
-          TLoadoutManager.SaveLoadouts(FSavedLoadouts);
+          FController.SaveCurrentLoadout(LLoadoutName);
 
           // Add to the visual list
-          var
-          LItem := LoadoutList.Items.Add;
+          var LItem := LoadoutList.Items.Add;
           LItem.Text := LLoadoutName;
-          // Update other visual details if needed
         end;
       end;
     end);
@@ -1647,7 +1636,6 @@ end;
 procedure TMainForm.DelClick(Sender: TObject);
 var
   LSelected: TListViewItem;
-  LLoadout: TSerializableLoadout;
   LSelectedName: string;
 begin
   LSelected := TListViewItem(LoadoutList.Selected);
@@ -1667,12 +1655,8 @@ begin
     begin
       if AResult <> mrYes then
         Exit;
-      if FSavedLoadouts.ContainsKey(LSelectedName) then
+      if FController.DeleteLoadout(LSelectedName) then
       begin
-        if FSavedLoadouts.TryGetValue(LSelectedName, LLoadout) then
-          LLoadout.Free;
-        FSavedLoadouts.Remove(LSelectedName);
-        TLoadoutManager.SaveLoadouts(FSavedLoadouts);
         LoadoutList.Items.Delete(LSelected.Index);
         ShowMessage('Loadout deleted.');
       end;
@@ -2194,33 +2178,6 @@ begin
   end;
 end;
 
-function TMainForm.GetCurrentLoadoutAsSerializable(const AName: string): TSerializableLoadout;
-begin
-  Result := FController.CreateSerializableLoadout(AName);
-
-  // Spec bonuses are updated in controller via RefreshAllStats before this is called usually,
-  // but let's be safe and ensure the checkboxes state is captured if not already in sync.
-  // Actually RefreshAllStats syncs them.
-
-  // Wait, CreateSerializableLoadout uses FActivatedSpecBonuses from Controller.
-  // Does UI update Controller.ActivatedSpecBonuses?
-  // Yes, in RefreshAllStats.
-  // So as long as we Refresh before Save, it's fine.
-  // Add explicit sync here to be safe.
-
-  var LActivatedBonuses: TArray<TWeaponFamily>;
-  SetLength(LActivatedBonuses, 0);
-  for var WT: TWeaponFamily := Low(TWeaponFamily) to High(TWeaponFamily) do
-    if Assigned(WeaponChk(WT)) and WeaponChk(WT).IsChecked then
-    begin
-      SetLength(LActivatedBonuses, Length(LActivatedBonuses) + 1);
-      LActivatedBonuses[High(LActivatedBonuses)] := WT;
-    end;
-  FController.ActivatedSpecBonuses := LActivatedBonuses;
-  // Re-create to catch updated bonuses
-  Result.Free;
-  Result := FController.CreateSerializableLoadout(AName);
-end;
 
 procedure TMainForm.EditClick(Sender: TObject);
 begin
@@ -2251,13 +2208,9 @@ procedure TMainForm.LoadoutListItemClick(const Sender: TObject;
 var
   LLoadout: TSerializableLoadout;
 begin
-  if not Assigned(FSavedLoadouts) then
-    Exit;
-
-  if FSavedLoadouts.TryGetValue(AItem.Text, LLoadout) then
-  begin
+  LLoadout := FController.GetSavedLoadout(AItem.Text);
+  if Assigned(LLoadout) then
     ApplySerializableLoadout(LLoadout);
-  end;
 
   MultiView_Loadout.HideMaster;
 end;
@@ -2303,8 +2256,6 @@ end;
 procedure TMainForm.SaveClick(Sender: TObject);
 var
   LSelected: TListViewItem;
-  LLoadout: TSerializableLoadout;
-  LExisting: TSerializableLoadout;
 begin
   LSelected := TListViewItem(LoadoutList.Selected);
   if not Assigned(LSelected) then
@@ -2313,67 +2264,34 @@ begin
     Exit;
   end;
 
-  // Update the selected loadout with the current configuration
-  LLoadout := GetCurrentLoadoutAsSerializable(LSelected.Text);
+  // Sync UI state to Controller for Specialization Bonuses
+  var LActivatedBonuses: TArray<TWeaponFamily>;
+  SetLength(LActivatedBonuses, 0);
+  for var WT: TWeaponFamily := Low(TWeaponFamily) to High(TWeaponFamily) do
+    if Assigned(WeaponChk(WT)) and WeaponChk(WT).IsChecked then
+    begin
+      SetLength(LActivatedBonuses, Length(LActivatedBonuses) + 1);
+      LActivatedBonuses[High(LActivatedBonuses)] := WT;
+    end;
+  FController.ActivatedSpecBonuses := LActivatedBonuses;
 
-  if not Assigned(FSavedLoadouts) then
-    FSavedLoadouts := TDictionary<string, TSerializableLoadout>.Create;
-
-  if FSavedLoadouts.TryGetValue(LLoadout.Name, LExisting) then
-  begin
-    LExisting.Free;
-    FSavedLoadouts[LLoadout.Name] := LLoadout;
-  end
-  else
-    FSavedLoadouts.Add(LLoadout.Name, LLoadout);
-
-  // Save all loadouts to file
-  TLoadoutManager.SaveLoadouts(FSavedLoadouts);
-
-  TDialogService.ShowMessage('Loadout "' + LLoadout.Name + '" has been updated.');
+  FController.SaveCurrentLoadout(LSelected.Text);
+  TDialogService.ShowMessage('Loadout "' + LSelected.Text + '" has been updated.');
 end;
-
-procedure TMainForm.ClearSavedLoadouts;
-var
-  LLoadout: TSerializableLoadout;
-begin
-  if not Assigned(FSavedLoadouts) then
-    Exit;
-
-  for LLoadout in FSavedLoadouts.Values do
-    LLoadout.Free;
-
-  FSavedLoadouts.Free;
-  FSavedLoadouts := nil;
-end;
-
-procedure TMainForm.SetSavedLoadouts(const ALoadouts: TDictionary<string, TSerializableLoadout>);
-begin
-  ClearSavedLoadouts;
-  FSavedLoadouts := ALoadouts;
-end;
-
 
 procedure TMainForm.LoadClick(Sender: TObject);
 var
-  LLoadout: TSerializableLoadout;
-  LLoadoutValues: TArray<TSerializableLoadout>;
-  I: Integer;
+  Names: TArray<string>;
+  Name: string;
 begin
-  var LNewLoadouts := TLoadoutManager.LoadLoadouts;
-  SetSavedLoadouts(LNewLoadouts);
-
+  FController.LoadSavedLoadouts;
   LoadoutList.Items.Clear;
 
-  if (FSavedLoadouts = nil) or (FSavedLoadouts.Count = 0) then
-    Exit;
-
-  LLoadoutValues := FSavedLoadouts.Values.ToArray;
-  for I := 0 to High(LLoadoutValues) do
+  Names := FController.GetSavedLoadoutNames;
+  for Name in Names do
   begin
-    LLoadout := LLoadoutValues[I];
     var LItem := LoadoutList.Items.Add;
-    LItem.Text := LLoadout.Name;
+    LItem.Text := Name;
   end;
 end;
 
@@ -2431,6 +2349,10 @@ begin
   // Defaulting to Mica (weMica) and Dark Mode.
   TWindowEffects.ApplyEffect(Self, TWindowEffect.weMica, True);
 
+  // Tweaks for background translucency
+  if Assigned(Spec_rect) then
+    Spec_rect.Fill.Kind := TBrushKind.None; // Or TBrushKind.Solid with Opacity < 1
+
   if DataJsonIterator = nil then // première Form seulement
   begin
     DataJsonIterator := TDataJsonIterator.Create(nil);
@@ -2439,8 +2361,7 @@ begin
 
   // Create Controller
   FController := TMainController.Create(DataJsonIterator);
-
-  SetSavedLoadouts(TLoadoutManager.LoadLoadouts);
+  FController.LoadSavedLoadouts;
 
   { 1) spécialisation + bonus armes + bonus watch }
   FSpecializations := TDictionary<string, TSpecialization>.Create;
@@ -2476,7 +2397,6 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 var
   I: TItemType;
 begin
-  ClearSavedLoadouts;
   FreeAndNil(FController);
 
   // Free the InherentWeaponTypeBonuses dictionaries within each TSpecialization record

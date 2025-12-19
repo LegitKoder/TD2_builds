@@ -87,14 +87,14 @@ begin
     // Armor / tank
     else if ContainsText(NormAttr, 'armorregen') then
       Result := Result + DispStats.TotalArmorRegenPct * Weight
+    else if ContainsText(NormAttr, 'armoronkill') or
+            ContainsText(NormAttr, 'healthonkill') then
+      Result := Result + DispStats.TotalArmorOnKillPct * Weight
     else if ContainsText(NormAttr, 'totalarmor') or
             (ContainsText(NormAttr, 'armor') and not ContainsText(NormAttr, 'regen')) then
       Result := Result + DispStats.TotalArmor_Display * Weight
     else if ContainsText(NormAttr, 'health') then
       Result := Result + DispStats.TotalHealth_Display * Weight
-    else if ContainsText(NormAttr, 'armoronkill') or
-            ContainsText(NormAttr, 'healthonkill') then
-      Result := Result + DispStats.TotalArmorOnKillPct * Weight
     else if ContainsText(NormAttr, 'incomingrepair') then
       Result := Result + DispStats.TotalIncomingRepairsPct * Weight
 

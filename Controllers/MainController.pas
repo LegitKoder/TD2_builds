@@ -22,6 +22,9 @@ type
     FExoticWeaponSelected: Boolean;
     FExoticWeaponSlot: TWeaponSlot;
 
+    // Loadouts
+    FSavedLoadouts: TDictionary<string, TSerializableLoadout>;
+
     procedure InitializeState;
   public
     constructor Create(AData: TDataJsonIterator);
@@ -58,6 +61,13 @@ type
     // Loadout Management
     function CreateSerializableLoadout(const Name: string): TSerializableLoadout;
     procedure ApplySerializableLoadout(const Loadout: TSerializableLoadout);
+
+    // Persistence
+    procedure LoadSavedLoadouts;
+    procedure SaveCurrentLoadout(const Name: string);
+    function DeleteLoadout(const Name: string): Boolean;
+    function GetSavedLoadoutNames: TArray<string>;
+    function GetSavedLoadout(const Name: string): TSerializableLoadout;
   end;
 
 implementation
@@ -66,11 +76,20 @@ constructor TMainController.Create(AData: TDataJsonIterator);
 begin
   inherited Create;
   FData := AData;
+  FSavedLoadouts := TDictionary<string, TSerializableLoadout>.Create;
   InitializeState;
 end;
 
 destructor TMainController.Destroy;
+var
+  L: TSerializableLoadout;
 begin
+  if Assigned(FSavedLoadouts) then
+  begin
+    for L in FSavedLoadouts.Values do
+      L.Free;
+    FSavedLoadouts.Free;
+  end;
   inherited;
 end;
 
@@ -341,6 +360,85 @@ begin
       Result.Weapons.Add(WSlot, SWeapon);
     end;
   end;
+end;
+
+procedure TMainController.LoadSavedLoadouts;
+var
+  Loaded: TDictionary<string, TSerializableLoadout>;
+  L: TSerializableLoadout;
+begin
+  // Clear existing
+  if Assigned(FSavedLoadouts) then
+  begin
+    for L in FSavedLoadouts.Values do
+      L.Free;
+    FSavedLoadouts.Clear;
+  end;
+
+  Loaded := TLoadoutManager.LoadLoadouts;
+  if Assigned(Loaded) then
+  begin
+    for L in Loaded.Values do
+      FSavedLoadouts.Add(L.Name, L);
+    // TLoadoutManager.LoadLoadouts returns a new dictionary,
+    // but the items are now owned by FSavedLoadouts.
+    // We should free the container but NOT the items we just moved.
+    // Actually, simple assignment is better if we just want to take ownership.
+    // But since FSavedLoadouts is already created in constructor, let's copy/move.
+
+    // Wait, TLoadoutManager.LoadLoadouts returns a dictionary that we must manage.
+    // The items inside it are objects.
+    // Let's swap the dictionary logic to be cleaner.
+  end;
+  Loaded.Free; // The container only, items are in FSavedLoadouts now?
+  // No, TDictionary.Add doesn't transfer ownership.
+  // If we Free Loaded, it's fine unless Loaded has OwnsObjects=True?
+  // TDictionary does not own objects by default.
+  // So copying references is fine.
+end;
+
+procedure TMainController.SaveCurrentLoadout(const Name: string);
+var
+  LLoadout: TSerializableLoadout;
+  LExisting: TSerializableLoadout;
+begin
+  LLoadout := CreateSerializableLoadout(Name);
+
+  if FSavedLoadouts.TryGetValue(Name, LExisting) then
+  begin
+    LExisting.Free;
+    FSavedLoadouts[Name] := LLoadout;
+  end
+  else
+  begin
+    FSavedLoadouts.Add(Name, LLoadout);
+  end;
+
+  TLoadoutManager.SaveLoadouts(FSavedLoadouts);
+end;
+
+function TMainController.DeleteLoadout(const Name: string): Boolean;
+var
+  LExisting: TSerializableLoadout;
+begin
+  Result := False;
+  if FSavedLoadouts.TryGetValue(Name, LExisting) then
+  begin
+    LExisting.Free;
+    FSavedLoadouts.Remove(Name);
+    TLoadoutManager.SaveLoadouts(FSavedLoadouts);
+    Result := True;
+  end;
+end;
+
+function TMainController.GetSavedLoadoutNames: TArray<string>;
+begin
+  Result := FSavedLoadouts.Keys.ToArray;
+end;
+
+function TMainController.GetSavedLoadout(const Name: string): TSerializableLoadout;
+begin
+  FSavedLoadouts.TryGetValue(Name, Result);
 end;
 
 procedure TMainController.ApplySerializableLoadout(const Loadout: TSerializableLoadout);
