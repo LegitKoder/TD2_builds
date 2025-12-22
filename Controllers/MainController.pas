@@ -3,11 +3,14 @@ unit MainController;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, System.Classes,
+  System.SysUtils, System.Generics.Collections, System.Classes, System.Math,
   Game.Types, Game.JsonIterator, CalcEngine, LoadoutManager,
   System.TypInfo;
 
 type
+  TWeaponDamageResults = array[TWeaponSlot] of TFullDamageCalcResult;
+  TWeaponAggregatedStats = array[TWeaponSlot] of TLoadoutAggregatedStats_Display;
+
   TMainController = class
   private
     FData: TDataJsonIterator;
@@ -54,8 +57,9 @@ type
 
     // Calculations
     function CalculateFullPerformance(
-      out DamageResults: array[TWeaponSlot] of TFullDamageCalcResult;
-      out AggregatedStats: TPlayerAggregatedStats
+      out DamageResults: TWeaponDamageResults;
+      out AggregatedStats: TPlayerAggregatedStats;
+      out SlotAggregatedStats: TWeaponAggregatedStats
     ): Boolean;
 
     // Loadout Management
@@ -199,20 +203,20 @@ begin
 end;
 
 function TMainController.CalculateFullPerformance(
-  out DamageResults: array[TWeaponSlot] of TFullDamageCalcResult;
-  out AggregatedStats: TPlayerAggregatedStats
+  out DamageResults: TWeaponDamageResults;
+  out AggregatedStats: TPlayerAggregatedStats;
+  out SlotAggregatedStats: TWeaponAggregatedStats
 ): Boolean;
 var
   LInput: TFullLoadoutInput;
   Slot: TItemType;
   WSlot: TWeaponSlot;
-  SlotAggregatedStats: TLoadoutAggregatedStats_Display;
 begin
   Result := False;
   if not Assigned(FData) then Exit;
 
   // Prepare Input
-  FillChar(LInput, SizeOf(TFullLoadoutInput), 0);
+  LInput := Default(TFullLoadoutInput);
 
   // 1. Gear
   LInput.TotalSkillTiers := 0;
@@ -246,7 +250,7 @@ begin
         FData.Mods,
         FData.Talents,
         DamageResults[WSlot],
-        SlotAggregatedStats // Temp, as we aggregate globally later
+        SlotAggregatedStats[WSlot] // Temp, as we aggregate globally later
       );
     end;
   end;
@@ -623,3 +627,4 @@ begin
 end;
 
 end.
+

@@ -230,6 +230,7 @@
                     "itemsRequired": 1
                 },
                 {
+                    "incoming_repairs": 30,
                     "itemsRequired": 2
                 },
                 {
@@ -409,6 +410,7 @@
                     "itemsRequired": 2
                 },
                 {
+                    "incoming_repairs": 45,
                     "itemsRequired": 3
                 }
             ]
@@ -1324,7 +1326,7 @@
             },
             "bonuses": [
                 {
-                    "incoming_repairss": 15,
+                    "incoming_repairs": 15,
                     "itemsRequired": 1
                 },
                 {

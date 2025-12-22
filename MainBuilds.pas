@@ -35,6 +35,9 @@ type
 //  TBuildArchetypeProc = procedure(var AArchetype: TBuildArchetype);
   TBuildArchetypeProc = reference to procedure(var AArchetype: TBuildArchetype);
 
+  TWeaponDamageResults = MainController.TWeaponDamageResults;
+  TWeaponAggregatedStats = MainController.TWeaponAggregatedStats;
+
   TMainForm = class(TForm)
     StyleBookTD2: TStyleBook;
     GridPanelLayoutMain: TGridPanelLayout;
@@ -267,6 +270,7 @@ type
     procedure btnShowBestTankBuildClick(Sender: TObject);
     procedure ListViewAttributesItemClick(const Sender: TObject; const AItem: TListViewItem);
     procedure ListViewAttributesSearchChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     FGenerationContext: TCoreAttributeType;
@@ -1494,7 +1498,8 @@ var
   WeaponDisplays: array[TWeaponSlot] of TWeaponDisplay;
   WT: TWeaponFamily;
   WeaponSlot: TWeaponSlot;
-  DamageResults: array[TWeaponSlot] of TFullDamageCalcResult;
+  DamageResults: TWeaponDamageResults;
+  SlotStats: TWeaponAggregatedStats;
   TotalSkillTiers: Integer;
 begin
   // 1. Prepare UI Containers
@@ -1550,50 +1555,16 @@ begin
   FController.ActivatedSpecBonuses := LActivatedSpecBonuses;
 
   // 3. Calculate via Controller
-  if FController.CalculateFullPerformance(DamageResults, LPlayerAggregatedStats) then
+  if FController.CalculateFullPerformance(DamageResults, LPlayerAggregatedStats, SlotStats) then
   begin
     // 4. Update UI with results
     for WeaponSlot := Game.Types.wsPrimary to Game.Types.wsSideArm do
     begin
-      // Note: We need the aggregated stats for the *specific weapon* to display its specific AWD/SWD/CHC/CHD.
-      // The current Controller.CalculateFullPerformance returns *DamageResults* (which has DPS)
-      // and *Global AggregatedStats*.
-      // However, specific stats like "AR Damage" vs "LMG Damage" are usually per-weapon context in AggregatedStats.
-      // The `UpdateWeaponDisplay` helper expects `TLoadoutAggregatedStats_Display`.
-      // The `TFullDamageCalcResult` usually contains enough to derive display, OR we need the per-weapon stats.
-      //
-      // Refactoring Note: Ideally CalculateFullPerformance returns an array of stats too.
-      // For now, let's assume Global Stats are roughly correct for general display,
-      // but strictly speaking, CHC/CHD/SWD can vary per weapon (e.g. SMG inherent CHC).
-      //
-      // For this refactor, we will rely on `DamageResults` for DPS/Dmg, and `LPlayerAggregatedStats` for global stats.
-      // BUT `UpdateWeaponDisplay` takes `TLoadoutAggregatedStats_Display` which is from `CalcEngine`.
-      //
-      // Let's reconstruct a display struct or modify UpdateWeaponDisplay.
-      // Actually `TFullDamageCalcResult` has `FinalRPM` etc.
-      // We will perform a light mapping here to satisfy `UpdateWeaponDisplay` signature
-      // or modify `UpdateWeaponDisplay` to take `TPlayerAggregatedStats`.
-      //
-      // To keep it simple and correct, we might need to expose the per-weapon aggregated stats from Controller.
-      // But for now, I'll map what I can.
-
-      var DisplayStats: TLoadoutAggregatedStats_Display;
-      DisplayStats.TotalWeaponDamage_AWD_Pct_Display := LPlayerAggregatedStats.WeaponDamageBonus; // Approximation
-      DisplayStats.FinalCHC_Pct_Display := LPlayerAggregatedStats.CriticalHitChance;
-      DisplayStats.FinalCHD_Pct_Display := LPlayerAggregatedStats.CriticalHitDamage;
-      // Note: This global stat approach loses weapon-specifics (like SMG +21% CHC) for the UI label.
-      // A full fix would require `CalculateFullPerformance` to return per-weapon stats.
-      // Given the scope, this is acceptable for a "God Object" refactor, but let's note it.
-
-      // Update: Actually, CalcEngine returns specific stats.
-      // Since I can't easily change the Controller signature right now without another file write,
-      // I will proceed.
-
       if DamageResults[WeaponSlot].BurstDPS > 0 then
-         UpdateWeaponDisplay(WeaponDisplays[WeaponSlot], DamageResults[WeaponSlot], DisplayStats);
+         UpdateWeaponDisplay(WeaponDisplays[WeaponSlot], DamageResults[WeaponSlot], SlotStats[WeaponSlot]);
     end;
 
-    RefreshSkillStatsUI(LPlayerAggregatedStats, LPlayerAggregatedStats.SkillTier);
+    RefreshSkillStatsUI(LPlayerAggregatedStats, LPlayerAggregatedStats.TotalSkillTier);
   end;
 end;
 
@@ -1703,7 +1674,7 @@ begin
   // Apply Weapons
   for LWeaponSlot := wsPrimary to wsSideArm do
   begin
-    FSelectedWeapon[LWeaponSlot] := ABuild.Weapons[LWeaponSlot];
+    FController.SetSelectedWeapon(LWeaponSlot, ABuild.Weapons[LWeaponSlot]);
     UpdateWeaponUI(LWeaponSlot, ABuild.Weapons[LWeaponSlot]);
   end;
 
@@ -2347,7 +2318,7 @@ begin
 
   // Apply Mica/Acrylic Effect
   // Defaulting to Mica (weMica) and Dark Mode.
-  TWindowEffects.ApplyEffect(Self, TWindowEffect.weMica, True);
+//  TWindowEffects.ApplyEffect(Self, TWindowEffect.weMica, True);
 
   // Tweaks for background translucency
   if Assigned(Spec_rect) then
@@ -2388,6 +2359,7 @@ begin
   // Load gear pieces data into FGearPieces here...
   if not Assigned(FormSlots) then
     Application.CreateForm(TFormSlots, FormSlots);
+
   if not Assigned(FormCw) then
     Application.CreateForm(TFormCw, FormCw);
 
@@ -2420,6 +2392,13 @@ procedure TMainForm.FormResize(Sender: TObject);
 begin
   // GridPanelLayout1.ColumnCollection := Self.ClientWidth div 200;
   // GridPanelLayout1.Rows := Self.ClientHeight div 200;
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  {$IFDEF MSWINDOWS}
+  TWindowEffects.ApplyEffect(Self, weMica, True);
+  {$ENDIF}
 end;
 
 end.

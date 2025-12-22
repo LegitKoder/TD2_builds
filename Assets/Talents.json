@@ -222,15 +222,23 @@
                         }
                     },
                     {
+                        "name": "Tag Team",
+                        "description": "The last enemy you have damaged with a skill is marked. Dealing weapon damage to that enemy consumes the mark to reduce active cooldowns by 6s. ",
+                        "icon": "tag_team.png",
+                        "max_cooldown": 4,
+                        "effect": {
+                            "reduce_active_cooldowns": 6,
+                            "condition": "Dealing weapon damage to marked enemy."
+                        }
+                    },
+                    {
                         "name": "Trauma",
                         "description": "Applying a status effect to an enemy applies blind to that enemy. Cooldown 20s. Applying a status effect to an enemy applies bleed to that enemy. Cooldown 20s.",
                         "icon": "trauma.png",
-                        "max_cooldown": 20,
+                        "max_cooldown": 30,
                         "effect": {
-                            "type": "status_effect_application",
-                            "value": 1,
-                            "condition": "bleed_and_blind",
-                            "cooldown_per_type": 20
+                            "blind_effect": "",
+                            "bleed_effect": ""
                         }
                     }
                 ]
@@ -605,26 +613,13 @@
                     }
                 },
                 {
-                    "name": "Perfect Berserk",
-                    "description": "When your armor is depleted, gain +50% weapon damage. This effect is removed when your armor is repaired.",
-                    "icon": "berserk.png",
-                    "max_cooldown": "N/A",
-                    "effect": {
-                        "type": "weapon_damage",
-                        "value": 0.5,
-                        "condition": "armor_depleted"
-                    }
-                },
-                {
                     "name": "Perfect Trauma",
                     "description": "Applying a status effect to an enemy applies blind to that enemy. Cooldown 15s. Applying a status effect to an enemy applies bleed to that enemy. Cooldown 15s.",
                     "icon": "trauma.png",
-                    "max_cooldown": 15,
+                    "max_cooldown": 20,
                     "effect": {
-                        "type": "status_effect_application",
-                        "value": 1,
-                        "condition": "bleed_and_blind",
-                        "cooldown_per_type": 15
+                        "blind_effect": "",
+                        "bleed_effect": ""
                     }
                 },
                 {
@@ -966,16 +961,23 @@
                     "name": "One in Hand",
                     "description": "Throwing a grenade gives you +1 skill tier for 15s. If you have 6 skill tiers, you get an overcharge instead.",
                     "icon": "one_in_hand.png",
-                    "max_cooldown": 15,
+                    "max_cooldown": 60,
                     "effect": {
-                        "type": "skill_tier_on_grenade_throw",
-                        "value": 1,
+                        "skill_tier": 1,
                         "duration": 15
-                    },
-                    "secondary_effect": {
-                        "type": "overcharge_on_grenade_throw",
-                        "value": 1,
-                        "condition": "at_6_skill_tiers"
+                    }
+                },
+                {
+                    "name": "Two in the bag",
+                    "description": "N/A",
+                    "icon": "two_in_bag.png",
+                    "max_cooldown": 60,
+                    "effect": {
+                        "armor_kit_capacity": 1,
+                        "grenade_capacity": 3,
+                        "ammor_capacity": 25,
+                        "repair_skills": 10,
+                        "status_effect": 10
                     }
                 },
                 {
@@ -984,37 +986,32 @@
                     "icon": "kill_confirmed.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "long_term_buff",
-                        "value": {
-                            "weapon_damage": 0.01,
-                            "skill_efficiency": 0.01,
-                            "armor_regeneration": 0.001
-                        },
-                        "stack_max": 30
+                        "weapon_damage":5,
+                        "bonus_armor": 10,
+                        "skill_efficiency": 5
                     },
-                    "secondary_effect": {
+                    "condition": {
                         "type": "short_term_buff_on_pickup",
-                        "duration": 10
+                        "stack_max": 30
                     }
                 },
                 {
                     "name": "Resourceful",
-                    "description": "Allows you to use brand set bonuses from any brand set, and unlocks the 4-piece bonus of any gear set.",
+                    "description": "Slots in with any equipped Gear Set and/or Brand Set item to fulfill a requirement towards unlocking a Gear Sets bonus.Can unlock bonuses from multiple sets simultaneously.",
                     "icon": "resourceful.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "brand_and_gear_set_unlock",
-                        "value": 1
+                        "unlock_sets_bonus": 1
                     }
                 },
                 {
                     "name": "Combat Medic",
                     "description": "Using an armor kit on a friendly player also applies it to you. If used on yourself, it applies to all allies within 20m.",
                     "icon": "combat_medic.png",
-                    "max_cooldown": "N/A",
+                    "max_cooldown": "10",
                     "effect": {
-                        "type": "shared_armor_kit",
-                        "range": 20
+                        "revive_speed": 50,
+                        "weakened_debuff_timer": -50
                     }
                 }
             ],
@@ -1023,80 +1020,76 @@
                     "name": "Over the Top",
                     "description": "Throwing a grenade over cover or from a height grants +35% weapon damage for 15s.",
                     "icon": "over_the_top.png",
-                    "max_cooldown": 15,
+                    "max_cooldown": 60,
                     "effect": {
-                        "type": "weapon_damage",
-                        "value": 0.35,
-                        "duration": 15,
-                        "condition": "on_grenade_throw_over_cover"
+                        "weapon_damage": 25,
+                        "melee_damage": 100,
+                        "duration": 20,
+                        "condition": "While in cooldown, striking an enemy with a melee attack or hitting an enemy with the effect of a grenade will complete the cooldown instantly."
                     }
                 },
                 {
                     "name": "Transference Overclock",
-                    "description": "Grants +15% skill haste, skill damage, and repair skills to all allies. Applying a status effect infuses your gloves. While infused, you can detonate your Hive to create an explosion that applies the infused status effect.",
+                    "description": "Grants +15% Hive skill haste per skill tier.",
                     "icon": "transference_overclock.png",
-                    "max_cooldown": "N/A",
+                    "max_cooldown": "120",
                     "effect": {
-                        "type": "ally_buff",
-                        "value": {
-                            "skill_haste": 0.15,
-                            "skill_damage": 0.15,
-                            "repair_skills": 0.15
-                        }
+                        "skill_haste": 15
                     },
-                    "secondary_effect": {
-                        "type": "hive_detonation",
-                        "condition": "infused_gloves"
-                    }
+                    "condition": "Detonating a hive refreshes your skill cooldowns and grants overcharge for 15s.If at Skill Tier 6, this effect also applies to all allies."
                 },
                 {
                     "name": "Iron Grip",
-                    "description": "Cannot be staggered. +50% melee damage. Melee kills grant 100% bonus armor for 10s.",
+                    "description": "-50% Recoil Penalty when hip-firing; -50% Recoil Penalty when blind-firing from cover.",
                     "icon": "iron_grip.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "stagger_immunity_melee_buff",
-                        "value": 1
-                    }
+                        "recoil_penalty_hip": -50
+                    },
+                    "condition": "-50% Recoil Penalty when hip-firing; -50% Recoil Penalty when blind-firing from cover."
                 },
                 {
                     "name": "Smoke Screen",
                     "description": "When your armor breaks, you deploy a smoke cloud that blinds enemies within 10m for 5s.",
                     "icon": "smoke_screen.png",
-                    "max_cooldown": 30,
-                    "effect": {
-                        "type": "smoke_cloud_on_armor_break"
+                    "max_cooldown": 40,
+                    "effect_pvp": {
+                        "concealing": "concealing you from enemies for 3s"
+                    },
+                    "effect_pve": {
+                        "pulse_resistance": 100
                     }
                 },
                 {
                     "name": "Weakest Link",
-                    "description": "The first enemy you damage in combat is marked. Marked enemies take 20% amplified damage from all sources.",
+                    "description": "Amplifies Weapon Damage by 30% to the lowest ranking enemies within the Tier hierarchy.",
                     "icon": "weakest_link.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "mark_target_on_hit"
+                        "type": "amplified",
+                        "weapon_damage": 30
                     }
                 }
             ],
             "Holster": [
                 {
                     "name": "Quick Draw",
-                    "description": "When your pistol is holstered, it gains a buff of +100% weapon damage. The buff is consumed on your first shot after swapping to your pistol. Headshot kills with your pistol will grant the buff back.",
+                    "description": "While your pistol is holstered, gain a stacking buff every 0.3s, up to 100. When you swap to it, your first shot consumes the buff and deals +10% damage per stack. This deals headshot damage to anywhere you hit.",
                     "icon": "quick_draw.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "weapon_damage_buff",
-                        "value": 1,
-                        "condition": "pistol_holstered"
-                    }
+                        "headshot_damage": 10,
+                        "stack_max": 100
+                    },
+                    "condition": "pistol holstered"
                 },
                 {
                     "name": "Dragon's Glare",
                     "description": "Enemies within 20m are ignited. Cooldown 40s.",
                     "icon": "dragons_glare.png",
-                    "max_cooldown": 40,
+                    "max_cooldown": 35,
                     "effect": {
-                        "type": "auto_ignite",
+                        "burn_damage": "N/A",
                         "range": 20
                     }
                 },
@@ -1104,9 +1097,10 @@
                     "name": "Alternating Current",
                     "description": "Every 10s, one of your skills will be overcharged for 10s.",
                     "icon": "alternating_current.png",
-                    "max_cooldown": 10,
+                    "max_cooldown": "N/A",
+                    "max_stack": 10,
                     "effect": {
-                        "type": "overcharge_skill",
+                        "skill_damage": 3,
                         "duration": 10
                     }
                 },
@@ -1114,32 +1108,36 @@
                     "name": "Defibrillator",
                     "description": "When an ally is downed, a defibrillator drone is deployed to revive them. Cooldown 120s.",
                     "icon": "defibrillator.png",
-                    "max_cooldown": 120,
+                    "max_cooldown": 15,
                     "effect": {
-                        "type": "auto_revive_drone",
-                        "value": 1
+                        "shock_resistence": 50,
+                        "melee_damage": 100
                     }
                 },
                 {
                     "name": "Counter",
-                    "description": "After taking damage, your next shot with a pistol deals +200% weapon damage.",
+                    "description": "weapon swaps grant bonuses to the following groups one in turn.",
                     "icon": "counter.png",
                     "max_cooldown": 3,
                     "effect": {
-                        "type": "pistol_damage_buff_on_hit",
-                        "value": 2.0
-                    }
+                        "rate_of_fire": 20,
+                        "weapon_damage": 20,
+                        "magazine_size": 50,
+                        "reload_speed": 50,
+                        "duration": 12
+                    },
+                    "condition": "swapping weapon"
                 },
                 {
                     "name": "Bob and Weave",
-                    "description": "After a cover to cover move, gain +15% weapon damage for 10s. This can stack up to 3 times.",
+                    "description": "A simple but powerful Exotic that can repair armor by moving between covers.",
                     "icon": "bob_and_weave.png",
-                    "max_cooldown": "N/A",
-                    "effect": {
-                        "type": "weapon_damage_on_cover_move",
-                        "value": 0.15,
-                        "stack_max": 3,
-                        "duration": 10
+                    "max_cooldown": "10",
+                    "effect_pve": {
+                        "armor_regen": 5
+                    },
+                    "effect_pvp": {
+                        "armor_regen": 3
                     }
                 }
             ],
@@ -1150,8 +1148,8 @@
                     "icon": "parkour.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "reload_on_vault_or_cover_to_cover",
-                        "value": 1
+                        "total_armor": 25,
+                        "duration": 5
                     }
                 },
                 {
@@ -1160,24 +1158,19 @@
                     "icon": "stand_your_ground.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "cannot_be_staggered_by_explosions",
-                        "value": 1
-                    },
-                    "secondary_effect": {
-                        "type": "total_weapon_damage",
-                        "value": 0.03,
+                        "weapon_damage": 3,
                         "stack_max": 10,
                         "condition": "not_moving"
                     }
                 },
                 {
                     "name": "Escape Plan",
-                    "description": "Dodging reloads 20% of your current weapon's magazine.",
+                    "description": "",
                     "icon": "escape_plan.png",
                     "max_cooldown": 5,
                     "effect": {
-                        "type": "reload_on_dodge",
-                        "value": 0.20
+                        "movement_speed": 20,
+                        "movement_impairement": -50
                     }
                 }
             ],
@@ -1188,17 +1181,17 @@
                     "icon": "abridged.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "secondary_talent_on_primary",
-                        "condition": "primary_and_secondary_same_type_not_exotic_or_named"
+                        "secondary_talent_on_primary": "secondary_talent_on_primary",
+                        "condition": "primary and secondary must be same type, not exotic or named"
                     }
                 },
                 {
                     "name": "Chemical Agent",
                     "description": "Dealing and receiving status effects builds stacks of Catalysis to a maximum of 12. Each stack grants +2% Weapon Damage and +2% Status Effects. Each enemy within 25m affected by a status effect grants +1 stack/sec. Being affected by status effects grants +2 stacks/sec. Stacks decay at 1 stack/sec after 5s. At max stacks, killing a status-affected enemy grants +25% bonus armor and +20% reload speed for 5s (Reactant). While burning, you can maintain ADS without disruption (Stabilizer).",
-                    "icon": "catalysis.png",
+                    "icon": "chemical_agent.png",
                     "max_cooldown": "N/A",
                     "effect": {
-                        "type": "stacking_buff_on_status_effect",
+                        "stacking_buff_on_status_effect": "stacking_buff_on_status_effect",
                         "stack_max": 12,
                         "buff_per_stack": {
                             "weapon_damage": 0.02,
@@ -1343,117 +1336,117 @@
                 {
                     "name": "Daring",
                     "description": "Doubles the bonus from Headache.",
-                    "icon": "daring.png"
+                    "icon": "daring_blessed.png"
                 },
                 {
                     "name": "Parabellum Rounds",
                     "description": "Hollow-Point Ammo now amplifies damage by 20%.",
-                    "icon": "parabellum_rounds.png"
+                    "icon": "Talents195.png"
                 },
                 {
                     "name": "Positive Reinforcement",
                     "description": "Increases Feedback Loop's cooldown reduction to 35 seconds.",
-                    "icon": "positive_reinforcement.png"
+                    "icon": "Talents194.png"
                 },
                 {
                     "name": "Target Rich Environment",
                     "description": "Increases the number of marked enemies to 5.",
-                    "icon": "target_rich_environment.png"
+                    "icon": "Talents196.png"
                 },
                 {
                     "name": "Specialized Destruction",
                     "description": "Signature weapon kills grant 20% bonus signature weapon damage for 60 seconds.",
-                    "icon": "specialized_destruction.png"
+                    "icon": "Talents197.png"
                 },
                 {
                     "name": "No Limit",
                     "description": "Increases the damage bonus from Dead Man's Hand to 50%.",
-                    "icon": "no_limit.png"
+                    "icon": "Talents199.png"
                 },
                 {
                     "name": "Press the Advantage",
                     "description": "Increases Striker's Gamble max stacks to 200.",
-                    "icon": "press_the_advantage.png"
+                    "icon": "Talents193.png"
                 },
                 {
                     "name": "Compiler Optimization",
                     "description": "Increases Hackstep Protocol's bonus armor to 25% and duration to 20 seconds.",
-                    "icon": "compiler_optimization.png"
+                    "icon": "Talents198.png"
                 },
                 {
                     "name": "Proliferation",
                     "description": "Increases the spread radius of Indirect Transmission to 15 meters and refreshes the duration of your status effects on kill.",
-                    "icon": "proliferation.png"
+                    "icon": "Talents202.png"
                 },
                 {
                     "name": "Tactical Superiority",
-                    "description": "Increases Ground Control's damage bonus to 25%.",
-                    "icon": "tactical_superiority.png"
+                    "description": "Increases Ground Control's damage bonus from 15% to 25%.",
+                    "icon": "Talents201.png"
                 },
                 {
                     "name": "Improved Materials",
                     "description": "Increases Makeshift Repairs' repair amount to 30% over 15 seconds.",
-                    "icon": "improved_materials.png"
+                    "icon": "Talents200.png"
                 },
                 {
                     "name": "Endless Hunger",
                     "description": "Increases the duration of Apex Predator's debuff to 10 seconds.",
-                    "icon": "endless_hunger.png"
+                    "icon": "Talents203.png"
                 },
                 {
                     "name": "Best Buds",
                     "description": "Increases the damage bonus from Tend and Befriend to 50%.",
-                    "icon": "best_buds.png"
+                    "icon": "Talents204.png"
                 },
                 {
                     "name": "From the Shadows",
                     "description": "Increases the critical hit damage bonus from From the Shadows & Into the Light to 50%.",
-                    "icon": "from_the_shadows.png"
+                    "icon": "Talents264.png"
                 },
                 {
                     "name": "Overcharging",
                     "description": "Increases the incoming skill damage reduction from Charging to 75%.",
-                    "icon": "overcharging.png"
+                    "icon": "overcharging_safe_charging.png"
                 },
                 {
                     "name": "Chain Combustion",
                     "description": "The explosion from the Ortiz Incinerator Turret Prototype now applies a burn status effect to enemies hit.",
-                    "icon": "chain_combustion.png"
+                    "icon": "Talents287.png"
                 },
                 {
                     "name": "Deceit",
                     "description": "Stoic now also grants 10% bonus armor to allies for 10 seconds when you take damage.",
-                    "icon": "deceit.png"
+                    "icon": "Talents296.png"
                 },
                 {
                     "name": "Point of no Return",
                     "description": "Increases the weapon handling and weapon damage bonus from On Point to 3% per stack.",
-                    "icon": "point_of_no_return.png"
+                    "icon": "Talents301.png"
                 },
                 {
                     "name": "Increased Interest",
                     "description": "The refunded skill also gains a 25% damage bonus on its next use.",
-                    "icon": "increased_interest.png"
+                    "icon": "Talents320.png"
                 },
                 {
                     "name": "Hivemind",
                     "description": "The Huddle buff now provides an additional 10% weapon damage.",
-                    "icon": "hivemind.png"
+                    "icon": "Talents332.png"
                 },
                 {
                     "name": "Sustainability",
                     "description": "Doubles the duration of Throttle Control's buffs.",
-                    "icon": "sustainability.png"
+                    "icon": "Talents340.png"
                 },
                 {
                     "name": "Fortissimo",
                     "description": "The damage bonus from Symphony is increased to 20%.",
-                    "icon": "fortissimo.png"
+                    "icon": "Talents312.png"
                 },
                 {
                     "name": "Max BPM",
                     "description": "Increases the max stacks for Heartstopper to 100.",
-                    "icon": "max_bpm.png"
+                    "icon": "Talents205.png"
                 }
             ],
             "Backpack": [
@@ -1465,117 +1458,117 @@
                 {
                     "name": "Blessed",
                     "description": "Extends the duration of Headache to 10 seconds.",
-                    "icon": "blessed.png"
+                    "icon": "daring_blessed.png"
                 },
                 {
                     "name": "Trauma Specialist",
                     "description": "Increases the duration of bleed from Hollow-Point Ammo to 10 seconds and all bleed damage by 50%.",
-                    "icon": "trauma_specialist.png"
+                    "icon": "Talents195.png"
                 },
                 {
                     "name": "Short Circuit",
                     "description": "Reduces Feedback Loop's cooldown to 10 seconds.",
-                    "icon": "short_circuit.png"
+                    "icon": "Talents194.png"
                 },
                 {
                     "name": "Critical Measures",
                     "description": "Increases the damage to other marked enemies to 100%.",
-                    "icon": "critical_measures.png"
+                    "icon": "Talents196.png"
                 },
                 {
                     "name": "Signature Moves",
                     "description": "Signature weapon kills grant a 30% reload speed buff for 10 seconds.",
-                    "icon": "signature_moves.png"
+                    "icon": "Talents197.png"
                 },
                 {
                     "name": "Ace in the Sleeve",
                     "description": "Increases the chance to flip a card to 25%.",
-                    "icon": "ace_in_the_sleeve.png"
+                    "icon": "Talents199.png"
                 },
                 {
                     "name": "Risk Management",
                     "description": "Reduces Striker's Gamble stack loss on miss to 1.",
-                    "icon": "risk_management.png"
+                    "icon": "Talents193.png"
                 },
                 {
                     "name": "Multithreaded Execution",
                     "description": "Reduces Hackstep Protocol's cooldown to 15 seconds.",
-                    "icon": "multithreaded_execution.png"
+                    "icon": "Talents198.png"
                 },
                 {
                     "name": "Symptom Aggravator",
                     "description": "Amplifies all damage you deal to status affected targets by 30%.",
-                    "icon": "symptom_aggravator.png"
+                    "icon": "Talents202.png"
                 },
                 {
                     "name": "Strategic Combat Support",
-                    "description": "Ground Control now also increases allies' skill repair by 30%.",
-                    "icon": "strategic_combat_support.png"
+                    "description": "Increases Ground Control proximity repair from 60% to 120%.",
+                    "icon": "Talents201.png"
                 },
                 {
                     "name": "Process Refinery",
                     "description": "Increases Makeshift Repairs' repair amount to 35% over 10 seconds.",
-                    "icon": "process_refinery.png"
+                    "icon": "Talents200.png"
                 },
                 {
                     "name": "Overwhelming Force",
                     "description": "Increases the radius of Apex Predator's disorient to 10 meters.",
-                    "icon": "overwhelming_force.png"
+                    "icon": "Talents203.png"
                 },
                 {
                     "name": "Complete Uptime",
                     "description": "Reduces the cooldown of Tend and Befriend to 5 seconds.",
-                    "icon": "complete_uptime.png"
+                    "icon": "Talents204.png"
                 },
                 {
                     "name": "Into the Light",
                     "description": "Increases the armor regeneration from From the Shadows & Into the Light to 0.8% and allows it to stack up to 40 times.",
-                    "icon": "into_the_light.png"
+                    "icon": "Talents264.png"
                 },
                 {
                     "name": "Safe Charging",
                     "description": "Charging now also grants immunity to bleed, poison, and burn.",
-                    "icon": "safe_charging.png"
+                    "icon": "overcharging_safe_charging.png"
                 },
                 {
                     "name": "Heatstroke",
                     "description": "Increases the damage of the Ortiz Incinerator Turret Prototype's explosion by 100%.",
-                    "icon": "heatstroke.png"
+                    "icon": "Talents287.png"
                 },
                 {
                     "name": "Polyethylene Plating",
                     "description": "Increases the damage resistance from Stoic to 5%.",
-                    "icon": "polyethylene_plating.png"
+                    "icon": "Talents296.png"
                 },
                 {
                     "name": "Point of Honor",
                     "description": "Increases the duration of On Point to 15 seconds.",
-                    "icon": "point_of_honor.png"
+                    "icon": "Talents301.png"
                 },
                 {
                     "name": "Over-engineered",
                     "description": "Reduces the cooldown for Return to Sender to 15 seconds.",
-                    "icon": "over_engineered.png"
+                    "icon": "Talents320.png"
                 },
                 {
                     "name": "Smart Cooperation",
                     "description": "Allies also benefit from the Huddle buff when they are within 10m of you.",
-                    "icon": "smart_cooperation.png"
+                    "icon": "Talents332.png"
                 },
                 {
                     "name": "Snowball",
                     "description": "Killing an enemy grants you and all allies within 20m 10% bonus armor for 10s.",
-                    "icon": "snowball.png"
+                    "icon": "Talents340.png"
                 },
                 {
                     "name": "Accelerando",
                     "description": "Headshot kills grant you and your allies 10% skill haste for 10s.",
-                    "icon": "accelerando.png"
+                    "icon": "Talents312.png"
                 },
                 {
                     "name": "Cold",
                     "description": "Enemies with Heartstopper lose 5% of their armor for 5s.",
-                    "icon": "cold.png"
+                    "icon": "Talents205.png"
                 }
             ]
         }
