@@ -8,7 +8,7 @@ uses
   System.Generics.Collections, System.TypInfo, System.Variants,
   FMX.DialogService, FMX.Dialogs, Winapi.Windows,
   {units}
-  Game.Player, Game.Types, Utils;
+  Game.Player, Game.Types, Utils, System.ImageList, FMX.ImgList;
 // Utils only for TUtils.AssetsPath – replace if needed
 
 type
@@ -18,6 +18,7 @@ type
     : TCoreAttributeDefinition);
 
   TDataJsonIterator = class(TDataModule)
+    ImageList_GTalents: TImageList;
   private
     { Private declarations }
     FWeapons: TDictionary<Integer, TWeapon>;
