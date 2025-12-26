@@ -26,6 +26,8 @@ type
     FMods: TDictionary<Integer, TWeaponMod>;
     FTalents: TDictionary<Integer, TWeaponTalent>;
     FGearTalents: TDictionary<string, TDictionary<string, TList<string>>>;
+    FGearTalentDefinitions: TDictionary<string, TGearTalentDefinition>;
+    FTalentIconCache: TObjectDictionary<string, TBitmap>;
     FGearModsData: TDictionary<Integer, TGearModDefinition>;
     FAllPieceSetDefinitions: TDictionary<string, TPieceSet>;
     FCoreAttributeDefinitions: TDictionary<string, TCoreAttributeDefinition>;
@@ -94,12 +96,15 @@ type
       const ACoreAttrCallback: TProcessCoreAttrCallback);
     // procedure LoadSkillsFromJson(const FileName: string);
 
+    function GetTalentBitmap(const TalentName: string): TBitmap;
+
     { read-only access }
     property Weapons: TDictionary<Integer, TWeapon> read FWeapons;
     property WeaponStats: TDictionary<Integer, TWeaponStat> read FWeaponStats;
     property Mods: TDictionary<Integer, TWeaponMod> read FMods;
     property Talents: TDictionary<Integer, TWeaponTalent> read FTalents;
     property GearTalents: TDictionary<string, TDictionary<string, TList<string>>> read FGearTalents;
+    property GearTalentDefinitions: TDictionary<string, TGearTalentDefinition> read FGearTalentDefinitions;
     property GearModsData: TDictionary<Integer, TGearModDefinition>
       read FGearModsData; // Gear Mods
     property AllPieceSetDefinitions: TDictionary<string, TPieceSet>
@@ -473,6 +478,8 @@ begin
   FMods := TDictionary<Integer, TWeaponMod>.Create;
   FTalents := TDictionary<Integer, TWeaponTalent>.Create;
   FGearTalents := TDictionary<string, TDictionary<string, TList<string>>>.Create;
+  FGearTalentDefinitions := TDictionary<string, TGearTalentDefinition>.Create;
+  FTalentIconCache := TObjectDictionary<string, TBitmap>.Create([doOwnsValues]);
   FGearModsData := TDictionary<Integer, TGearModDefinition>.Create;
   // Create GearMods dictionary
   FAllPieceSetDefinitions := TDictionary<string, TPieceSet>.Create;
@@ -518,6 +525,8 @@ begin
     end;
     FGearTalents.Free;
   end;
+  FGearTalentDefinitions.Free;
+  FTalentIconCache.Free;
   FGearModsData.Free;
   FAllPieceSetDefinitions.Free;
   FCoreAttributeDefinitions.Free;
@@ -581,6 +590,8 @@ begin
     end;
     FGearTalents.Clear;
   end;
+  FGearTalentDefinitions.Clear;
+  FTalentIconCache.Clear;
   FGearModsData.Clear;
   FAllPieceSetDefinitions.Clear;
   FCoreAttributeDefinitions.Clear;
@@ -1605,9 +1616,10 @@ var
   It: TJSONIterator;
   JR: TJsonTextReader;
   SR: TStringReader;
-  SlotName, CategoryName: string;
+  SlotName, CategoryName, TopLevelKey: string;
   SlotDict: TDictionary<string, TList<string>>;
   TalentList: TList<string>;
+  TalentDef: TGearTalentDefinition;
 begin
   if not FileExists(FileName) then
   begin
@@ -1620,58 +1632,151 @@ begin
     JR := TJsonTextReader.Create(SR);
     It := TJSONIterator.Create(JR);
 
-    // Structure: { "talents": { "brandSets": { "Vest": { "category": [ ... ] } } } }
+    // Structure: { "talents": { "brandSets": ..., "named": ..., "exotic": ..., "gearSets": ... } }
     if It.Next and (It.Key = 'talents') and (It.&Type = TJsonToken.StartObject) then
     begin
-      It.Recurse;
-      if It.Next and (It.Key = 'brandSets') and (It.&Type = TJsonToken.StartObject) then
+      It.Recurse; // Enter "talents"
+
+      while It.Next do // Iterate TopLevel keys (brandSets, named, exotic, gearSets)
       begin
-        It.Recurse;
-        while It.Next do // Iterate Slots (Vest, Backpack)
+        if It.&Type = TJsonToken.StartObject then
         begin
-          if It.&Type = TJsonToken.StartObject then
+          TopLevelKey := It.Key; // e.g. "brandSets"
+          It.Recurse; // Enter "brandSets" etc.
+
+          while It.Next do // Iterate Slots (Vest, Backpack)
           begin
             SlotName := It.Key;
-            SlotDict := TDictionary<string, TList<string>>.Create;
-            FGearTalents.Add(SlotName, SlotDict);
 
-            It.Recurse;
-            while It.Next do // Iterate Categories
+            // Case 1: Slot value is an Object (e.g., brandSets -> Vest: { "weapon_dps": [...] })
+            if It.&Type = TJsonToken.StartObject then
             begin
-              if It.&Type = TJsonToken.StartArray then
+              // Only modify FGearTalents (UI list) if we are processing "brandSets"
+              if SameText(TopLevelKey, 'brandSets') then
               begin
-                CategoryName := It.Key;
-                TalentList := TList<string>.Create;
-                SlotDict.Add(CategoryName, TalentList);
-
-                It.Recurse;
-                while It.Next do // Iterate Talents
+                if not FGearTalents.TryGetValue(SlotName, SlotDict) then
                 begin
-                  if It.&Type = TJsonToken.StartObject then
+                  SlotDict := TDictionary<string, TList<string>>.Create;
+                  FGearTalents.Add(SlotName, SlotDict);
+                end;
+
+                It.Recurse; // Enter Vest
+                while It.Next do // Iterate Categories (weapon_dps, etc)
+                begin
+                  if It.&Type = TJsonToken.StartArray then
                   begin
-                    It.Recurse;
-                    while It.Next do
+                    CategoryName := It.Key; // e.g. "weapon_dps"
+
+                    if not SlotDict.TryGetValue(CategoryName, TalentList) then
                     begin
-                      if It.Key = 'name' then
-                        TalentList.Add(It.AsString);
+                      TalentList := TList<string>.Create;
+                      SlotDict.Add(CategoryName, TalentList);
                     end;
-                    It.Return;
+
+                    It.Recurse; // Enter Array
+                    while It.Next do // Iterate Talent Objects
+                    begin
+                      if It.&Type = TJsonToken.StartObject then
+                      begin
+                        TalentDef := Default(TGearTalentDefinition);
+                        It.Recurse;
+                        while It.Next do
+                        begin
+                          if It.Key = 'name' then
+                            TalentDef.Name := It.AsString
+                          else if It.Key = 'description' then
+                            TalentDef.Description := It.AsString
+                          else if It.Key = 'icon' then
+                            TalentDef.IconFilename := It.AsString;
+                        end;
+                        It.Return;
+
+                        if TalentDef.Name <> '' then
+                        begin
+                          TalentList.Add(TalentDef.Name);
+                          FGearTalentDefinitions.AddOrSetValue(TalentDef.Name, TalentDef);
+                        end;
+                      end;
+                    end;
+                    It.Return; // Exit Array
                   end;
                 end;
+                It.Return; // Exit Vest
+              end
+              else
+              begin
+                // If it's StartObject but NOT brandSets (unexpected for provided JSON, but safe fallback)
+                It.Recurse;
+                while It.Next do; // Skip content
                 It.Return;
               end;
+            end
+            // Case 2: Slot value is an Array (e.g., named -> Vest: [ {...}, ... ])
+            else if It.&Type = TJsonToken.StartArray then
+            begin
+              It.Recurse; // Enter Array
+              while It.Next do // Iterate Talent Objects
+              begin
+                if It.&Type = TJsonToken.StartObject then
+                begin
+                  TalentDef := Default(TGearTalentDefinition);
+                  It.Recurse;
+                  while It.Next do
+                  begin
+                    if It.Key = 'name' then
+                      TalentDef.Name := It.AsString
+                    else if It.Key = 'description' then
+                      TalentDef.Description := It.AsString
+                    else if It.Key = 'icon' then
+                      TalentDef.IconFilename := It.AsString;
+                  end;
+                  It.Return;
+
+                  if TalentDef.Name <> '' then
+                    FGearTalentDefinitions.AddOrSetValue(TalentDef.Name, TalentDef);
+                end;
+              end;
+              It.Return; // Exit Array
             end;
-            It.Return;
           end;
+          It.Return; // Exit "brandSets" etc.
         end;
-        It.Return;
       end;
-      It.Return;
+      It.Return; // Exit "talents"
     end;
   finally
     It.Free;
     JR.Free;
     SR.Free;
+  end;
+end;
+
+function TDataJsonIterator.GetTalentBitmap(const TalentName: string): TBitmap;
+var
+  Def: TGearTalentDefinition;
+  Path: string;
+begin
+  if FTalentIconCache.TryGetValue(TalentName, Result) then
+    Exit;
+
+  Result := nil;
+  if FGearTalentDefinitions.TryGetValue(TalentName, Def) and (Def.IconFilename <> '') then
+  begin
+    // Assuming icons are in Assets/Talents/Gears/
+    Path := TPath.Combine(TUtils.AssetsPath, 'Talents', 'Gears');
+    Path := TPath.Combine(Path, Def.IconFilename);
+
+    if TFile.Exists(Path) then
+    begin
+      Result := TBitmap.Create;
+      try
+        Result.LoadFromFile(Path);
+        FTalentIconCache.Add(TalentName, Result); // Dictionary owns value, so it manages lifecycle
+      except
+        Result.Free;
+        Result := nil;
+      end;
+    end;
   end;
 end;
 

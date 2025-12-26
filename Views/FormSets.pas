@@ -986,6 +986,11 @@ begin
         begin
           TItem := TListBoxItem.Create(ListBoxTalents);
           TItem.Text := TalentName;
+
+          var Bmp := AData.GetTalentBitmap(TalentName);
+          if Assigned(Bmp) then
+            TItem.ItemData.Bitmap.Assign(Bmp);
+
           ListBoxTalents.AddObject(TItem);
         end;
       end;
