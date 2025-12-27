@@ -1763,7 +1763,7 @@ begin
   if FGearTalentDefinitions.TryGetValue(TalentName, Def) and (Def.IconFilename <> '') then
   begin
     // Assuming icons are in Assets/Talents/Gears/
-    Path := TPath.Combine(TUtils.AssetsPath, 'Talents', 'Gears');
+    Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Talents'), 'Gears');
     Path := TPath.Combine(Path, Def.IconFilename);
 
     if TFile.Exists(Path) then

@@ -985,6 +985,7 @@ begin
         for TalentName in TalentList do
         begin
           TItem := TListBoxItem.Create(ListBoxTalents);
+          TItem.StyleLookup := 'ListBoxItem1Style1';
           TItem.Text := TalentName;
 
           var Bmp := AData.GetTalentBitmap(TalentName);
