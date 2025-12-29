@@ -1002,21 +1002,28 @@ begin
   if not Assigned(AData) or not Assigned(AData.GearTalents) then
     Exit;
 
-  // Map FGearSlot to string key used in Talents.json (e.g. itChest -> 'Vest')
+  // Map FGearSlot to string key used in Talents.json
+  // Keys in JSON: Vest, Backpack, Mask, Glove, Holster, Kneepad (singular)
   case FGearSlot of
     itChest: SlotName := 'Vest';
     itBackpack: SlotName := 'Backpack';
+    itMask: SlotName := 'Mask';
+    itGloves: SlotName := 'Glove';
+    itHolster: SlotName := 'Holster';
+    itKneepads: SlotName := 'Kneepad';
   else
-    Exit; // Other slots don't have talents
+    Exit; // Should not happen for valid gear types
   end;
 
   ListBoxTalents.Clear;
   ListBoxTalents.BeginUpdate;
   try
-    if AData.GearTalents.TryGetValue(SlotName, SlotData) then
+    if FSelectedGearPiece.SetType = stBrandSet then
     begin
-      // Filter logic based on Set Type
-      if FSelectedGearPiece.SetType = stBrandSet then
+      // For Brand Sets, we expect generic talents mostly on Vest/Backpack.
+      // If we are looking at other slots, usually there are no generic brand talents.
+      // We check if the SlotData exists for this slot.
+      if AData.GearTalents.TryGetValue(SlotName, SlotData) then
       begin
         // Show only Brand Set Categories (exclude 'named', 'exotic', 'gearSets')
         for CategoryName in SlotData.Keys do
@@ -1037,34 +1044,32 @@ begin
               AddTalentItem(TalentName);
           end;
         end;
-      end
-      else
-      begin
-        // Named Item, Gear Set, or Exotic
-        // These have a fixed talent associated with the piece itself.
-        // We shouldn't browse the generic lists.
-        // Display the specific talent if available.
-        if FSelectedGearPiece.Talent <> '' then
-        begin
-          TGroupHeader := TListBoxGroupHeader.Create(ListBoxTalents);
-          if FSelectedGearPiece.SetType = stNamedSet then
-            TGroupHeader.Text := 'NAMED TALENT'
-          else if FSelectedGearPiece.SetType = stExoticSet then
-            TGroupHeader.Text := 'EXOTIC TALENT'
-          else
-            TGroupHeader.Text := 'GEAR SET TALENT';
-
-          TGroupHeader.Selectable := False;
-          ListBoxTalents.AddObject(TGroupHeader);
-
-          AddTalentItem(FSelectedGearPiece.Talent, True);
-        end
-        else
-        begin
-          // Fallback: If no talent is defined on the piece (unlikely for these types if data is correct),
-          // show nothing or a message? For now, empty list is correct behavior if no talent applies.
-        end;
       end;
+    end
+    else
+    begin
+      // Named Item, Gear Set, or Exotic
+      // These have a fixed talent associated with the piece itself.
+      // We strictly display ONLY this talent if it exists.
+      // Note: We do not need to look up in AData.GearTalents because the specific talent name
+      // should already be in FSelectedGearPiece.Talent (loaded from Brands.json).
+
+      if FSelectedGearPiece.Talent <> '' then
+      begin
+        TGroupHeader := TListBoxGroupHeader.Create(ListBoxTalents);
+        if FSelectedGearPiece.SetType = stNamedSet then
+          TGroupHeader.Text := 'NAMED TALENT'
+        else if FSelectedGearPiece.SetType = stExoticSet then
+          TGroupHeader.Text := 'EXOTIC TALENT'
+        else
+          TGroupHeader.Text := 'GEAR SET TALENT';
+
+        TGroupHeader.Selectable := False;
+        ListBoxTalents.AddObject(TGroupHeader);
+
+        AddTalentItem(FSelectedGearPiece.Talent, True);
+      end;
+      // If no talent is defined on the piece, show nothing (empty list), which is correct.
     end;
   finally
     ListBoxTalents.EndUpdate;
