@@ -963,25 +963,36 @@ var
   var
     LImgIdx: Integer;
     LItem: TListBoxItem;
+    LGlyph: TGlyph;
   begin
     LItem := TListBoxItem.Create(ListBoxTalents);
-    LItem.StyleLookup := 'ListBoxItem1Style1';
     LItem.Text := ATalentName;
+    // We do NOT use the custom StyleLookup 'ListBoxItem1Style1' because it is causing rendering issues.
+    // Instead, we manually create the Glyph if an image is available.
 
     LImgIdx := AData.GetTalentImageIndex(ATalentName);
     if LImgIdx >= 0 then
     begin
       LItem.ImageIndex := LImgIdx;
-      // Also try to set it for the specific glyph style requested by the user
-      LItem.StylesData['talent_style'] := LImgIdx;
+
+      // Manually create the glyph to ensure proper sizing and alignment
+      LGlyph := TGlyph.Create(LItem);
+      LGlyph.Parent := LItem;
+      LGlyph.Align := TAlignLayout.Left;
+      LGlyph.Width := 40; // Adequate width for the icon
+      LGlyph.Margins.Right := 5;
+      LGlyph.Margins.Left := 5;
+      LGlyph.Margins.Top := 2;
+      LGlyph.Margins.Bottom := 2;
+      LGlyph.HitTest := False; // Pass clicks to the item
+      LGlyph.Images := ListBoxTalents.Images;
+      LGlyph.ImageIndex := LImgIdx;
     end;
 
     if IsFixed then
     begin
       LItem.Selectable := True;
       LItem.IsSelected := True;
-      // Often fixed talents are implied, but here we allow selection to acknowledge it.
-      // If we want to "lock" it, we might disable HitTest, but then selection visuals differ.
     end;
 
     ListBoxTalents.AddObject(LItem);

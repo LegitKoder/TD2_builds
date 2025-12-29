@@ -476,6 +476,9 @@ var
   Errors: TArray<string>;
 begin
   inherited;
+  if not Assigned(ImageList_GTalents) then
+    ImageList_GTalents := TImageList.Create(Self);
+
   FWeapons := TDictionary<Integer, TWeapon>.Create;
   FWeaponStats := TDictionary<Integer, TWeaponStat>.Create;
   FMods := TDictionary<Integer, TWeaponMod>.Create;
@@ -1799,8 +1802,12 @@ begin
         Result.LoadFromFile(Path);
         FTalentIconCache.Add(TalentName, Result); // Dictionary owns value, so it manages lifecycle
       except
-        Result.Free;
-        Result := nil;
+        on E: Exception do
+        begin
+          WriteLog(['Error loading talent icon: ' + Path + ' - ' + E.Message]);
+          Result.Free;
+          Result := nil;
+        end;
       end;
     end;
   end;
