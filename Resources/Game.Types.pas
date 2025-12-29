@@ -186,7 +186,15 @@ type
     // Ensure all fields from TGearModAttributeType have a corresponding accumulator field here
   end;
 
-  // SHD Watch Bonuses
+   TGearTalentDefinition = record
+    Name: string;
+    Description: string;
+    IconFilename: string;
+    // Add other fields like Effect if you want to parse and store them
+  end;
+
+  { ────────────  Structures for SHD Watch Stats ──────────── }
+
   TWatchBonuses = record
     WeaponDamagePct: Double;
     CriticalHitChancePct: Double;

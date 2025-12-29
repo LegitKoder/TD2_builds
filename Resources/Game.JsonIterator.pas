@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Classes, System.IOUtils, System.Rtti, System.StrUtils,
   System.JSON, System.JSON.Types, System.JSON.Readers, System.JSON.Builders,
   System.Generics.Collections, System.TypInfo, System.Variants,
-  FMX.DialogService, FMX.Dialogs, Winapi.Windows,
+  FMX.DialogService, FMX.Dialogs, Winapi.Windows, FMX.Graphics, FMX.MultiResBitmap,
   {units}
   FMX.Graphics,
   Game.Player, Game.Types, Utils, System.ImageList, FMX.ImgList;
@@ -97,6 +97,8 @@ type
       const APieceSetCallback: TProcessPieceSetCallback;
       const ACoreAttrCallback: TProcessCoreAttrCallback);
     // procedure LoadSkillsFromJson(const FileName: string);
+    function GetTalentBitmap(const TalentName: string): TBitmap;
+    function GetTalentImageIndex(const TalentName: string): Integer;
 
     function GetTalentBitmap(const TalentName: string): TBitmap;
     function GetTalentImageIndex(const TalentName: string): Integer;
@@ -469,6 +471,53 @@ begin
     Result := Trim(Copy(Result, LOpenParen + 1, LCloseParen - LOpenParen - 1));
 end;
 
+function TDataJsonIterator.GetTalentBitmap(const TalentName: string): TBitmap;
+var
+  Def: TGearTalentDefinition;
+  Path: string;
+begin
+  if FTalentIconCache.TryGetValue(TalentName, Result) then
+    Exit;
+
+  Result := nil;
+  if FGearTalentDefinitions.TryGetValue(TalentName, Def) and (Def.IconFilename <> '') then
+  begin
+    // Assuming icons are in Assets/Talents/Gears/
+    Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Talents'), 'Gears');
+    Path := TPath.Combine(Path, Def.IconFilename);
+
+    if TFile.Exists(Path) then
+    begin
+      Result := TBitmap.Create;
+      try
+        Result.LoadFromFile(Path);
+        FTalentIconCache.Add(TalentName, Result); // Dictionary owns value, so it manages lifecycle
+      except
+        Result.Free;
+        Result := nil;
+      end;
+    end;
+  end;
+end;
+
+function TDataJsonIterator.GetTalentImageIndex(const TalentName: string): Integer;
+var
+  Bmp: TBitmap;
+  SourceItem: TCustomSourceItem;
+begin
+  if FTalentImageIndices.TryGetValue(TalentName, Result) then
+    Exit;
+
+  Result := -1;
+  Bmp := GetTalentBitmap(TalentName); // Returns cached bitmap or loads it
+  if Assigned(Bmp) and Assigned(ImageList_GTalents) then
+  begin
+    SourceItem := ImageList_GTalents.Source.Add;
+    SourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
+    Result := SourceItem.Index;
+    FTalentImageIndices.Add(TalentName, Result);
+  end;
+end;
 
 
 constructor TDataJsonIterator.Create(AOwner: TComponent);
@@ -602,8 +651,13 @@ begin
   FGearTalentDefinitions.Clear;
   FTalentIconCache.Clear;
   FTalentImageIndices.Clear;
+<<<<<<< Updated upstream
   if Assigned(FImageList_GTalents) then
     FImageList_GTalents.Source.Clear;
+=======
+  if Assigned(ImageList_GTalents) then
+    ImageList_GTalents.Source.Clear;
+>>>>>>> Stashed changes
   FGearModsData.Clear;
   FAllPieceSetDefinitions.Clear;
   FCoreAttributeDefinitions.Clear;

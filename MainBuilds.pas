@@ -1051,7 +1051,7 @@ begin
     if GearPiece.Name = '' then
     begin
       TargetComboBox.StyleLookup := '';
-      TargetComboBox.Hint := '(Empty)';
+      TargetComboBox.Hint := 'BrandSetSlot';
       if Assigned(TargetImage) then
       begin
         if Assigned(FGearSlotPlaceholders[SlotIndex]) then
