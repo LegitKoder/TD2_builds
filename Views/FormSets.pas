@@ -1,4 +1,4 @@
-﻿unit FormSets;
+unit FormSets;
 
 interface
 
@@ -967,8 +967,6 @@ var
   begin
     LItem := TListBoxItem.Create(ListBoxTalents);
     LItem.Text := ATalentName;
-    // We do NOT use the custom StyleLookup 'ListBoxItem1Style1' because it is causing rendering issues.
-    // Instead, we manually create the Glyph if an image is available.
 
     LImgIdx := AData.GetTalentImageIndex(ATalentName);
     if LImgIdx >= 0 then
@@ -1228,6 +1226,9 @@ begin
       GearPiece.SetType := SelectedPieceSet.SetType;
       GearPiece.Bonuses := SelectedPieceSet.Bonuses;
       GearPiece.MinorAttributeSlotCount := SelectedPart.MinorAttributeSlotCount;
+      // CRITICAL FIX: Assign the talent from the Part definition
+      GearPiece.Talent := SelectedPart.Talent;
+
       SetLength(GearPiece.FixedMinorAttributes, 0);
       if DataJsonIterator <> nil then
         for var j := 0 to High(SelectedPart.FixedMinorAttributeIDs) do
@@ -1260,11 +1261,21 @@ begin
       // Store the selected gear piece
       FSelectedGearPiece := GearPiece;
 
-      // Retrieve and assign talents if available
-      if Assigned(ListBoxTalents.Selected) then
-        FSelectedGearPiece.Talent := ListBoxTalents.Selected.Text
-      else
-        FSelectedGearPiece.Talent := '';
+      // CRITICAL FIX: Refresh the talents list based on the new selection
+      if Assigned(DataJsonIterator) then
+        PopulateTalents(DataJsonIterator);
+
+      // Update Talent Visibility logic
+      // Show talents if list is not empty (covers Brand Sets on Vest/Backpack AND Named/Set items with unique talents anywhere)
+      Talents.Visible := (ListBoxTalents.Count > 0);
+
+      if not Talents.Visible then
+        ListBoxTalents.ClearSelection
+      else if (FSelectedGearPiece.Talent <> '') and (ListBoxTalents.Count > 0) then
+      begin
+         // If a specific talent exists, it should be selected by default (PopulateTalents handles selection for Fixed items, but double check)
+         // PopulateTalents already sets IsSelected=True for Fixed talents.
+      end;
 
       // Apply and display any fixed minor attributes defined for this part
       ApplyFixedMinorAttributes(SelectedPart);
@@ -1278,10 +1289,6 @@ begin
       FSelectedGearPiece.ModAttribute := Default (TModAttribute);
       // Reset to empty/default
       FSelectedModAttributeImageIndex := -1; // Reset image index
-
-      Talents.Visible := (FGearSlot in [itBackpack, itChest]);
-      if not Talents.Visible then
-        ListBoxTalents.ClearSelection;
 
       // Update Mod Availability (which might also call PopulateMods or enable/disable ListBoxModAttributes)
       UpdateModAvailability;

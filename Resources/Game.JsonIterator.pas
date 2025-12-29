@@ -1,4 +1,4 @@
-﻿unit Game.JsonIterator;
+unit Game.JsonIterator;
 
 interface
 
@@ -10,7 +10,6 @@ uses
   {units}
   FMX.Graphics,
   Game.Player, Game.Types, Utils, System.ImageList, FMX.ImgList;
-// Utils only for TUtils.AssetsPath – replace if needed
 
 type
   // Callback for asynchronous processing.
@@ -19,6 +18,7 @@ type
     : TCoreAttributeDefinition);
 
   TDataJsonIterator = class(TDataModule)
+  published
     ImageList_GTalents: TImageList;
   private
     { Private declarations }
@@ -2746,5 +2746,3 @@ begin
 end;
 
 end.
-
-
