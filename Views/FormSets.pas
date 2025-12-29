@@ -492,6 +492,8 @@ end;
 
 procedure TFormSlots.FormCreate(Sender: TObject);
 begin
+  if Assigned(DataJsonIterator) then
+    ListBoxTalents.Images := DataJsonIterator.ImageList_GTalents;
   FCoreAttributes := TList<TCoreAttribute>.Create;
   PopulateCoreAttributes;
   PopulateMinorAttributes;
@@ -955,6 +957,7 @@ var
   CategoryName, TalentName: string;
   SlotData: TDictionary<string, TList<string>>;
   TalentList: TList<string>;
+  ImgIdx: Integer;
 begin
   if not Assigned(AData) or not Assigned(AData.GearTalents) then
     Exit;
@@ -988,9 +991,13 @@ begin
           TItem.StyleLookup := 'ListBoxItem1Style1';
           TItem.Text := TalentName;
 
-          var Bmp := AData.GetTalentBitmap(TalentName);
-          if Assigned(Bmp) then
-            TItem.ItemData.Bitmap.Assign(Bmp);
+          ImgIdx := AData.GetTalentImageIndex(TalentName);
+          if ImgIdx >= 0 then
+          begin
+            TItem.ImageIndex := ImgIdx;
+            // Also try to set it for the specific glyph style requested by the user
+            TItem.StylesData['talent_style'] := ImgIdx;
+          end;
 
           ListBoxTalents.AddObject(TItem);
         end;

@@ -28,6 +28,7 @@ type
     FGearTalents: TDictionary<string, TDictionary<string, TList<string>>>;
     FGearTalentDefinitions: TDictionary<string, TGearTalentDefinition>;
     FTalentIconCache: TObjectDictionary<string, TBitmap>;
+    FTalentImageIndices: TDictionary<string, Integer>;
     FGearModsData: TDictionary<Integer, TGearModDefinition>;
     FAllPieceSetDefinitions: TDictionary<string, TPieceSet>;
     FCoreAttributeDefinitions: TDictionary<string, TCoreAttributeDefinition>;
@@ -97,6 +98,7 @@ type
     // procedure LoadSkillsFromJson(const FileName: string);
 
     function GetTalentBitmap(const TalentName: string): TBitmap;
+    function GetTalentImageIndex(const TalentName: string): Integer;
 
     { read-only access }
     property Weapons: TDictionary<Integer, TWeapon> read FWeapons;
@@ -480,6 +482,7 @@ begin
   FGearTalents := TDictionary<string, TDictionary<string, TList<string>>>.Create;
   FGearTalentDefinitions := TDictionary<string, TGearTalentDefinition>.Create;
   FTalentIconCache := TObjectDictionary<string, TBitmap>.Create([doOwnsValues]);
+  FTalentImageIndices := TDictionary<string, Integer>.Create;
   FGearModsData := TDictionary<Integer, TGearModDefinition>.Create;
   // Create GearMods dictionary
   FAllPieceSetDefinitions := TDictionary<string, TPieceSet>.Create;
@@ -527,6 +530,7 @@ begin
   end;
   FGearTalentDefinitions.Free;
   FTalentIconCache.Free;
+  FTalentImageIndices.Free;
   FGearModsData.Free;
   FAllPieceSetDefinitions.Free;
   FCoreAttributeDefinitions.Free;
@@ -592,6 +596,9 @@ begin
   end;
   FGearTalentDefinitions.Clear;
   FTalentIconCache.Clear;
+  FTalentImageIndices.Clear;
+  if Assigned(ImageList_GTalents) then
+    ImageList_GTalents.Source.Clear;
   FGearModsData.Clear;
   FAllPieceSetDefinitions.Clear;
   FCoreAttributeDefinitions.Clear;
@@ -1714,6 +1721,21 @@ begin
             // Case 2: Slot value is an Array (e.g., named -> Vest: [ {...}, ... ])
             else if It.&Type = TJsonToken.StartArray then
             begin
+              // Ensure we have a dictionary for this slot (Vest/Backpack)
+              if not FGearTalents.TryGetValue(SlotName, SlotDict) then
+              begin
+                SlotDict := TDictionary<string, TList<string>>.Create;
+                FGearTalents.Add(SlotName, SlotDict);
+              end;
+
+              // Ensure we have a list for this category (named, exotic, etc.)
+              // Using TopLevelKey (e.g., "named", "exotic") as the category name
+              if not SlotDict.TryGetValue(TopLevelKey, TalentList) then
+              begin
+                TalentList := TList<string>.Create;
+                SlotDict.Add(TopLevelKey, TalentList);
+              end;
+
               It.Recurse; // Enter Array
               while It.Next do // Iterate Talent Objects
               begin
@@ -1733,7 +1755,10 @@ begin
                   It.Return;
 
                   if TalentDef.Name <> '' then
+                  begin
+                    TalentList.Add(TalentDef.Name);
                     FGearTalentDefinitions.AddOrSetValue(TalentDef.Name, TalentDef);
+                  end;
                 end;
               end;
               It.Return; // Exit Array
@@ -1777,6 +1802,25 @@ begin
         Result := nil;
       end;
     end;
+  end;
+end;
+
+function TDataJsonIterator.GetTalentImageIndex(const TalentName: string): Integer;
+var
+  Bmp: TBitmap;
+  SourceItem: TCustomBitmapItem;
+begin
+  if FTalentImageIndices.TryGetValue(TalentName, Result) then
+    Exit;
+
+  Result := -1;
+  Bmp := GetTalentBitmap(TalentName); // Returns cached bitmap or loads it
+  if Assigned(Bmp) and Assigned(ImageList_GTalents) then
+  begin
+    SourceItem := ImageList_GTalents.Source.Add;
+    SourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
+    Result := SourceItem.Index;
+    FTalentImageIndices.Add(TalentName, Result);
   end;
 end;
 
