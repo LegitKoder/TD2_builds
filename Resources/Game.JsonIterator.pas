@@ -19,9 +19,9 @@ type
     : TCoreAttributeDefinition);
 
   TDataJsonIterator = class(TDataModule)
+    ImageList_GTalents: TImageList;
   private
     { Private declarations }
-    FImageList_GTalents: TImageList;
     FWeapons: TDictionary<Integer, TWeapon>;
     FWeaponStats: TDictionary<Integer, TWeaponStat>;
     FMods: TDictionary<Integer, TWeaponMod>;
@@ -102,7 +102,6 @@ type
     function GetTalentImageIndex(const TalentName: string): Integer;
 
     { read-only access }
-    property ImageList_GTalents: TImageList read FImageList_GTalents;
     property Weapons: TDictionary<Integer, TWeapon> read FWeapons;
     property WeaponStats: TDictionary<Integer, TWeaponStat> read FWeaponStats;
     property Mods: TDictionary<Integer, TWeaponMod> read FMods;
@@ -477,8 +476,8 @@ var
   Errors: TArray<string>;
 begin
   inherited;
-  if not Assigned(FImageList_GTalents) then
-    FImageList_GTalents := TImageList.Create(Self);
+  if not Assigned(ImageList_GTalents) then
+    ImageList_GTalents := TImageList.Create(Self);
 
   FWeapons := TDictionary<Integer, TWeapon>.Create;
   FWeaponStats := TDictionary<Integer, TWeaponStat>.Create;
@@ -602,8 +601,8 @@ begin
   FGearTalentDefinitions.Clear;
   FTalentIconCache.Clear;
   FTalentImageIndices.Clear;
-  if Assigned(FImageList_GTalents) then
-    FImageList_GTalents.Source.Clear;
+  if Assigned(ImageList_GTalents) then
+    ImageList_GTalents.Source.Clear;
   FGearModsData.Clear;
   FAllPieceSetDefinitions.Clear;
   FCoreAttributeDefinitions.Clear;
@@ -1824,9 +1823,9 @@ begin
 
   Result := -1;
   Bmp := GetTalentBitmap(TalentName); // Returns cached bitmap or loads it
-  if Assigned(Bmp) and Assigned(FImageList_GTalents) then
+  if Assigned(Bmp) and Assigned(ImageList_GTalents) then
   begin
-    SourceItem := FImageList_GTalents.Source.Add;
+    SourceItem := ImageList_GTalents.Source.Add;
     SourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
     Result := SourceItem.Index;
     FTalentImageIndices.Add(TalentName, Result);
