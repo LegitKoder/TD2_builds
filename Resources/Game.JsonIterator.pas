@@ -8,6 +8,7 @@ uses
   System.Generics.Collections, System.TypInfo, System.Variants,
   FMX.DialogService, FMX.Dialogs, Winapi.Windows,
   {units}
+  FMX.Graphics,
   Game.Player, Game.Types, Utils, System.ImageList, FMX.ImgList;
 // Utils only for TUtils.AssetsPath – replace if needed
 
