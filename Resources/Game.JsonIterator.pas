@@ -1809,7 +1809,7 @@ end;
 function TDataJsonIterator.GetTalentImageIndex(const TalentName: string): Integer;
 var
   Bmp: TBitmap;
-  SourceItem: TCustomBitmapItem;
+  SourceItem: TCustomSourceItem;
 begin
   if FTalentImageIndices.TryGetValue(TalentName, Result) then
     Exit;
