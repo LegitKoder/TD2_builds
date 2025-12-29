@@ -958,6 +958,35 @@ var
   SlotData: TDictionary<string, TList<string>>;
   TalentList: TList<string>;
   ImgIdx: Integer;
+
+  procedure AddTalentItem(const ATalentName: string; IsFixed: Boolean = False);
+  var
+    LImgIdx: Integer;
+    LItem: TListBoxItem;
+  begin
+    LItem := TListBoxItem.Create(ListBoxTalents);
+    LItem.StyleLookup := 'ListBoxItem1Style1';
+    LItem.Text := ATalentName;
+
+    LImgIdx := AData.GetTalentImageIndex(ATalentName);
+    if LImgIdx >= 0 then
+    begin
+      LItem.ImageIndex := LImgIdx;
+      // Also try to set it for the specific glyph style requested by the user
+      LItem.StylesData['talent_style'] := LImgIdx;
+    end;
+
+    if IsFixed then
+    begin
+      LItem.Selectable := True;
+      LItem.IsSelected := True;
+      // Often fixed talents are implied, but here we allow selection to acknowledge it.
+      // If we want to "lock" it, we might disable HitTest, but then selection visuals differ.
+    end;
+
+    ListBoxTalents.AddObject(LItem);
+  end;
+
 begin
   if not Assigned(AData) or not Assigned(AData.GearTalents) then
     Exit;
@@ -975,31 +1004,54 @@ begin
   try
     if AData.GearTalents.TryGetValue(SlotName, SlotData) then
     begin
-      for CategoryName in SlotData.Keys do
+      // Filter logic based on Set Type
+      if FSelectedGearPiece.SetType = stBrandSet then
       begin
-        TGroupHeader := TListBoxGroupHeader.Create(ListBoxTalents);
-        TGroupHeader.Text := UpperCase(CategoryName);
-        TGroupHeader.StyledSettings := TGroupHeader.StyledSettings - [TStyledSetting.Size];
-        TGroupHeader.TextSettings.Font.Size := 10;
-        TGroupHeader.Selectable := False;
-        ListBoxTalents.AddObject(TGroupHeader);
-
-        TalentList := SlotData[CategoryName];
-        for TalentName in TalentList do
+        // Show only Brand Set Categories (exclude 'named', 'exotic', 'gearSets')
+        for CategoryName in SlotData.Keys do
         begin
-          TItem := TListBoxItem.Create(ListBoxTalents);
-          TItem.StyleLookup := 'ListBoxItem1Style1';
-          TItem.Text := TalentName;
-
-          ImgIdx := AData.GetTalentImageIndex(TalentName);
-          if ImgIdx >= 0 then
+          if (not SameText(CategoryName, 'named')) and
+             (not SameText(CategoryName, 'exotic')) and
+             (not SameText(CategoryName, 'gearSets')) then
           begin
-            TItem.ImageIndex := ImgIdx;
-            // Also try to set it for the specific glyph style requested by the user
-            TItem.StylesData['talent_style'] := ImgIdx;
-          end;
+            TGroupHeader := TListBoxGroupHeader.Create(ListBoxTalents);
+            TGroupHeader.Text := UpperCase(CategoryName);
+            TGroupHeader.StyledSettings := TGroupHeader.StyledSettings - [TStyledSetting.Size];
+            TGroupHeader.TextSettings.Font.Size := 10;
+            TGroupHeader.Selectable := False;
+            ListBoxTalents.AddObject(TGroupHeader);
 
-          ListBoxTalents.AddObject(TItem);
+            TalentList := SlotData[CategoryName];
+            for TalentName in TalentList do
+              AddTalentItem(TalentName);
+          end;
+        end;
+      end
+      else
+      begin
+        // Named Item, Gear Set, or Exotic
+        // These have a fixed talent associated with the piece itself.
+        // We shouldn't browse the generic lists.
+        // Display the specific talent if available.
+        if FSelectedGearPiece.Talent <> '' then
+        begin
+          TGroupHeader := TListBoxGroupHeader.Create(ListBoxTalents);
+          if FSelectedGearPiece.SetType = stNamedSet then
+            TGroupHeader.Text := 'NAMED TALENT'
+          else if FSelectedGearPiece.SetType = stExoticSet then
+            TGroupHeader.Text := 'EXOTIC TALENT'
+          else
+            TGroupHeader.Text := 'GEAR SET TALENT';
+
+          TGroupHeader.Selectable := False;
+          ListBoxTalents.AddObject(TGroupHeader);
+
+          AddTalentItem(FSelectedGearPiece.Talent, True);
+        end
+        else
+        begin
+          // Fallback: If no talent is defined on the piece (unlikely for these types if data is correct),
+          // show nothing or a message? For now, empty list is correct behavior if no talent applies.
         end;
       end;
     end;
