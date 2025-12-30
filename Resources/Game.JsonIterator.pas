@@ -1785,7 +1785,7 @@ var
   Def: TGearTalentDefinition;
   Path: string;
   NormalizedKey: string;
-  SourceItem: TCustomSourceItem;
+  SourceItem: TCustomBitmapItem;
 begin
   if FTalentIconCache.TryGetValue(TalentName, Result) then
     Exit;
@@ -1801,28 +1801,20 @@ begin
     NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
 
     // A) Try finding in ImageList first (Fast RAM Cache)
-    if Assigned(ImageList_GTalents) and Assigned(ImageList_GTalents.Source) then
+    if Assigned(ImageList_GTalents) then
     begin
-      // Manual lookup since ItemByName might not exist in this FMX version
-      for var i := 0 to ImageList_GTalents.Source.Count - 1 do
+      SourceItem := ImageList_GTalents.BitmapItemByName(NormalizedKey);
+      if Assigned(SourceItem) and (SourceItem.MultiResBitmap.Count > 0) then
       begin
-        if SameText(ImageList_GTalents.Source[i].Name, NormalizedKey) then
-        begin
-          SourceItem := ImageList_GTalents.Source[i];
-          if Assigned(SourceItem) and (SourceItem.MultiResBitmap.Count > 0) then
-          begin
-            Result := TBitmap.Create;
-            try
-              // Create a copy from the ImageList
-              Result.Assign(SourceItem.MultiResBitmap[0].Bitmap);
-              FTalentIconCache.Add(TalentName, Result);
-              Exit;
-            except
-              Result.Free;
-              Result := nil;
-            end;
-          end;
-          Break; // Found but invalid bitmap, stop searching
+        Result := TBitmap.Create;
+        try
+          // Create a copy from the ImageList
+          Result.Assign(SourceItem.MultiResBitmap[0].Bitmap);
+          FTalentIconCache.Add(TalentName, Result);
+          Exit;
+        except
+          Result.Free;
+          Result := nil;
         end;
       end;
     end;
@@ -1870,7 +1862,7 @@ end;
 function TDataJsonIterator.GetTalentImageIndex(const TalentName: string): Integer;
 var
   Bmp: TBitmap;
-  SourceItem: TCustomSourceItem;
+  SourceItem: TCustomBitmapItem;
   Def: TGearTalentDefinition;
   NormalizedKey: string;
 begin
@@ -1885,22 +1877,18 @@ begin
     Exit;
 
   // 3. Hybrid Key-Based Lookup
-  if (Def.IconFilename <> '') and Assigned(ImageList_GTalents) and Assigned(ImageList_GTalents.Source) then
+  if (Def.IconFilename <> '') and Assigned(ImageList_GTalents) then
   begin
     // Normalize Key: "Talents/Gears/Braced.png" -> "braced"
     NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
 
     // A) Check if already in ImageList (Design-time or previously loaded)
-    // Manual lookup since ItemByName might not exist
-    for var i := 0 to ImageList_GTalents.Source.Count - 1 do
+    SourceItem := ImageList_GTalents.BitmapItemByName(NormalizedKey);
+    if Assigned(SourceItem) then
     begin
-      if SameText(ImageList_GTalents.Source[i].Name, NormalizedKey) then
-      begin
-        SourceItem := ImageList_GTalents.Source[i];
-        Result := SourceItem.Index;
-        FTalentImageIndices.Add(TalentName, Result);
-        Exit;
-      end;
+      Result := SourceItem.Index;
+      FTalentImageIndices.Add(TalentName, Result);
+      Exit;
     end;
 
     // B) Not found? Load from Disk via GetTalentBitmap (Lazy Load)
