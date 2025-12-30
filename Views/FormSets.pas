@@ -971,7 +971,8 @@ var
     LImgIdx := AData.GetTalentImageIndex(ATalentName);
     if LImgIdx >= 0 then
     begin
-      LItem.ImageIndex := LImgIdx;
+      // Do NOT set LItem.ImageIndex to avoid conflict/double-rendering with the style.
+      // LItem.ImageIndex := LImgIdx;
 
       // Manually create the glyph to ensure proper sizing and alignment
       LGlyph := TGlyph.Create(LItem);
@@ -983,6 +984,7 @@ var
       LGlyph.Margins.Top := 2;
       LGlyph.Margins.Bottom := 2;
       LGlyph.HitTest := False; // Pass clicks to the item
+      LGlyph.Visible := True;
       LGlyph.Images := ListBoxTalents.Images;
       LGlyph.ImageIndex := LImgIdx;
     end;

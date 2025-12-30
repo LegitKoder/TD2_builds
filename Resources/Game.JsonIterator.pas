@@ -1793,22 +1793,36 @@ begin
   begin
     // Assuming icons are in Assets/Talents/Gears/
     Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Talents'), 'Gears');
-    Path := TPath.Combine(Path, Def.IconFilename);
 
-    if TFile.Exists(Path) then
+    // Robust file finding: Try exact name, then with .png, then without .png (if it had it)
+    var FileToLoad := TPath.Combine(Path, Def.IconFilename);
+    if not TFile.Exists(FileToLoad) then
+    begin
+      if TFile.Exists(FileToLoad + '.png') then
+        FileToLoad := FileToLoad + '.png'
+      else if SameText(TPath.GetExtension(Def.IconFilename), '.png') and
+              TFile.Exists(ChangeFileExt(FileToLoad, '')) then
+        FileToLoad := ChangeFileExt(FileToLoad, '');
+    end;
+
+    if TFile.Exists(FileToLoad) then
     begin
       Result := TBitmap.Create;
       try
-        Result.LoadFromFile(Path);
+        Result.LoadFromFile(FileToLoad);
         FTalentIconCache.Add(TalentName, Result); // Dictionary owns value, so it manages lifecycle
       except
         on E: Exception do
         begin
-          WriteLog(['Error loading talent icon: ' + Path + ' - ' + E.Message]);
+          WriteLog(['Error loading talent icon: ' + FileToLoad + ' - ' + E.Message]);
           Result.Free;
           Result := nil;
         end;
       end;
+    end
+    else
+    begin
+      WriteLog(['Warning: Icon file not found for talent "' + TalentName + '": ' + Def.IconFilename]);
     end;
   end;
 end;
