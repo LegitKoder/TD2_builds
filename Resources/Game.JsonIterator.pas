@@ -1785,7 +1785,8 @@ var
   Def: TGearTalentDefinition;
   Path: string;
   NormalizedKey: string;
-  SourceItem: TCustomBitmapItem;
+  LBitmapItem: TCustomBitmapItem;
+  LSize: TSize;
 begin
   if FTalentIconCache.TryGetValue(TalentName, Result) then
     Exit;
@@ -1803,13 +1804,12 @@ begin
     // A) Try finding in ImageList first (Fast RAM Cache)
     if Assigned(ImageList_GTalents) then
     begin
-      SourceItem := ImageList_GTalents.BitmapItemByName(NormalizedKey);
-      if Assigned(SourceItem) and (SourceItem.MultiResBitmap.Count > 0) then
+      if ImageList_GTalents.BitmapItemByName(NormalizedKey, LBitmapItem, LSize) and Assigned(LBitmapItem) then
       begin
         Result := TBitmap.Create;
         try
           // Create a copy from the ImageList
-          Result.Assign(SourceItem.MultiResBitmap[0].Bitmap);
+          Result.Assign(LBitmapItem.Bitmap);
           FTalentIconCache.Add(TalentName, Result);
           Exit;
         except
@@ -1862,7 +1862,7 @@ end;
 function TDataJsonIterator.GetTalentImageIndex(const TalentName: string): Integer;
 var
   Bmp: TBitmap;
-  SourceItem: TCustomBitmapItem;
+  LSourceItem: TCustomSourceItem;
   Def: TGearTalentDefinition;
   NormalizedKey: string;
 begin
@@ -1883,25 +1883,26 @@ begin
     NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
 
     // A) Check if already in ImageList (Design-time or previously loaded)
-    SourceItem := ImageList_GTalents.BitmapItemByName(NormalizedKey);
-    if Assigned(SourceItem) then
+    // TSourceCollection.IndexOf is case-insensitive
+    Result := ImageList_GTalents.Source.IndexOf(NormalizedKey);
+    if Result >= 0 then
     begin
-      Result := SourceItem.Index;
       FTalentImageIndices.Add(TalentName, Result);
       Exit;
     end;
 
     // B) Not found? Load from Disk via GetTalentBitmap (Lazy Load)
+    // This handles loading, cache update, and returns the bitmap
     Bmp := GetTalentBitmap(TalentName);
 
     if Assigned(Bmp) then
     begin
-      // Add to ImageList with the Normalized Key so next time ItemByName works
-      SourceItem := ImageList_GTalents.Source.Add;
-      SourceItem.Name := NormalizedKey;
-      SourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
+      // Add to ImageList with the Normalized Key so next time IndexOf works
+      LSourceItem := ImageList_GTalents.Source.Add;
+      LSourceItem.Name := NormalizedKey;
+      LSourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
 
-      Result := SourceItem.Index;
+      Result := LSourceItem.Index;
       FTalentImageIndices.Add(TalentName, Result);
     end;
   end;
