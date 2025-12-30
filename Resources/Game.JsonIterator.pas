@@ -1793,10 +1793,14 @@ begin
   Result := nil;
   if FGearTalentDefinitions.TryGetValue(TalentName, Def) and (Def.IconFilename <> '') then
   begin
-    // 1. Hybrid Approach: Try ImageList Lookup First
-    // Normalize: remove path, remove extension, lowercase (e.g. "Talents/Gears/braced.png" -> "braced")
+    // ---------------------------------------------------------
+    // 1. Hybrid Approach: Key-Based Lookup (Recommended)
+    // ---------------------------------------------------------
+    // Normalize: remove path, remove extension, lowercase.
+    // JSON: "Talents/Gears/Braced.png" -> Key: "braced"
     NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
 
+    // A) Try finding in ImageList first (Fast RAM Cache)
     if Assigned(ImageList_GTalents) and Assigned(ImageList_GTalents.Source) then
     begin
       SourceItem := ImageList_GTalents.Source.ItemByName(NormalizedKey);
@@ -1815,19 +1819,22 @@ begin
       end;
     end;
 
-    // 2. Fallback: Disk Load
-    // Assuming icons are in Assets/Talents/Gears/
+    // ---------------------------------------------------------
+    // 2. Fallback: Disk Load (Lazy Loading)
+    // ---------------------------------------------------------
+    // If not in ImageList, try to find it on disk using the Key or original filename
     Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Talents'), 'Gears');
 
-    // Robust file finding: Try exact name, then with .png, then without .png (if it had it)
-    var FileToLoad := TPath.Combine(Path, Def.IconFilename);
+    // Construct the fallback path. We prioritize the NormalizedKey + .png
+    // to align with the standard naming convention.
+    var FileToLoad := TPath.Combine(Path, NormalizedKey + '.png');
+
     if not TFile.Exists(FileToLoad) then
     begin
-      if TFile.Exists(FileToLoad + '.png') then
-        FileToLoad := FileToLoad + '.png'
-      else if SameText(TPath.GetExtension(Def.IconFilename), '.png') and
-              TFile.Exists(ChangeFileExt(FileToLoad, '')) then
-        FileToLoad := ChangeFileExt(FileToLoad, '');
+       // Last resort: try the raw filename from JSON if it differs (e.g. "foo.jpg")
+       var RawPath := TPath.Combine(Path, TPath.GetFileName(Def.IconFilename));
+       if TFile.Exists(RawPath) then
+         FileToLoad := RawPath;
     end;
 
     if TFile.Exists(FileToLoad) then
@@ -1835,7 +1842,7 @@ begin
       Result := TBitmap.Create;
       try
         Result.LoadFromFile(FileToLoad);
-        FTalentIconCache.Add(TalentName, Result); // Dictionary owns value, so it manages lifecycle
+        FTalentIconCache.Add(TalentName, Result);
       except
         on E: Exception do
         begin
@@ -1847,7 +1854,7 @@ begin
     end
     else
     begin
-      WriteLog(['Warning: Icon file not found for talent "' + TalentName + '": ' + Def.IconFilename]);
+      WriteLog(['Warning: Icon file not found for talent "' + TalentName + '" Key: ' + NormalizedKey]);
     end;
   end;
 end;
@@ -1859,20 +1866,23 @@ var
   Def: TGearTalentDefinition;
   NormalizedKey: string;
 begin
-  // 1. Runtime Cache
+  // 1. Runtime Cache (Fastest)
   if FTalentImageIndices.TryGetValue(TalentName, Result) then
     Exit;
 
   Result := -1;
 
-  // 2. Resolve Definition for Key Normalization
+  // 2. Resolve Definition
   if not FGearTalentDefinitions.TryGetValue(TalentName, Def) then
     Exit;
 
-  // 3. Hybrid Lookup: Check ImageList by Name
+  // 3. Hybrid Key-Based Lookup
   if (Def.IconFilename <> '') and Assigned(ImageList_GTalents) and Assigned(ImageList_GTalents.Source) then
   begin
+    // Normalize Key: "Talents/Gears/Braced.png" -> "braced"
     NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
+
+    // A) Check if already in ImageList (Design-time or previously loaded)
     SourceItem := ImageList_GTalents.Source.ItemByName(NormalizedKey);
     if Assigned(SourceItem) then
     begin
@@ -1880,22 +1890,20 @@ begin
       FTalentImageIndices.Add(TalentName, Result);
       Exit;
     end;
-  end;
 
-  // 4. Fallback: Load from Disk via GetTalentBitmap
-  // This will try ImageList internal lookup again (redundant but safe) or load from disk
-  Bmp := GetTalentBitmap(TalentName);
+    // B) Not found? Load from Disk via GetTalentBitmap (Lazy Load)
+    Bmp := GetTalentBitmap(TalentName);
 
-  if Assigned(Bmp) and Assigned(ImageList_GTalents) then
-  begin
-    SourceItem := ImageList_GTalents.Source.Add;
-    // Register the name so future lookups find it immediately
-    if Def.IconFilename <> '' then
-      SourceItem.Name := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
+    if Assigned(Bmp) then
+    begin
+      // Add to ImageList with the Normalized Key so next time ItemByName works
+      SourceItem := ImageList_GTalents.Source.Add;
+      SourceItem.Name := NormalizedKey;
+      SourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
 
-    SourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
-    Result := SourceItem.Index;
-    FTalentImageIndices.Add(TalentName, Result);
+      Result := SourceItem.Index;
+      FTalentImageIndices.Add(TalentName, Result);
+    end;
   end;
 end;
 
