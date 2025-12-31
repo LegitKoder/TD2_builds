@@ -963,7 +963,7 @@ var
   var
     LImgIdx: Integer;
     LItem: TListBoxItem;
-    LBitmap: TBitmap;
+    LGlyph: TGlyph;
   begin
     LItem := TListBoxItem.Create(ListBoxTalents);
     LItem.Text := ATalentName;
@@ -971,17 +971,24 @@ var
     LImgIdx := AData.GetTalentImageIndex(ATalentName);
     if LImgIdx >= 0 then
     begin
-      // Extract bitmap directly from ImageList to ensure it displays regardless of style capabilities
-      if Assigned(AData.ImageList_GTalents) then
-      begin
-        LBitmap := AData.ImageList_GTalents.Bitmap(TSizeF.Create(40, 40), LImgIdx);
-        if Assigned(LBitmap) then
-        try
-          LItem.ItemData.Bitmap.Assign(LBitmap);
-        finally
-          LBitmap.Free;
-        end;
-      end;
+      // Create a glyph to display the icon.
+      // We set specific margins and alignment to ensure it is visible and positioned correctly.
+      LGlyph := TGlyph.Create(LItem);
+      LGlyph.Parent := LItem;
+      LGlyph.Align := TAlignLayout.Left;
+      LGlyph.Margins.Left := 5;
+      LGlyph.Margins.Right := 5;
+      LGlyph.Margins.Top := 2;
+      LGlyph.Margins.Bottom := 2;
+      LGlyph.Width := 40; // Explicit width
+      LGlyph.Height := 40; // Explicit height (crucial if parent height varies)
+
+      // Assign the ImageList from AData
+      LGlyph.Images := AData.ImageList_GTalents;
+      LGlyph.ImageIndex := LImgIdx;
+
+      LGlyph.HitTest := False; // Pass clicks to the item
+      LGlyph.Visible := True;
     end
     else
     begin
