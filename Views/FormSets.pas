@@ -963,7 +963,7 @@ var
   var
     LImgIdx: Integer;
     LItem: TListBoxItem;
-    LGlyph: TGlyph;
+    LBitmap: TBitmap;
   begin
     LItem := TListBoxItem.Create(ListBoxTalents);
     LItem.Text := ATalentName;
@@ -971,24 +971,17 @@ var
     LImgIdx := AData.GetTalentImageIndex(ATalentName);
     if LImgIdx >= 0 then
     begin
-      // Manually create the glyph to ensure proper sizing and alignment
-      LGlyph := TGlyph.Create(LItem);
-      LGlyph.Parent := LItem;
-      LGlyph.Align := TAlignLayout.Left;
-      LGlyph.Width := 40; // Adequate width for the icon
-      LGlyph.Margins.Right := 5;
-      LGlyph.Margins.Left := 5;
-      LGlyph.Margins.Top := 2;
-      LGlyph.Margins.Bottom := 2;
-      LGlyph.HitTest := False; // Pass clicks to the item
-      LGlyph.Visible := True;
-
-      // Ensure Images property is linked even if FormCreate missed it
-      if (ListBoxTalents.Images = nil) and Assigned(AData) then
-         ListBoxTalents.Images := AData.ImageList_GTalents;
-
-      LGlyph.Images := ListBoxTalents.Images;
-      LGlyph.ImageIndex := LImgIdx;
+      // Extract bitmap directly from ImageList to ensure it displays regardless of style capabilities
+      if Assigned(AData.ImageList_GTalents) then
+      begin
+        LBitmap := AData.ImageList_GTalents.Bitmap(TSizeF.Create(40, 40), LImgIdx);
+        if Assigned(LBitmap) then
+        try
+          LItem.ItemData.Bitmap.Assign(LBitmap);
+        finally
+          LBitmap.Free;
+        end;
+      end;
     end
     else
     begin
