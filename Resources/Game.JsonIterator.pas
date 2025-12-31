@@ -1854,8 +1854,12 @@ begin
     end
     else
     begin
-      WriteLog(['Warning: Icon file not found for talent "' + TalentName + '" Key: ' + NormalizedKey]);
+      WriteLog(['Warning: Icon file not found for talent "' + TalentName + '" Key: ' + NormalizedKey + ' File: ' + FileToLoad]);
     end;
+  end else if not FGearTalentDefinitions.ContainsKey(TalentName) then begin
+      WriteLog(['Warning: Talent definition not found for "' + TalentName + '"']);
+  end else begin
+      WriteLog(['Warning: Icon filename empty for talent "' + TalentName + '"']);
   end;
 end;
 
@@ -1874,7 +1878,10 @@ begin
 
   // 2. Resolve Definition
   if not FGearTalentDefinitions.TryGetValue(TalentName, Def) then
+  begin
+    WriteLog(['GetTalentImageIndex: Talent not found in definitions: ' + TalentName]);
     Exit;
+  end;
 
   // 3. Hybrid Key-Based Lookup
   if (Def.IconFilename <> '') and Assigned(ImageList_GTalents) then
@@ -1904,7 +1911,14 @@ begin
 
       Result := LSourceItem.Index;
       FTalentImageIndices.Add(TalentName, Result);
-    end;
+    end
+    else
+      WriteLog(['GetTalentImageIndex: GetTalentBitmap returned nil for ' + TalentName]);
+  end
+  else
+  begin
+    if not Assigned(ImageList_GTalents) then WriteLog(['GetTalentImageIndex: ImageList_GTalents is nil!']);
+    if Def.IconFilename = '' then WriteLog(['GetTalentImageIndex: IconFilename is empty for ' + TalentName]);
   end;
 end;
 
