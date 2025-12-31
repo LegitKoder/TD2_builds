@@ -979,12 +979,19 @@ var
       LGlyph.Parent := LItem;
       LGlyph.Align := TAlignLayout.Left;
       LGlyph.Width := 40; // Adequate width for the icon
+      // Ensure height is set, though Align usually handles it relative to parent content
+      LGlyph.Height := 40;
       LGlyph.Margins.Right := 5;
       LGlyph.Margins.Left := 5;
       LGlyph.Margins.Top := 2;
       LGlyph.Margins.Bottom := 2;
       LGlyph.HitTest := False; // Pass clicks to the item
       LGlyph.Visible := True;
+
+      // Ensure Images property is linked even if FormCreate missed it
+      if (ListBoxTalents.Images = nil) and Assigned(AData) then
+         ListBoxTalents.Images := AData.ImageList_GTalents;
+
       LGlyph.Images := ListBoxTalents.Images;
       LGlyph.ImageIndex := LImgIdx;
     end;
@@ -1001,6 +1008,10 @@ var
 begin
   if not Assigned(AData) or not Assigned(AData.GearTalents) then
     Exit;
+
+  // Ensure the listbox knows about the image list before we start
+  if (ListBoxTalents.Images = nil) and Assigned(AData) then
+    ListBoxTalents.Images := AData.ImageList_GTalents;
 
   // Map FGearSlot to string key used in Talents.json
   // Keys in JSON: Vest, Backpack, Mask, Glove, Holster, Kneepad (singular)
