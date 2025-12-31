@@ -195,6 +195,30 @@
                         }
                     },
                     {
+                        "name": "Mad Bomber",
+                        "description": "Grenade Radius is increased by +50%. Grenades that kill an enemy are refunded. Grenades can now be 'cooked'. Gain +15% bonus armor while aiming grenades.",
+                        "icon": "mad_bomber.png",
+                        "max_cooldown": "N/A",
+                        "effect_pve": {
+                            "type": "grenade_buffs",
+                            "grenade_radius": 50,
+                            "bonus_armor": 15,
+                            "grenade_refund_on_kill": 1
+                        }
+                    },
+                    {
+                        "name": "Tamper Proof",
+                        "description": "Enemies that walk within 3 meters of your hive, turret, or remote pulse are shocked. Arm time: 2 seconds. Cooldown per skill: 10 seconds.",
+                        "icon": "tamper_proof.png",
+                        "max_cooldown": 10,
+                        "effect_pve": {
+                            "type": "status_effect_on_proximity",
+                            "status_effect": "shock",
+                            "range": 3,
+                            "condition": "enemy_walks_near_skill"
+                        }
+                    },
+                    {
                         "name": "Kinetic Momentum",
                         "description": "Each second spent firing increases skill damage and repair by 1%, stacking up to 15%.",
                         "icon": "kinetic_momentum.png",
@@ -763,7 +787,7 @@
                 {
                     "name": "Perfect Adrenaline Rush",
                     "description": "Whenever you are within 10 meters of an enemy, gain 23% bonus armor for 5 seconds. Stacks up to 3 times. Cooldown is 5 seconds.",
-                    "icon": "fireworks_show.png",
+                    "icon": "adrenaline_rush.png",
                     "max_cooldown": 5,
                     "effect_pve": {
                         "bonus_armor": 23,
