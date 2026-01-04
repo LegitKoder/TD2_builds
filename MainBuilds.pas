@@ -1102,6 +1102,56 @@ begin
       else
         TargetComboBox.StyleLookup := 'EmptySlot';
       end;
+
+      // --- Talent icon inside the slot style (Glyph_talent) ---
+      if TargetComboBox.StyleLookup <> 'EmptySlot' then
+      begin
+        TargetComboBox.ApplyStyleLookup;
+        var LGlyph := TargetComboBox.FindStyleResource('Glyph_talent') as TGlyph;
+        if Assigned(LGlyph) then
+        begin
+          LGlyph.Images := DataJsonIterator.ImageList_GTalents;
+          var LTalentName := GearPiece.Talent.Trim;
+          if LTalentName <> '' then
+          begin
+            var LImgIdx := DataJsonIterator.GetTalentImageIndex(LTalentName);
+
+            // Fallback: some sources prefix Perfect/Perfectly while the talent definition uses the base name.
+            if (LImgIdx < 0) and StartsText('Perfectly ', LTalentName) then
+              LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfectly ') + 1, MaxInt).Trim);
+            if (LImgIdx < 0) and StartsText('Perfect ', LTalentName) then
+              LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfect ') + 1, MaxInt).Trim);
+
+            LGlyph.ImageIndex := LImgIdx;
+            LGlyph.Visible := (LImgIdx >= 0);
+          end
+          else
+          begin
+            LGlyph.ImageIndex := -1;
+            LGlyph.Visible := False;
+          end;
+        end;
+      end;
+
+//      TargetComboBox.ApplyStyleLookup;
+//      var LGlyph := TargetComboBox.FindStyleResource('Glyph_talent') as TGlyph;
+//      if Assigned(LGlyph) then begin
+//          LGlyph.Images := DataJsonIterator.ImageList_GTalents;
+//          if GearPiece.Talent <> '' then
+//          begin
+//              // Get the icon key for the talent and find its index in the ImageList
+//              var LIconKey := DataJsonIterator.GetTalentIconKey(GearPiece.Talent);
+//              var LImgIdx  := DataJsonIterator.GetTalentImageIndex(LIconKey);
+//              LGlyph.ImageIndex := LImgIdx;
+//              LGlyph.Visible    := (LImgIdx >= 0);   // show glyph if a valid icon is set
+//          end else
+//          begin
+//              // No talent on this gear piece – hide the glyph
+//              LGlyph.ImageIndex := -1;
+//              LGlyph.Visible    := False;
+//          end;
+//      end;
+
     end;
   finally
     TargetComboBox.EndUpdate;

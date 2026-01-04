@@ -633,7 +633,7 @@ var
 begin
   Result := '';
   if FGearTalentDefinitions.TryGetValue(TalentName, Def) then
-    Result := Def.IconFilename.Trim.ToLower;
+    Result := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
 end;
 
 constructor TDataJsonIterator.Create(AOwner: TComponent);

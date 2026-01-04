@@ -128,16 +128,6 @@ begin
     Result := -1;
 end;
 
-procedure TFormSlots.SetGearSlot(const Value: TItemType);
-var
-  SlotText: string;
-begin
-  FGearSlot := Value;
-  SlotText := ItemTypeToStr(Value);
-  GroupBox1.Text := 'Sets ' + SlotText;
-  Caption := 'Sets ' + SlotText;
-end;
-
 function TFormSlots.FindPieceSetByNameAndType(const SetName: string;
   SetType: TSetType; out PieceSet: TPieceSet): Boolean;
 var
@@ -232,51 +222,6 @@ begin
     raise Exception.Create('Unknown Core Attribute ID: ' + CoreAttrID);
 end;
 
-procedure TFormSlots.ResetMinorAttributeSelections;
-var
-  I: Integer;
-  Item: TListBoxItem;
-begin
-  ListBoxMinorAttributes.BeginUpdate;
-  try
-    for I := 0 to ListBoxMinorAttributes.Count - 1 do
-    begin
-      Item := ListBoxMinorAttributes.ListItems[I];
-      if Item = nil then
-        Continue;
-      if Item is TListBoxGroupHeader then
-        Continue;
-      Item.IsSelected := False;
-      Item.Enabled := True;
-    end;
-  finally
-    ListBoxMinorAttributes.EndUpdate;
-  end;
-  SetLength(FSelectedMinorAttributeImageIndices, 0);
-end;
-
-procedure TFormSlots.LockMinorAttributeInList(const MinorAttr
-  : TMinorAttributeType);
-var
-  DisplayText: string;
-  I: Integer;
-  Item: TListBoxItem;
-begin
-  DisplayText := MinorAttributeDetailsToString(MinorAttr);
-  for I := 0 to ListBoxMinorAttributes.Count - 1 do
-  begin
-    Item := ListBoxMinorAttributes.ListItems[I];
-    if (Item = nil) or (Item is TListBoxGroupHeader) then
-      Continue;
-    if SameText(Item.Text, DisplayText) then
-    begin
-      Item.IsSelected := True;
-      Item.Enabled := False;
-      Break;
-    end;
-  end;
-end;
-
 function TFormSlots.TryMapFixedMinorToEnum(const FixedID: string;
   out MinorType: TMinorAttributeType): Boolean;
 begin
@@ -347,6 +292,8 @@ begin
 
   Result := ValueText + NameText;
 end;
+
+{$ENDREGION}
 
 procedure TFormSlots.ConfigureFixedMinorColumnVisibility(const HasFixed
   : Boolean);
@@ -488,7 +435,63 @@ begin
   ListBoxMinorAttributes.Enabled := True; // Always enabled so we can see/scroll fixed attributes
 end;
 
-{$ENDREGION}
+procedure TFormSlots.ResetMinorAttributeSelections;
+var
+  I: Integer;
+  Item: TListBoxItem;
+begin
+  ListBoxMinorAttributes.BeginUpdate;
+  try
+    for I := 0 to ListBoxMinorAttributes.Count - 1 do
+    begin
+      Item := ListBoxMinorAttributes.ListItems[I];
+      if Item = nil then
+        Continue;
+      if Item is TListBoxGroupHeader then
+        Continue;
+      Item.IsSelected := False;
+      Item.Enabled := True;
+    end;
+  finally
+    ListBoxMinorAttributes.EndUpdate;
+  end;
+  SetLength(FSelectedMinorAttributeImageIndices, 0);
+end;
+
+procedure TFormSlots.LockMinorAttributeInList(const MinorAttr
+  : TMinorAttributeType);
+var
+  DisplayText: string;
+  I: Integer;
+  Item: TListBoxItem;
+begin
+  DisplayText := MinorAttributeDetailsToString(MinorAttr);
+  for I := 0 to ListBoxMinorAttributes.Count - 1 do
+  begin
+    Item := ListBoxMinorAttributes.ListItems[I];
+    if (Item = nil) or (Item is TListBoxGroupHeader) then
+      Continue;
+    if SameText(Item.Text, DisplayText) then
+    begin
+      Item.IsSelected := True;
+      Item.Enabled := False;
+      Break;
+    end;
+  end;
+end;
+
+procedure TFormSlots.SetGearSlot(const Value: TItemType);
+var
+  SlotText: string;
+begin
+  FGearSlot := Value;
+  // Reset selection state when switching slot (avoids carrying rollable talent across slots)
+  FSelectedGearPiece := Default(TGearPiece);
+  FSelectedGearPiece.ItemType := Value;
+  SlotText := ItemTypeToStr(Value);
+  GroupBox1.Text := 'Sets ' + SlotText;
+  Caption := 'Sets ' + SlotText;
+end;
 
 procedure TFormSlots.FormCreate(Sender: TObject);
 begin
@@ -559,6 +562,22 @@ begin
       FSelectedGearPiece.SelectedMinorIconIndices[idx]      := ListBoxMinorAttributes.ListItems[i].ImageIndex;
       Inc(idx);
     end;
+
+  // Persist selected talent (if any). For Brand/Improvised it is rollable;
+  // for Named/Exotic/GearSet it is usually fixed but we still capture the selection safely.
+  if Assigned(ListBoxTalents) then
+  begin
+    var SelTalent := '';
+    if (ListBoxTalents.ItemIndex >= 0) and (ListBoxTalents.ListItems[ListBoxTalents.ItemIndex] <> nil) and
+       (not (ListBoxTalents.ListItems[ListBoxTalents.ItemIndex] is TListBoxGroupHeader)) then
+      SelTalent := ListBoxTalents.ListItems[ListBoxTalents.ItemIndex].Text.Trim;
+
+    if SelTalent <> '' then
+      FSelectedGearPiece.Talent := SelTalent
+    else if FSelectedGearPiece.SetType in [stBrandSet, stImprovised] then
+      FSelectedGearPiece.Talent := ''; // rollable talent not selected
+  end;
+
   // Persist mod icon index
   FSelectedGearPiece.SelectedModIconIndex := FSelectedModAttributeImageIndex;
   ModalResult := mrOk;
@@ -1014,8 +1033,9 @@ var
     LItem.StyleLookup := 'ListBoxItemTalent';
     LItem.Text := ATalentName;
 
-    LIconKey := AData.GetTalentIconKey(ATalentName);    // "braced"
-    LImgIdx  := AData.FindImageIndexByName(LIconKey);   // index in ImageList_GTalents
+//    LIconKey := AData.GetTalentIconKey(ATalentName);    // "braced"
+//    LImgIdx  := AData.FindImageIndexByName(LIconKey);   // index in ImageList_GTalents
+    LImgIdx := AData.GetTalentImageIndex(ATalentName);
     LItem.ImageIndex := LImgIdx;
 
     // IMPORTANT: add to list BEFORE ApplyStyleLookup
@@ -1035,6 +1055,13 @@ var
       G.ImageIndex := LItem.ImageIndex;
       G.Visible := (LItem.ImageIndex >= 0);
       G.HitTest := False;
+    end;
+
+    // Auto-select current talent when browsing rollable lists (Brand/Improvised)
+    if (not IsFixed) and (FSelectedGearPiece.Talent <> '') and SameText(ATalentName, FSelectedGearPiece.Talent) then
+    begin
+      LItem.IsSelected := True;
+      ListBoxTalents.ItemIndex := LItem.Index;
     end;
 
     if IsFixed then
@@ -1073,7 +1100,7 @@ begin
     // 1. If the piece has a specific fixed talent (e.g. Named, Exotic, Gear Set Chest/Backpack), SHOW IT.
     // 2. Else if it is a Brand Set (and has no specific talent), show the generic talents list.
 
-    if FSelectedGearPiece.Talent <> '' then
+    if (FSelectedGearPiece.SetType in [stNamedSet, stExoticSet, stGearSet]) and (FSelectedGearPiece.Talent <> '') then
     begin
       // Specific Fixed Talent
       TGroupHeader := TListBoxGroupHeader.Create(ListBoxTalents);
@@ -1091,7 +1118,7 @@ begin
 
       AddTalentItem(FSelectedGearPiece.Talent, True);
     end
-    else if FSelectedGearPiece.SetType = stBrandSet then
+    else if FSelectedGearPiece.SetType in [stBrandSet, stImprovised] then
     begin
       // Generic Brand Set Talents
       // For Brand Sets, we expect generic talents mostly on Vest/Backpack.
