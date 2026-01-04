@@ -1112,8 +1112,7 @@ begin
           LGlyph.Images := DataJsonIterator.ImageList_GTalents;
           if GearPiece.Talent <> '' then
           begin
-            var LIconKey := DataJsonIterator.GetTalentIconKey(GearPiece.Talent);
-            var LImgIdx := DataJsonIterator.FindImageIndexByName(LIconKey);
+            var LImgIdx := DataJsonIterator.GetTalentImageIndex(GearPiece.Talent);
             LGlyph.ImageIndex := LImgIdx;
             LGlyph.Visible := (LImgIdx >= 0);
           end
