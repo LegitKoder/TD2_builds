@@ -6,9 +6,8 @@ uses
   System.SysUtils, System.Classes, System.IOUtils, System.Rtti, System.StrUtils,
   System.JSON, System.JSON.Types, System.JSON.Readers, System.JSON.Builders,
   System.Generics.Collections, System.TypInfo, System.Variants,
-  FMX.DialogService, FMX.Dialogs, Winapi.Windows,
+  FMX.DialogService, FMX.Dialogs, Winapi.Windows, FMX.Graphics, FMX.MultiResBitmap,
   {units}
-  FMX.Graphics,
   Game.Player, Game.Types, Utils, System.ImageList, FMX.ImgList;
 
 type
@@ -97,9 +96,10 @@ type
       const APieceSetCallback: TProcessPieceSetCallback;
       const ACoreAttrCallback: TProcessCoreAttrCallback);
     // procedure LoadSkillsFromJson(const FileName: string);
-
     function GetTalentBitmap(const TalentName: string): TBitmap;
     function GetTalentImageIndex(const TalentName: string): Integer;
+    function FindImageIndexByName(const AName: string): Integer;
+    function GetTalentIconKey(const TalentName: string): string;
 
     { read-only access }
     property Weapons: TDictionary<Integer, TWeapon> read FWeapons;
@@ -468,7 +468,173 @@ begin
     Result := Trim(Copy(Result, LOpenParen + 1, LCloseParen - LOpenParen - 1));
 end;
 
+function TDataJsonIterator.GetTalentBitmap(const TalentName: string): TBitmap;
+var
+  Def: TGearTalentDefinition;
+  Path: string;
+  NormalizedKey: string;
+  LBitmapItem: TCustomBitmapItem;
+  LSize: TSize;
+begin
+  if FTalentIconCache.TryGetValue(TalentName, Result) then
+    Exit;
 
+  Result := nil;
+  if FGearTalentDefinitions.TryGetValue(TalentName, Def) and (Def.IconFilename <> '') then
+  begin
+    // ---------------------------------------------------------
+    // 1. Hybrid Approach: Key-Based Lookup (Recommended)
+    // ---------------------------------------------------------
+    // Normalize: remove path, remove extension, lowercase.
+    // JSON: "Talents/Gears/Braced.png" -> Key: "braced"
+    NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
+
+    // A) Try finding in ImageList first (Fast RAM Cache)
+    if Assigned(ImageList_GTalents) then
+    begin
+      if ImageList_GTalents.BitmapItemByName(NormalizedKey, LBitmapItem, LSize) and Assigned(LBitmapItem) then
+      begin
+        Result := TBitmap.Create;
+        try
+          // Create a copy from the ImageList
+          Result.Assign(LBitmapItem.Bitmap);
+          FTalentIconCache.Add(TalentName, Result);
+          Exit;
+        except
+          Result.Free;
+          Result := nil;
+        end;
+      end;
+    end;
+
+    // ---------------------------------------------------------
+    // 2. Fallback: Disk Load (Lazy Loading)
+    // ---------------------------------------------------------
+    // If not in ImageList, try to find it on disk using the Key or original filename
+    Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Talents'), 'Gears');
+
+    // Construct the fallback path. We prioritize the NormalizedKey + .png
+    // to align with the standard naming convention.
+    var FileToLoad := TPath.Combine(Path, NormalizedKey + '.png');
+
+    if not TFile.Exists(FileToLoad) then
+    begin
+       // Last resort: try the raw filename from JSON if it differs (e.g. "foo.jpg")
+       var RawPath := TPath.Combine(Path, TPath.GetFileName(Def.IconFilename));
+       if TFile.Exists(RawPath) then
+         FileToLoad := RawPath;
+    end;
+
+    if TFile.Exists(FileToLoad) then
+    begin
+      Result := TBitmap.Create;
+      try
+        Result.LoadFromFile(FileToLoad);
+        FTalentIconCache.Add(TalentName, Result);
+      except
+        on E: Exception do
+        begin
+          WriteLog(['Error loading talent icon: ' + FileToLoad + ' - ' + E.Message]);
+          Result.Free;
+          Result := nil;
+        end;
+      end;
+    end
+    else
+    begin
+      WriteLog(['Warning: Icon file not found for talent "' + TalentName + '" Key: ' + NormalizedKey + ' File: ' + FileToLoad]);
+    end;
+  end else if not FGearTalentDefinitions.ContainsKey(TalentName) then begin
+      WriteLog(['Warning: Talent definition not found for "' + TalentName + '"']);
+  end else begin
+      WriteLog(['Warning: Icon filename empty for talent "' + TalentName + '"']);
+  end;
+end;
+
+function TDataJsonIterator.GetTalentImageIndex(const TalentName: string): Integer;
+var
+  Bmp: TBitmap;
+  LSourceItem: TCustomSourceItem;
+  Def: TGearTalentDefinition;
+  NormalizedKey: string;
+begin
+  // 1. Runtime Cache (Fastest)
+  if FTalentImageIndices.TryGetValue(TalentName, Result) then
+    Exit;
+
+  Result := -1;
+
+  // 2. Resolve Definition
+  if not FGearTalentDefinitions.TryGetValue(TalentName, Def) then
+  begin
+    WriteLog(['GetTalentImageIndex: Talent not found in definitions: ' + TalentName]);
+    Exit;
+  end;
+
+  // 3. Hybrid Key-Based Lookup
+  if (Def.IconFilename <> '') and Assigned(ImageList_GTalents) then
+  begin
+    // Normalize Key: "Talents/Gears/Braced.png" -> "braced"
+    NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
+
+    // A) Check if already in ImageList (Design-time or previously loaded)
+    // TSourceCollection.IndexOf is case-insensitive
+    Result := ImageList_GTalents.Source.IndexOf(NormalizedKey);
+    if Result >= 0 then
+    begin
+      FTalentImageIndices.Add(TalentName, Result);
+      Exit;
+    end;
+
+    // B) Not found? Load from Disk via GetTalentBitmap (Lazy Load)
+    // This handles loading, cache update, and returns the bitmap
+    Bmp := GetTalentBitmap(TalentName);
+
+    if Assigned(Bmp) then
+    begin
+      // Add to ImageList with the Normalized Key so next time IndexOf works
+      LSourceItem := ImageList_GTalents.Source.Add;
+      LSourceItem.Name := NormalizedKey;
+      LSourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
+
+      Result := LSourceItem.Index;
+      FTalentImageIndices.Add(TalentName, Result);
+    end
+    else
+      WriteLog(['GetTalentImageIndex: GetTalentBitmap returned nil for ' + TalentName]);
+  end
+  else
+  begin
+    if not Assigned(ImageList_GTalents) then WriteLog(['GetTalentImageIndex: ImageList_GTalents is nil!']);
+    if Def.IconFilename = '' then WriteLog(['GetTalentImageIndex: IconFilename is empty for ' + TalentName]);
+  end;
+end;
+
+function TDataJsonIterator.FindImageIndexByName(const AName: string): Integer;
+begin
+  Result := -1;
+  if (AName = '') or (ImageList_GTalents = nil) then
+    Exit;
+
+  // Robust: SameText (case-insensitive) over Source items
+  for var I := 0 to ImageList_GTalents.Source.Count - 1 do
+    if SameText(ImageList_GTalents.Source[I].Name, AName) then
+      Exit(I);
+
+  // Optional: if your ImageList items are named with ".png"
+  for var I := 0 to ImageList_GTalents.Source.Count - 1 do
+    if SameText(ImageList_GTalents.Source[I].Name, AName + '.png') then
+      Exit(I);
+end;
+
+function TDataJsonIterator.GetTalentIconKey(const TalentName: string): string;
+var
+  Def: TGearTalentDefinition;
+begin
+  Result := '';
+  if FGearTalentDefinitions.TryGetValue(TalentName, Def) then
+    Result := Def.IconFilename.Trim.ToLower;
+end;
 
 constructor TDataJsonIterator.Create(AOwner: TComponent);
 var
@@ -1698,7 +1864,7 @@ begin
                           else if It.Key = 'description' then
                             TalentDef.Description := It.AsString
                           else if It.Key = 'icon' then
-                            TalentDef.IconFilename := It.AsString;
+                            TalentDef.IconFilename := TPath.GetFileNameWithoutExtension(It.AsString).Trim.ToLower;
                         end;
                         It.Return;
 
@@ -1754,7 +1920,7 @@ begin
                     else if It.Key = 'description' then
                       TalentDef.Description := It.AsString
                     else if It.Key = 'icon' then
-                      TalentDef.IconFilename := It.AsString;
+                      TalentDef.IconFilename := TPath.GetFileNameWithoutExtension(It.AsString).Trim.ToLower;
                   end;
                   It.Return;
 
@@ -1777,148 +1943,6 @@ begin
     It.Free;
     JR.Free;
     SR.Free;
-  end;
-end;
-
-function TDataJsonIterator.GetTalentBitmap(const TalentName: string): TBitmap;
-var
-  Def: TGearTalentDefinition;
-  Path: string;
-  NormalizedKey: string;
-  LBitmapItem: TCustomBitmapItem;
-  LSize: TSize;
-begin
-  if FTalentIconCache.TryGetValue(TalentName, Result) then
-    Exit;
-
-  Result := nil;
-  if FGearTalentDefinitions.TryGetValue(TalentName, Def) and (Def.IconFilename <> '') then
-  begin
-    // ---------------------------------------------------------
-    // 1. Hybrid Approach: Key-Based Lookup (Recommended)
-    // ---------------------------------------------------------
-    // Normalize: remove path, remove extension, lowercase.
-    // JSON: "Talents/Gears/Braced.png" -> Key: "braced"
-    NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
-
-    // A) Try finding in ImageList first (Fast RAM Cache)
-    if Assigned(ImageList_GTalents) then
-    begin
-      if ImageList_GTalents.BitmapItemByName(NormalizedKey, LBitmapItem, LSize) and Assigned(LBitmapItem) then
-      begin
-        Result := TBitmap.Create;
-        try
-          // Create a copy from the ImageList
-          Result.Assign(LBitmapItem.Bitmap);
-          FTalentIconCache.Add(TalentName, Result);
-          Exit;
-        except
-          Result.Free;
-          Result := nil;
-        end;
-      end;
-    end;
-
-    // ---------------------------------------------------------
-    // 2. Fallback: Disk Load (Lazy Loading)
-    // ---------------------------------------------------------
-    // If not in ImageList, try to find it on disk using the Key or original filename
-    Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Talents'), 'Gears');
-
-    // Construct the fallback path. We prioritize the NormalizedKey + .png
-    // to align with the standard naming convention.
-    var FileToLoad := TPath.Combine(Path, NormalizedKey + '.png');
-
-    if not TFile.Exists(FileToLoad) then
-    begin
-       // Last resort: try the raw filename from JSON if it differs (e.g. "foo.jpg")
-       var RawPath := TPath.Combine(Path, TPath.GetFileName(Def.IconFilename));
-       if TFile.Exists(RawPath) then
-         FileToLoad := RawPath;
-    end;
-
-    if TFile.Exists(FileToLoad) then
-    begin
-      Result := TBitmap.Create;
-      try
-        Result.LoadFromFile(FileToLoad);
-        FTalentIconCache.Add(TalentName, Result);
-      except
-        on E: Exception do
-        begin
-          WriteLog(['Error loading talent icon: ' + FileToLoad + ' - ' + E.Message]);
-          Result.Free;
-          Result := nil;
-        end;
-      end;
-    end
-    else
-    begin
-      WriteLog(['Warning: Icon file not found for talent "' + TalentName + '" Key: ' + NormalizedKey + ' File: ' + FileToLoad]);
-    end;
-  end else if not FGearTalentDefinitions.ContainsKey(TalentName) then begin
-      WriteLog(['Warning: Talent definition not found for "' + TalentName + '"']);
-  end else begin
-      WriteLog(['Warning: Icon filename empty for talent "' + TalentName + '"']);
-  end;
-end;
-
-function TDataJsonIterator.GetTalentImageIndex(const TalentName: string): Integer;
-var
-  Bmp: TBitmap;
-  LSourceItem: TCustomSourceItem;
-  Def: TGearTalentDefinition;
-  NormalizedKey: string;
-begin
-  // 1. Runtime Cache (Fastest)
-  if FTalentImageIndices.TryGetValue(TalentName, Result) then
-    Exit;
-
-  Result := -1;
-
-  // 2. Resolve Definition
-  if not FGearTalentDefinitions.TryGetValue(TalentName, Def) then
-  begin
-    WriteLog(['GetTalentImageIndex: Talent not found in definitions: ' + TalentName]);
-    Exit;
-  end;
-
-  // 3. Hybrid Key-Based Lookup
-  if (Def.IconFilename <> '') and Assigned(ImageList_GTalents) then
-  begin
-    // Normalize Key: "Talents/Gears/Braced.png" -> "braced"
-    NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
-
-    // A) Check if already in ImageList (Design-time or previously loaded)
-    // TSourceCollection.IndexOf is case-insensitive
-    Result := ImageList_GTalents.Source.IndexOf(NormalizedKey);
-    if Result >= 0 then
-    begin
-      FTalentImageIndices.Add(TalentName, Result);
-      Exit;
-    end;
-
-    // B) Not found? Load from Disk via GetTalentBitmap (Lazy Load)
-    // This handles loading, cache update, and returns the bitmap
-    Bmp := GetTalentBitmap(TalentName);
-
-    if Assigned(Bmp) then
-    begin
-      // Add to ImageList with the Normalized Key so next time IndexOf works
-      LSourceItem := ImageList_GTalents.Source.Add;
-      LSourceItem.Name := NormalizedKey;
-      LSourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
-
-      Result := LSourceItem.Index;
-      FTalentImageIndices.Add(TalentName, Result);
-    end
-    else
-      WriteLog(['GetTalentImageIndex: GetTalentBitmap returned nil for ' + TalentName]);
-  end
-  else
-  begin
-    if not Assigned(ImageList_GTalents) then WriteLog(['GetTalentImageIndex: ImageList_GTalents is nil!']);
-    if Def.IconFilename = '' then WriteLog(['GetTalentImageIndex: IconFilename is empty for ' + TalentName]);
   end;
 end;
 

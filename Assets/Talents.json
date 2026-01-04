@@ -599,6 +599,30 @@
                     }
                 },
                 {
+                    "name": "Tamper Proof",
+                    "description": "Enemies that walk within 3m of your Hive, Turret, or Remote Pulse are shocked for 3s.\n\nArm time: 2s.\nCooldown: 10s.",
+                    "icon": "tamper_proof.png",
+                    "max_cooldown": 10,
+                    "effect_pve": {
+                        "type": "status_effect_on_proximity",
+                        "status_effect": "shock",
+                        "range": 3,
+                        "condition": "enemy_walks_near_skill"
+                    }
+                },
+                {
+                    "name": "Mad Bomber",
+                    "description": "Grenade radius is increased by 50%.\n\nGrenades that kill an enemy are refunded.\n\nGrenades can now be \"cooked\" by holding the fire button, making them explode earlier.",
+                    "icon": "mad_bomber.png",
+                    "max_cooldown": "N/A",
+                    "effect_pve": {
+                        "type": "grenade_buffs",
+                        "grenade_radius": 50,
+                        "bonus_armor": 15,
+                        "grenade_refund_on_kill": 1
+                    }
+                },
+                {
                     "name": "Perfect Unbreakable",
                     "description": "When your armor is depleted, 100% of your armor is repaired. This can occur once every 60 seconds.",
                     "icon": "unbreakable.png",
@@ -800,20 +824,6 @@
                         "duration": 5,
                         "range": 10,
                         "stack_max": 3
-                    }
-                },
-                {
-                    "name": "Fireworks Show",
-                    "description": "Concussion grenades become Festive Grenades. Hitting an enemy with a Festive Grenade will cause explosions to happen around two other enemies within 20m.",
-                    "icon": "fireworks_show.png",
-                    "max_cooldown": 3,
-                    "effect_pve": {
-                        "grenade_damage": "N/A",
-                        "range": 20
-                    },
-                    "effect_pvp": {
-                        "grenade_damage": "N/A",
-                        "range": 10
                     }
                 },
                 {
