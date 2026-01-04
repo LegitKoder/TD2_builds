@@ -1102,6 +1102,28 @@ begin
       else
         TargetComboBox.StyleLookup := 'EmptySlot';
       end;
+
+      if TargetComboBox.StyleLookup <> 'EmptySlot' then
+      begin
+        TargetComboBox.ApplyStyleLookup;
+        var LGlyph := TargetComboBox.FindStyleResource('Glyph_talent') as TGlyph;
+        if Assigned(LGlyph) then
+        begin
+          LGlyph.Images := DataJsonIterator.ImageList_GTalents;
+          if GearPiece.Talent <> '' then
+          begin
+            var LIconKey := DataJsonIterator.GetTalentIconKey(GearPiece.Talent);
+            var LImgIdx := DataJsonIterator.FindImageIndexByName(LIconKey);
+            LGlyph.ImageIndex := LImgIdx;
+            LGlyph.Visible := (LImgIdx >= 0);
+          end
+          else
+          begin
+            LGlyph.ImageIndex := -1;
+            LGlyph.Visible := False;
+          end;
+        end;
+      end;
     end;
   finally
     TargetComboBox.EndUpdate;
