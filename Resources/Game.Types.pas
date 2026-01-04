@@ -246,13 +246,6 @@ type
     Value: Double;    // The MAX value, e.g., 15 for WD, 170000 for Armor
   end;
 
-  TGearTalentDefinition = record
-    Name: string;
-    Description: string;
-    IconFilename: string;
-    // Add other fields like Effect if you want to parse and store them
-  end;
-
   TFixedMinorAttributeDefinition = record
     ID: string;       // e.g. "armorOnKill"
     TypeName: string; // e.g. "Armor On Kill"

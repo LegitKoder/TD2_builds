@@ -1,4 +1,4 @@
-unit FormSets;
+﻿unit FormSets;
 
 interface
 
@@ -959,32 +959,82 @@ var
   TalentList: TList<string>;
   ImgIdx: Integer;
 
+//  procedure AddTalentItem(const ATalentName: string; IsFixed: Boolean = False);
+//  var
+//    LImgIdx: Integer;
+//    LItem: TListBoxItem;
+//    LGlyph: TGlyph;
+//  begin
+//    LItem := TListBoxItem.Create(ListBoxTalents);
+//    LItem.Text := ATalentName;
+//    LImgIdx := AData.GetTalentImageIndex(ATalentName);
+//    if LImgIdx >= 0 then
+//    begin
+//      // Create a glyph to display the icon.
+//      // We set specific margins and alignment to ensure it is visible and positioned correctly.
+//      LGlyph := TGlyph.Create(LItem);
+//      LGlyph.Parent := LItem;
+//      LGlyph.Align := TAlignLayout.Left;
+//      LGlyph.Margins.Left := 5;
+//      LGlyph.Margins.Right := 5;
+//      LGlyph.Margins.Top := 2;
+//      LGlyph.Margins.Bottom := 2;
+//      LGlyph.Width := 40; // Explicit width
+//      LGlyph.Height := 40; // Explicit height (crucial if parent height varies)
+//
+//      // Assign the ImageList from AData
+//      LGlyph.Images := AData.ImageList_GTalents;
+//      LGlyph.ImageIndex := LImgIdx;
+//
+//      LGlyph.HitTest := False; // Pass clicks to the item
+//      LGlyph.Visible := True;
+//    end
+//    else
+//    begin
+//      AData.WriteLog(['PopulateTalents: Image index not found for ' + ATalentName]);
+//    end;
+//
+//    if IsFixed then
+//    begin
+//      LItem.Selectable := True;
+//      LItem.IsSelected := True;
+//    end;
+//
+//    ListBoxTalents.AddObject(LItem);
+//  end;
+
   procedure AddTalentItem(const ATalentName: string; IsFixed: Boolean = False);
   var
-    LImgIdx: Integer;
     LItem: TListBoxItem;
-    LGlyph: TGlyph;
+    LIconKey: string;
+    LImgIdx: Integer;
+    G: TGlyph;
   begin
     LItem := TListBoxItem.Create(ListBoxTalents);
+    LItem.StyleLookup := 'ListBoxItemTalent';
     LItem.Text := ATalentName;
 
-    LImgIdx := AData.GetTalentImageIndex(ATalentName);
-    if LImgIdx >= 0 then
-    begin
-      LItem.ImageIndex := LImgIdx;
+    LIconKey := AData.GetTalentIconKey(ATalentName);    // "braced"
+    LImgIdx  := AData.FindImageIndexByName(LIconKey);   // index in ImageList_GTalents
+    LItem.ImageIndex := LImgIdx;
 
-      // Manually create the glyph to ensure proper sizing and alignment
-      LGlyph := TGlyph.Create(LItem);
-      LGlyph.Parent := LItem;
-      LGlyph.Align := TAlignLayout.Left;
-      LGlyph.Width := 40; // Adequate width for the icon
-      LGlyph.Margins.Right := 5;
-      LGlyph.Margins.Left := 5;
-      LGlyph.Margins.Top := 2;
-      LGlyph.Margins.Bottom := 2;
-      LGlyph.HitTest := False; // Pass clicks to the item
-      LGlyph.Images := ListBoxTalents.Images;
-      LGlyph.ImageIndex := LImgIdx;
+    // IMPORTANT: add to list BEFORE ApplyStyleLookup
+    ListBoxTalents.AddObject(LItem);
+
+    // Force style creation so FindStyleResource works
+    LItem.ApplyStyleLookup;
+
+    // Depending on your style, the glyph may be named "glyphstyle" or "glyph"
+    G := LItem.FindStyleResource('glyphstyle') as TGlyph;
+    if not Assigned(G) then
+      G := LItem.FindStyleResource('glyph') as TGlyph;
+
+    if Assigned(G) then
+    begin
+      G.Images := AData.ImageList_GTalents;
+      G.ImageIndex := LItem.ImageIndex;
+      G.Visible := (LItem.ImageIndex >= 0);
+      G.HitTest := False;
     end;
 
     if IsFixed then
@@ -992,13 +1042,16 @@ var
       LItem.Selectable := True;
       LItem.IsSelected := True;
     end;
-
-    ListBoxTalents.AddObject(LItem);
   end;
+
 
 begin
   if not Assigned(AData) or not Assigned(AData.GearTalents) then
     Exit;
+
+  // Ensure the listbox knows about the image list before we start
+  if (ListBoxTalents.Images = nil) and Assigned(AData) then
+    ListBoxTalents.Images := AData.ImageList_GTalents;
 
   // Map FGearSlot to string key used in Talents.json
   // Keys in JSON: Vest, Backpack, Mask, Glove, Holster, Kneepad (singular)
@@ -1010,7 +1063,7 @@ begin
     itHolster: SlotName := 'Holster';
     itKneepads: SlotName := 'Kneepad';
   else
-    Exit; // Should not happen for valid gear types
+    Exit; // Other slots don't have talents
   end;
 
   ListBoxTalents.Clear;
@@ -1192,6 +1245,15 @@ begin
   if not FindPieceSetByNameAndType(SelectedSetName, SelectedSetType,
     SelectedPieceSet) then
   begin
+    ShowMessage('Error: Set not found.');
+    Exit;
+  end;
+
+  // Since we only stored parts for the specified GearSlot, we can directly get the first part
+  if Length(SelectedPieceSet.Parts) > 0 then
+    SelectedPart := SelectedPieceSet.Parts[0]
+  else
+  begin
     // Fallback: If strict match failed, try finding by name only (ignoring Tag mismatch)
     var FoundAny: Boolean := False;
     for i := 0 to FPieceSets.Count - 1 do
@@ -1209,15 +1271,6 @@ begin
       ShowMessage('Error: Set not found: ' + SelectedSetName);
       Exit;
     end;
-  end;
-
-  // Since we only stored parts for the specified GearSlot, we can directly get the first part
-  if Length(SelectedPieceSet.Parts) > 0 then
-    SelectedPart := SelectedPieceSet.Parts[0]
-  else
-  begin
-    ShowMessage('Error: No parts found for this gear slot.');
-    Exit;
   end;
 
   // Find the corresponding Part within the PieceSet
@@ -1240,7 +1293,6 @@ begin
       GearPiece.MinorAttributeSlotCount := SelectedPart.MinorAttributeSlotCount;
       // CRITICAL FIX: Assign the talent from the Part definition
       GearPiece.Talent := SelectedPart.Talent;
-
       SetLength(GearPiece.FixedMinorAttributes, 0);
       if DataJsonIterator <> nil then
         for var j := 0 to High(SelectedPart.FixedMinorAttributeIDs) do
@@ -1273,6 +1325,11 @@ begin
       // Store the selected gear piece
       FSelectedGearPiece := GearPiece;
 
+      // Retrieve and assign talents if available
+//      if Assigned(ListBoxTalents.Selected) then
+//        FSelectedGearPiece.Talent := ListBoxTalents.Selected.Text
+//      else
+//        FSelectedGearPiece.Talent := '';
       // CRITICAL FIX: Refresh the talents list based on the new selection
       if Assigned(DataJsonIterator) then
         PopulateTalents(DataJsonIterator);
@@ -1301,6 +1358,10 @@ begin
       FSelectedGearPiece.ModAttribute := Default (TModAttribute);
       // Reset to empty/default
       FSelectedModAttributeImageIndex := -1; // Reset image index
+
+//      Talents.Visible := (FGearSlot in [itBackpack, itChest]);
+//      if not Talents.Visible then
+//        ListBoxTalents.ClearSelection;
 
       // Update Mod Availability (which might also call PopulateMods or enable/disable ListBoxModAttributes)
       UpdateModAvailability;

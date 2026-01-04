@@ -85,6 +85,30 @@
                             "duration": 20,
                             "condition": "after_skill_hit"
                         }
+                    },
+                    {
+                        "name": "Mad Bomber",
+                        "description": "Grenade Radius is increased by +50%. Grenades that kill an enemy are refunded. Grenades can now be 'cooked'. Gain +15% bonus armor while aiming grenades.",
+                        "icon": "mad_bomber.png",
+                        "max_cooldown": "N/A",
+                        "effect_pve": {
+                            "type": "grenade_buffs",
+                            "grenade_radius": 50,
+                            "bonus_armor": 15,
+                            "grenade_refund_on_kill": 1
+                        }
+                    },
+                    {
+                        "name": "Tamper Proof",
+                        "description": "Enemies that walk within 3 meters of your hive, turret, or remote pulse are shocked. Arm time: 2 seconds. Cooldown per skill: 10 seconds.",
+                        "icon": "tamper_proof.png",
+                        "max_cooldown": 10,
+                        "effect_pve": {
+                            "type": "status_effect_on_proximity",
+                            "status_effect": "shock",
+                            "range": 3,
+                            "condition": "enemy_walks_near_skill"
+                        }
                     }
                 ],
                 "tank&bruiser": [
