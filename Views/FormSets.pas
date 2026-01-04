@@ -531,6 +531,10 @@ begin
   // Assign to selected gear piece
   FSelectedGearPiece.CoreAttribute := GearPiece.CoreAttribute;
 
+  // Capture selected talent
+  if ListBoxTalents.Visible and (ListBoxTalents.Selected <> nil) then
+    FSelectedGearPiece.Talent := ListBoxTalents.Selected.Text;
+
   SetLength(FSelectedGearPiece.SelectedMinorIconIndices, Length(FSelectedMinorAttributeImageIndices));
   for iq := 0 to High(FSelectedMinorAttributeImageIndices) do
     FSelectedGearPiece.SelectedMinorIconIndices[iq] := FSelectedMinorAttributeImageIndices[iq];
