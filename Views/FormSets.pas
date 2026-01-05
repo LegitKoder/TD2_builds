@@ -1018,8 +1018,7 @@ var
     LItem.StyleLookup := 'ListBoxItemTalent';
     LItem.Text := ATalentName;
 
-    LIconKey := AData.GetTalentIconKey(ATalentName);    // "braced"
-    LImgIdx  := AData.FindImageIndexByName(LIconKey);   // index in ImageList_GTalents
+    LImgIdx := AData.GetTalentImageIndex(ATalentName);
     LItem.ImageIndex := LImgIdx;
 
     // IMPORTANT: add to list BEFORE ApplyStyleLookup
