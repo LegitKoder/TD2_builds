@@ -1864,7 +1864,7 @@ begin
                           else if It.Key = 'description' then
                             TalentDef.Description := It.AsString
                           else if It.Key = 'icon' then
-                            TalentDef.IconFilename := TPath.GetFileNameWithoutExtension(It.AsString).Trim.ToLower;
+                            TalentDef.IconFilename := It.AsString.Trim; // Keep case and extension for file lookup
                         end;
                         It.Return;
 
@@ -1920,7 +1920,7 @@ begin
                     else if It.Key = 'description' then
                       TalentDef.Description := It.AsString
                     else if It.Key = 'icon' then
-                      TalentDef.IconFilename := TPath.GetFileNameWithoutExtension(It.AsString).Trim.ToLower;
+                      TalentDef.IconFilename := It.AsString.Trim; // Keep case and extension for file lookup
                   end;
                   It.Return;
 

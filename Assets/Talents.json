@@ -1034,6 +1034,20 @@
             ],
             "Mask": []
         },
+        "exotic": {
+            "Backpack": [
+                {
+                    "name": "Kill Confirmed",
+                    "description": "Enemies you kill drop a trophy on death. Collecting trophies provides a short-term and long-term buff. +5% Weapon Damage, +10% Bonus Armor, +5% Skill Efficiency per core attribute (10s). Long term: +1% Weapon Damage, +1% Skill Efficiency, +0.1% Armor Regen (300s, max 30 stacks).",
+                    "icon": "kill_confirmed.png"
+                }
+            ],
+            "Vest": [],
+            "Mask": [],
+            "Glove": [],
+            "Holster": [],
+            "Kneepad": []
+        },
         "gearSets": {
             "Vest": [
                 {
