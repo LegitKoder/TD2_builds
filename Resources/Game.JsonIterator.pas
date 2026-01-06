@@ -597,6 +597,13 @@ begin
       LSourceItem.Name := NormalizedKey;
       LSourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
 
+      // Add corresponding Destination item if using ImageList
+      // Check if a destination item already exists for this name (unlikely if source wasn't there)
+      // We must add a destination so it can be indexed by the UI
+      var LDestItem := ImageList_GTalents.Destination.Add;
+      var LLayer := LDestItem.Layers.Add;
+      LLayer.Name := NormalizedKey;
+
       Result := LSourceItem.Index;
       FTalentImageIndices.Add(TalentName, Result);
     end

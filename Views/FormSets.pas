@@ -58,6 +58,7 @@ type
     FSelectedGearPiece: TGearPiece;
     FPieceSets: TList<TPieceSet>;
     FRollableMinorLimit: Integer;
+    FData: TDataJsonIterator;
     procedure UpdateMinorAttributeList;
     procedure PopulateCoreAttributes;
     function GetSelectedMinorAttributeImageIndex(Index: Integer): Integer;
@@ -100,6 +101,8 @@ type
       read FSelectedModAttributeImageIndex;
     property SelectedGearPiece: TGearPiece read FSelectedGearPiece;
     property PieceSets: TList<TPieceSet> read FPieceSets write FPieceSets;
+  private
+    procedure ItemApplyStyleLookup(Sender: TObject);
   end;
 
 var
@@ -477,6 +480,28 @@ begin
       Item.Enabled := False;
       Break;
     end;
+  end;
+end;
+
+procedure TFormSlots.ItemApplyStyleLookup(Sender: TObject);
+var
+  LItem: TListBoxItem;
+  G: TGlyph;
+begin
+  if not (Sender is TListBoxItem) then Exit;
+  LItem := TListBoxItem(Sender);
+
+  // Find Glyph
+  G := LItem.FindStyleResource('glyphstyle') as TGlyph;
+  if not Assigned(G) then
+    G := LItem.FindStyleResource('glyph') as TGlyph;
+
+  if Assigned(G) and Assigned(FData) then
+  begin
+    G.Images := FData.ImageList_GTalents;
+    G.ImageIndex := LItem.ImageIndex;
+    G.Visible := (LItem.ImageIndex >= 0);
+    G.HitTest := False;
   end;
 end;
 
@@ -1033,29 +1058,17 @@ var
     LItem.StyleLookup := 'ListBoxItemTalent';
     LItem.Text := ATalentName;
 
-//    LIconKey := AData.GetTalentIconKey(ATalentName);    // "braced"
-//    LImgIdx  := AData.FindImageIndexByName(LIconKey);   // index in ImageList_GTalents
     LImgIdx := AData.GetTalentImageIndex(ATalentName);
     LItem.ImageIndex := LImgIdx;
+
+    // Assign the OnApplyStyleLookup handler to ensure icons persist after scrolling
+    LItem.OnApplyStyleLookup := ItemApplyStyleLookup;
 
     // IMPORTANT: add to list BEFORE ApplyStyleLookup
     ListBoxTalents.AddObject(LItem);
 
-    // Force style creation so FindStyleResource works
+    // Force style creation so FindStyleResource works (and triggers OnApplyStyleLookup)
     LItem.ApplyStyleLookup;
-
-    // Depending on your style, the glyph may be named "glyphstyle" or "glyph"
-    G := LItem.FindStyleResource('glyphstyle') as TGlyph;
-    if not Assigned(G) then
-      G := LItem.FindStyleResource('glyph') as TGlyph;
-
-    if Assigned(G) then
-    begin
-      G.Images := AData.ImageList_GTalents;
-      G.ImageIndex := LItem.ImageIndex;
-      G.Visible := (LItem.ImageIndex >= 0);
-      G.HitTest := False;
-    end;
 
     // Auto-select current talent when browsing rollable lists (Brand/Improvised)
     if (not IsFixed) and (FSelectedGearPiece.Talent <> '') and SameText(ATalentName, FSelectedGearPiece.Talent) then
@@ -1075,6 +1088,8 @@ var
 begin
   if not Assigned(AData) or not Assigned(AData.GearTalents) then
     Exit;
+
+  FData := AData;
 
   // Ensure the listbox knows about the image list before we start
   if (ListBoxTalents.Images = nil) and Assigned(AData) then
