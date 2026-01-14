@@ -604,7 +604,7 @@ begin
       var LLayer := LDestItem.Layers.Add;
       LLayer.Name := NormalizedKey;
 
-      Result := LSourceItem.Index;
+      Result := LDestItem.Index;
       FTalentImageIndices.Add(TalentName, Result);
     end
     else
