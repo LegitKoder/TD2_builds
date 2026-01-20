@@ -2445,9 +2445,24 @@ begin
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
+var
+  I: Integer;
+  Child: TFmxObject;
 begin
   {$IFDEF MSWINDOWS}
   TWindowEffects.ApplyEffect(Self, weMica, True);
+
+  // Fix: Ensure the FMX Style's background object is transparent so Mica is visible.
+  // Standard FMX styles often include a 'background' object that is opaque.
+  for I := 0 to Self.ChildrenCount - 1 do
+  begin
+    Child := Self.Children[I];
+    if (Child is TControl) and (SameText(Child.StyleName, 'background')) then
+    begin
+      TControl(Child).Opacity := 0;
+      // We don't Break here just in case there are multiple layers, though usually there's one.
+    end;
+  end;
   {$ENDIF}
 end;
 
