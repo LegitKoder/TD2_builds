@@ -467,8 +467,9 @@ procedure TMainForm.Slot_SpecializationChange(Sender: TObject);
 var
   SelectedSpecRecord: Game.Types.TSpecialization;
   WT: TWeaponFamily;
-  Path: string;
+  Path, LogoPath, BgPath: string;
   Bmp: TBitmap;
+  SpecName: string;
 begin
   if Slot_Specialization.ItemIndex < 0 then
     Exit;
@@ -477,21 +478,75 @@ begin
     [Slot_Specialization.ItemIndex], SelectedSpecRecord) then
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
-    // Update the ComboBox's image for the selected specialization
+    SpecName := SelectedSpecRecord.Name;
+
+    Slot_Specialization.ApplyStyleLookup;
+
+    // 1. Icon (Signature Weapon)
     Path := TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Image_Path);
     if TFile.Exists(Path) then
     begin
       Bmp := TBitmap.Create;
       try
         Bmp.LoadFromFile(Path);
-        // Update the image in the ComboBox's style
-        Slot_Specialization.ApplyStyleLookup;
-        Slot_Specialization.StylesData['MaskedImage1Style.Bitmap'] :=
-          TValue.From<TBitmap>(Bmp);
+        // Map to 'icon' element in the style
+        Slot_Specialization.StylesData['icon.Bitmap'] := TValue.From<TBitmap>(Bmp);
       finally
         Bmp.Free;
       end;
     end;
+
+    // 2. Logo (Class Symbol)
+    if SameText(SpecName, 'Gunner') then LogoPath := 'Ico_Gunner.png'
+    else if SameText(SpecName, 'Sharpshooter') then LogoPath := 'Ico_Cross.png'
+    else if SameText(SpecName, 'Firewall') then LogoPath := 'Ico_K8.png'
+    else if SameText(SpecName, 'Technician') then LogoPath := 'Ico_Tech.png'
+    else if SameText(SpecName, 'Demolitionist') then LogoPath := 'Ico_Bom_.png'
+    else if SameText(SpecName, 'Survivalist') then LogoPath := 'Ico_Surv.png'
+    else LogoPath := '';
+
+    if LogoPath <> '' then
+    begin
+      Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Specialization'), LogoPath);
+      if TFile.Exists(Path) then
+      begin
+        Bmp := TBitmap.Create;
+        try
+          Bmp.LoadFromFile(Path);
+          Slot_Specialization.StylesData['logo.Bitmap'] := TValue.From<TBitmap>(Bmp);
+        finally
+          Bmp.Free;
+        end;
+      end;
+    end;
+
+    // 3. Background
+    // Mapping logic to distribute available tiles.
+    if SameText(SpecName, 'Gunner') then BgPath := 'tile000.png'
+    else if SameText(SpecName, 'Sharpshooter') then BgPath := 'tile001.png'
+    else if SameText(SpecName, 'Firewall') then BgPath := 'tile002.png'
+    else if SameText(SpecName, 'Technician') then BgPath := 'tile003.png'
+    else if SameText(SpecName, 'Demolitionist') then BgPath := 'tile004.png'
+    else if SameText(SpecName, 'Survivalist') then BgPath := 'tile005.png'
+    else BgPath := 'tile000.png';
+
+    if BgPath <> '' then
+    begin
+      Path := TPath.Combine(TPath.Combine(TUtils.AssetsPath, 'Specialization'), BgPath);
+      if TFile.Exists(Path) then
+      begin
+        Bmp := TBitmap.Create;
+        try
+          Bmp.LoadFromFile(Path);
+          Slot_Specialization.StylesData['background.Bitmap'] := TValue.From<TBitmap>(Bmp);
+        finally
+          Bmp.Free;
+        end;
+      end;
+    end;
+
+    // 4. Expertise/Proficiency
+    Slot_Specialization.StylesData['exp_prof.Text'] := 'Proficient';
 
     // Update weapon type bonus checkboxes based on the selected specialization's capabilities
     for WT := Low(TWeaponFamily) to High(TWeaponFamily) do
