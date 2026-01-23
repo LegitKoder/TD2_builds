@@ -859,6 +859,10 @@ begin
     if Assigned(Nb) then Nb.TextColor := TAlphaColorRec.White;
   end;
 
+  // Title Text
+  if Assigned(Title) then
+    Title.Text := AItem.Text;
+
   // Number
   if Assigned(Nb) then
     Nb.Text := IntToStr(AItem.Index + 1);
