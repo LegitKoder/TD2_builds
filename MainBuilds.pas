@@ -285,10 +285,12 @@ type
 
     FController: TMainController;
     FSpecializations: TDictionary<string, Game.Types.TSpecialization>;
+    FSpecializationImageIndices: TDictionary<string, Integer>;
     FWeaponSelectedTalentIDs: array [TWeaponSlot] of Integer; // Kept for UI selection memory
     FExoticWeaponSelected: Boolean;
     FExoticWeaponSlot: Game.Types.TWeaponSlot;
 
+    procedure LoadoutListUpdateObjects(const Sender: TObject; const AItem: TListViewItem);
     function IsExoticGearEquipped: Boolean;
     function CanEquipGearPiece(const AGearPiece: TGearPiece): Boolean;
     procedure EquipGear(const AGearSlot: TItemType);
@@ -737,11 +739,16 @@ var
   Img: TImage;
   SpecList: TList<TSpecialization>;
   I: Integer;
+  SpecBmp: TBitmap;
+  LSourceItem: TCustomSourceItem;
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
     FSpecializations.Clear;
+    FSpecializationImageIndices.Clear;
+    if Assigned(ImgListSpec) then
+      ImgListSpec.Source.Clear;
 
     if Assigned(DataJsonIterator) and Assigned(DataJsonIterator.Specializations)
     then
@@ -769,12 +776,28 @@ begin
           // Apply the style immediately to find the resource
           Itm.ApplyStyleLookup;
 
-          var
-          StyleImg := Itm.FindStyleResource('ImgSpec');
-          if (StyleImg is TImage) then
+          SpecBmp := TUtils.BitmapFromPath(Spec.Image_Path);
+
+          // Populate ComboBox Image
+          var StyleImg := Itm.FindStyleResource('ImgSpec');
+          if (StyleImg is TImage) and Assigned(SpecBmp) then
           begin
             Img := StyleImg as TImage;
-            Img.Bitmap := TUtils.BitmapFromPath(Spec.Image_Path);
+            Img.Bitmap.Assign(SpecBmp);
+          end;
+
+          // Populate ImageList for LoadoutList
+          if Assigned(ImgListSpec) and Assigned(SpecBmp) then
+          begin
+            LSourceItem := ImgListSpec.Source.Add;
+            LSourceItem.Name := Spec.Name;
+            LSourceItem.MultiResBitmap.Add.Bitmap.Assign(SpecBmp);
+
+            var LDest := ImgListSpec.Destination.Add;
+            var LLayer := LDest.Layers.Add;
+            LLayer.Name := Spec.Name;
+
+            FSpecializationImageIndices.AddOrSetValue(Spec.Name, LDest.Index);
           end;
         end;
 
@@ -792,6 +815,98 @@ begin
 
   finally
     Slot_Specialization.EndUpdate;
+  end;
+end;
+
+procedure TMainForm.LoadoutListUpdateObjects(const Sender: TObject; const AItem: TListViewItem);
+var
+  Title, Details, Nb: TListItemText;
+  SpecIcon: TListItemImage;
+  LLoadout: TSerializableLoadout;
+  SpecIndex: Integer;
+
+  SetCounts: TDictionary<string, Integer>;
+  MainSetName: string;
+  MaxCount: Integer;
+  WeaponName: string;
+  GP: TSerializableGearPiece;
+  W: TSerializableWeapon;
+  WDef: TWeapon;
+begin
+  // Text Colors
+  Title := AItem.Objects.FindDrawable('Title') as TListItemText;
+  Details := AItem.Objects.FindDrawable('Details') as TListItemText;
+  Nb := AItem.Objects.FindDrawable('Nb') as TListItemText;
+  SpecIcon := AItem.Objects.FindDrawable('Spec_Icon') as TListItemImage;
+
+  if AItem.Selected then
+  begin
+    if Assigned(Title) then Title.TextColor := TAlphaColorRec.Black;
+    if Assigned(Details) then Details.TextColor := TAlphaColorRec.Black;
+    if Assigned(Nb) then Nb.TextColor := TAlphaColorRec.Black;
+  end
+  else
+  begin
+    if Assigned(Title) then Title.TextColor := TAlphaColorRec.White;
+    if Assigned(Details) then Details.TextColor := TAlphaColorRec.Lightgray;
+    if Assigned(Nb) then Nb.TextColor := TAlphaColorRec.White;
+  end;
+
+  // Number
+  if Assigned(Nb) then
+    Nb.Text := IntToStr(AItem.Index + 1);
+
+  // Loadout Details (Spec Icon + Detail Text)
+  LLoadout := FController.GetSavedLoadout(AItem.Text);
+  if Assigned(LLoadout) then
+  begin
+    // Construct Smart Detail: "MainSet / Weapon"
+    if Assigned(Details) then
+    begin
+      SetCounts := TDictionary<string, Integer>.Create;
+      try
+        for GP in LLoadout.GearPieces.Values do
+        begin
+          if GP.SetName <> '' then
+          begin
+            if SetCounts.ContainsKey(GP.SetName) then
+              SetCounts[GP.SetName] := SetCounts[GP.SetName] + 1
+            else
+              SetCounts.Add(GP.SetName, 1);
+          end;
+        end;
+
+        MainSetName := 'Hybrid';
+        MaxCount := 0;
+        for var Pair in SetCounts do
+        begin
+          if Pair.Value > MaxCount then
+          begin
+            MaxCount := Pair.Value;
+            MainSetName := Pair.Key;
+          end;
+        end;
+      finally
+        SetCounts.Free;
+      end;
+
+      WeaponName := 'Weapon';
+      if LLoadout.Weapons.TryGetValue(wsPrimary, W) then
+      begin
+        if DataJsonIterator.Weapons.TryGetValue(W.WeaponID, WDef) then
+          WeaponName := WDef.Name;
+      end;
+
+      Details.Text := Format('%s / %s', [MainSetName, WeaponName]);
+    end;
+
+    if Assigned(SpecIcon) and Assigned(FSpecializationImageIndices) then
+    begin
+      if FSpecializationImageIndices.TryGetValue(LLoadout.SpecializationName, SpecIndex) then
+        SpecIcon.ImageIndex := SpecIndex
+      else
+        SpecIcon.ImageIndex := -1;
+    end;
   end;
 end;
 
@@ -2386,6 +2501,7 @@ begin
 
   { 1) spécialisation + bonus armes + bonus watch }
   FSpecializations := TDictionary<string, TSpecialization>.Create;
+  FSpecializationImageIndices := TDictionary<string, Integer>.Create;
   FillSpecializations;
   Slot_Specialization.ItemIndex := -1;
 
@@ -2402,6 +2518,9 @@ begin
   FAttributeInfos := TList<TAttributeCatalogEntry>.Create;
   FSelectedAttributeIDs := TList<string>.Create;
   ListView1.OnItemClick := ListView1ItemClick;
+
+  // Wire up LoadoutList custom drawing/updating
+  LoadoutList.OnUpdateObjects := LoadoutListUpdateObjects;
 
   { 3) nettoyage UI }
   RefreshAllStats;
@@ -2428,6 +2547,9 @@ begin
     FSpecializations.Free;
     FSpecializations := nil;
   end;
+  if Assigned(FSpecializationImageIndices) then
+    FreeAndNil(FSpecializationImageIndices);
+
   if Assigned(FGeneratedBuilds) then
     FreeAndNil(FGeneratedBuilds);
   FreeAndNil(FPieceSets);
