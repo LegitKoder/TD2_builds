@@ -839,7 +839,7 @@ begin
   Nb := AItem.Objects.FindDrawable('Nb') as TListItemText;
   SpecIcon := AItem.Objects.FindDrawable('Spec_Icon') as TListItemImage;
 
-  if AItem.Selected then
+  if (TListView(Sender).Selected = AItem) then
   begin
     if Assigned(Title) then Title.TextColor := TAlphaColorRec.Black;
     if Assigned(Details) then Details.TextColor := TAlphaColorRec.Black;
