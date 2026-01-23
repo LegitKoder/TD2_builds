@@ -871,44 +871,50 @@ begin
   LLoadout := FController.GetSavedLoadout(AItem.Text);
   if Assigned(LLoadout) then
   begin
-    // Construct Smart Detail: "MainSet / Weapon"
+    // Calculate shared items count (Saved vs Equipped)
     if Assigned(Details) then
     begin
-      SetCounts := TDictionary<string, Integer>.Create;
-      try
-        for GP in LLoadout.GearPieces.Values do
-        begin
-          if GP.SetName <> '' then
-          begin
-            if SetCounts.ContainsKey(GP.SetName) then
-              SetCounts[GP.SetName] := SetCounts[GP.SetName] + 1
-            else
-              SetCounts.Add(GP.SetName, 1);
-          end;
-        end;
+      var SharedCount := 0;
+      var EquippedGP: TGearPiece;
+      var EquippedW: TWeapon;
+      var EquippedS: TEquippedSkill;
+      var SavedS: TSerializableSkill;
 
-        MainSetName := 'Hybrid';
-        MaxCount := 0;
-        for var Pair in SetCounts do
-        begin
-          if Pair.Value > MaxCount then
-          begin
-            MaxCount := Pair.Value;
-            MainSetName := Pair.Key;
-          end;
-        end;
-      finally
-        SetCounts.Free;
-      end;
-
-      WeaponName := 'Weapon';
-      if LLoadout.Weapons.TryGetValue(wsPrimary, W) then
+      // Check Gear
+      for var Slot := itMask to itKneepads do
       begin
-        if DataJsonIterator.Weapons.TryGetValue(W.WeaponID, WDef) then
-          WeaponName := WDef.Name;
+        if LLoadout.GearPieces.TryGetValue(Slot, GP) and (GP.PieceName <> '') then
+        begin
+          EquippedGP := FController.GetEquippedGearPiece(Slot);
+          // Compare by Name (assuming Name is sufficient for identity in this context)
+          if SameText(GP.PieceName, EquippedGP.Name) then
+            Inc(SharedCount);
+        end;
       end;
 
-      Details.Text := Format('%s / %s', [MainSetName, WeaponName]);
+      // Check Weapons
+      for var WSlot := wsPrimary to wsSideArm do
+      begin
+        if LLoadout.Weapons.TryGetValue(WSlot, W) and (W.WeaponID <> 0) then
+        begin
+          EquippedW := FController.GetSelectedWeapon(WSlot);
+          if W.WeaponID = EquippedW.ID then
+            Inc(SharedCount);
+        end;
+      end;
+
+      // Check Skills
+      for var SSlot := ssPrimary to ssSecondary do
+      begin
+        if LLoadout.Skills.TryGetValue(SSlot, SavedS) and (SavedS.VariantName <> '') then
+        begin
+          EquippedS := FController.GetEquippedSkill(SSlot);
+          if SameText(SavedS.VariantName, EquippedS.Variant.VariantName) then
+            Inc(SharedCount);
+        end;
+      end;
+
+      Details.Text := Format('Equipped %d / %d', [SharedCount, LoadoutList.Items.Count]);
     end;
 
     if Assigned(SpecIcon) and Assigned(FSpecializationImageIndices) then
