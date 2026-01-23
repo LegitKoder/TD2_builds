@@ -745,8 +745,15 @@ begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
+
+    if not Assigned(FSpecializations) then
+      FSpecializations := TDictionary<string, TSpecialization>.Create;
     FSpecializations.Clear;
+
+    if not Assigned(FSpecializationImageIndices) then
+      FSpecializationImageIndices := TDictionary<string, Integer>.Create;
     FSpecializationImageIndices.Clear;
+
     if Assigned(ImgListSpec) then
       ImgListSpec.Source.Clear;
 
@@ -2500,8 +2507,7 @@ begin
   FController.LoadSavedLoadouts;
 
   { 1) spécialisation + bonus armes + bonus watch }
-  FSpecializations := TDictionary<string, TSpecialization>.Create;
-  FSpecializationImageIndices := TDictionary<string, Integer>.Create;
+  // Dictionaries are lazily created in FillSpecializations to avoid access violations
   FillSpecializations;
   Slot_Specialization.ItemIndex := -1;
 
