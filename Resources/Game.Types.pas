@@ -30,7 +30,9 @@ type
     SignatureWeaponName: string; // e.g., "Minigun"
     UniqueSkillVariant: string;  // e.g., "Banshee Pulse"
     UniqueGrenadeType: string;
-    image_path: string;
+    Special_ammo: string;
+    IconKey: string; // (weapon image)
+    LogoKey: string; // (background watermark)
     // UniqueWeaponAttachment: TWeaponMod; // Could be complex, maybe just a name/description for now
     UniqueWeaponAttachmentName: string;
     UniqueWeaponAttachmentBonusDesc: string; // Description of what the attachment does
@@ -47,7 +49,7 @@ type
   end;
 
   /// four attachment rails recognised by the game
-  TModSlot = (msOptics, msMagazine, msUnderBarrel, msMuzzle);
+  TModSlot = (msUnknown, msOptics, msMagazine, msUnderBarrel, msMuzzle);
 
   { ────────────  helper records ──────────── }
 

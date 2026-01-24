@@ -99,6 +99,7 @@ type
     function GetTalentBitmap(const TalentName: string): TBitmap;
     function GetTalentImageIndex(const TalentName: string): Integer;
     function FindImageIndexByName(const AName: string): Integer;
+    function FindDestIndexByKey(const Key: string): Integer;
     function GetTalentIconKey(const TalentName: string): string;
 
     { read-only access }
@@ -179,9 +180,8 @@ begin
     Result := msMuzzle
   else
   begin
-    Result := msMuzzle; // Default or error
+    Result := msUnknown; // Default or error
   end;
-  // Result := msMuzzle;
 end;
 
 function TDataJsonIterator.StrToBonusType(const S: string): TBonusType;
@@ -562,7 +562,10 @@ begin
   if FTalentImageIndices.TryGetValue(TalentName, Result) then
     Exit;
 
-  Result := -1;
+//  Result := -1;
+  Result := FindDestIndexByKey(NormalizedKey);
+  if Result >= 0 then
+    Exit;
 
   // 2. Resolve Definition
   if not FGearTalentDefinitions.TryGetValue(TalentName.Trim, Def) then
@@ -609,12 +612,21 @@ begin
     end
     else
       WriteLog(['GetTalentImageIndex: GetTalentBitmap returned nil for ' + TalentName]);
+//
+//    var LImgIdx := DataJsonIterator.GetTalentImageIndex(LTalentName);
+//    // Fallback: some sources prefix Perfect/Perfectly while the talent definition uses the base name.
+//    if (LImgIdx < 0) and StartsText('Perfectly ', LTalentName) then
+//      LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfectly ') + 1, MaxInt).Trim);
+//    if (LImgIdx < 0) and StartsText('Perfect ', LTalentName) then
+//      LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfect ') + 1, MaxInt).Trim);
+
   end
   else
   begin
     if not Assigned(ImageList_GTalents) then WriteLog(['GetTalentImageIndex: ImageList_GTalents is nil!']);
     if Def.IconFilename = '' then WriteLog(['GetTalentImageIndex: IconFilename is empty for ' + TalentName]);
   end;
+
 end;
 
 function TDataJsonIterator.FindImageIndexByName(const AName: string): Integer;
@@ -637,6 +649,19 @@ begin
     LNoExt := TPath.GetFileNameWithoutExtension(LName);
     if SameText(LNoExt, AName) then
       Exit(I);
+  end;
+end;
+
+function TDataJsonIterator.FindDestIndexByKey(const Key: string): Integer;
+begin
+  Result := -1;
+  if not Assigned(ImageList_GTalents) then Exit;
+
+  for var i := 0 to ImageList_GTalents.Destination.Count - 1 do
+  begin
+    if (ImageList_GTalents.Destination[i].Layers.Count > 0) and
+       SameText(ImageList_GTalents.Destination[i].Layers[0].Name, Key) then
+      Exit(i); // destination index
   end;
 end;
 
@@ -719,9 +744,12 @@ begin
   FCoreAttributeDefinitions.Free;
   FFixedMinorAttributeDefinitions.Free;
   FSkills.Free;
-  for var Spec in FSpecializations.Values do
-    Spec.Free;
-  FSpecializations.Free;
+  if Assigned(FSpecializations) then
+  begin
+    for var Spec in FSpecializations.Values do
+      Spec.Free;
+    FSpecializations.Free;
+  end;
   FPlayer.Free;
   inherited;
 end;
@@ -788,9 +816,12 @@ begin
   FFixedMinorAttributeDefinitions.Clear;
   FSkills.Clear;
 
-  for var Spec in FSpecializations.Values do
-    Spec.Free;
-  FSpecializations.Clear;
+  if Assigned(FSpecializations) then
+  begin
+    for var Spec in FSpecializations.Values do
+      Spec.Free;
+    FSpecializations.Clear;
+  end;
 
   // recharger
   Init(TUtils.AssetsPath);
@@ -1098,6 +1129,8 @@ var
   BonusesDict: TDictionary<TWeaponFamily, Double>;
   GeneralBonusesDict: TDictionary<string, Double>;
 begin
+  if not Assigned(FSpecializations) then
+    FSpecializations := TDictionary<string, TSpecialization>.Create;
   FSpecializations.Clear;
 
   try
@@ -1133,8 +1166,12 @@ begin
                 CurrentSpec.Name := It.AsString
               else if SameText(It.Key, 'signature_weapon') then
                 CurrentSpec.SignatureWeaponName := It.AsString
-              else if SameText(It.Key, 'image_path') then
-                CurrentSpec.image_path := It.AsString
+              else if SameText(It.Key, 'icon') then
+                CurrentSpec.IconKey := It.AsString
+              else if SameText(It.Key, 'logo') then
+                CurrentSpec.LogoKey := It.AsString
+              else if SameText(It.Key, 'special_ammo') then
+                CurrentSpec.Special_ammo := It.AsString
               else if SameText(It.Key, 'unique_skill_variant') then
                 CurrentSpec.UniqueSkillVariant := It.AsString
               else if SameText(It.Key, 'inherent_weapon_type_bonuses') and
@@ -1181,13 +1218,11 @@ begin
       FreeAndNil(It);
       FreeAndNil(JR);
       FreeAndNil(LSR);
-//      FreeAndNil(CurrentSpec);
     end;
   except
     on E: Exception do
     begin
-      HandleParsingError('Exception in LoadSpecializationsFromJson: ' +
-        E.Message);
+      HandleParsingError('Exception in LoadSpecializationsFromJson: ' + E.Message);
       if Assigned(It) then
         FreeAndNil(It);
       if Assigned(JR) then

@@ -27,9 +27,7 @@ uses
 
 begin
   // Avoid crashing in GPU shader creation (style shadow/glow) on some drivers.
-  GlobalUseDXSoftware := True;
-  GlobalUseDirect2D := False;
-  GlobalUseHWEffects := False;
+  GlobalUseDX := True;
 
   GlobalUseSkia := True;
   Application.Initialize;
