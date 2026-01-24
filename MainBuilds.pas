@@ -264,7 +264,6 @@ type
     { for Skills.json }
 
     FController: TMainController;
-    FSpecializations: TDictionary<string, Game.Types.TSpecialization>;
     FSpecializationImageIndices: TDictionary<string, Integer>;
     FWeaponSelectedTalentIDs: array [TWeaponSlot] of Integer; // Kept for UI selection memory
     FExoticWeaponSelected: Boolean;
@@ -482,7 +481,7 @@ begin
   if Slot_Specialization.ItemIndex < 0 then
     Exit;
 
-  if FSpecializations.TryGetValue(Slot_Specialization.Items[Slot_Specialization.ItemIndex], SelectedSpecRecord) then
+  if DataJsonIterator.Specializations.TryGetValue(Slot_Specialization.Items[Slot_Specialization.ItemIndex], SelectedSpecRecord) then
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
 
@@ -735,7 +734,7 @@ begin
   try
     Slot_Specialization.Clear;
 
-    if (FSpecializations = nil) or (FSpecializations.Count = 0) then
+    if (DataJsonIterator = nil) or (DataJsonIterator.Specializations.Count = 0) then
       Exit;
 
     if not Assigned(FSpecializationImageIndices) then
@@ -743,7 +742,7 @@ begin
     FSpecializationImageIndices.Clear;
 
     // Create a sorted list to ensure consistent order in the UI
-    SpecList := TList<TSpecialization>.Create(FSpecializations.Values);
+    SpecList := TList<TSpecialization>.Create(DataJsonIterator.Specializations.Values);
     try
       SpecList.Sort(TComparer<TSpecialization>.Construct(
         function(const L, R: TSpecialization): Integer
@@ -2510,8 +2509,6 @@ begin
   FController.LoadSavedLoadouts;
 
   { 1) spécialisation + bonus armes + bonus watch }
-  FSpecializations := DataJsonIterator.LoadSpecializationsFromJson
-    (TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
   FillSpecializations;
   Slot_Specialization.ItemIndex := -1;
 
@@ -2549,16 +2546,6 @@ var
   I: TItemType;
 begin
   FreeAndNil(FController);
-
-  // Free the InherentWeaponTypeBonuses dictionaries within each TSpecialization record
-  // that is managed by a TSpecializationWrapper in FSpecializations
-  if Assigned(FSpecializations) then
-  begin
-    for var LSpec in FSpecializations.Values do
-      LSpec.Free;
-    FSpecializations.Free;
-    FSpecializations := nil;
-  end;
 
   if Assigned(FSpecializationImageIndices) then
     FreeAndNil(FSpecializationImageIndices);

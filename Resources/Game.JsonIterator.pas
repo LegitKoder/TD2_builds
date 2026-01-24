@@ -34,6 +34,7 @@ type
     FCoreAttributeDefinitions: TDictionary<string, TCoreAttributeDefinition>;
     FFixedMinorAttributeDefinitions: TDictionary<string, TFixedMinorAttributeDefinition>;
     FSkills: TDictionary<string, TSkillData>;
+    FSpecializations: TDictionary<string, TSpecialization>;
     FPlayer: TPlayer; // Instance du joueur
 
     { low-level helpers }
@@ -118,6 +119,7 @@ type
       read FFixedMinorAttributeDefinitions;
     // property Skills: TDictionary<string, TSkillDefinition> read FSkills;
     property Skills: TDictionary<string, TSkillData> read FSkills;
+    property Specializations: TDictionary<string, TSpecialization> read FSpecializations;
     property Player: TPlayer read FPlayer;
     function FindGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
     function FindFullGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
@@ -675,6 +677,7 @@ begin
 //    FSkills.Clear
 //  else
     FSkills := TDictionary<string, TSkillData>.Create;
+    FSpecializations := TDictionary<string, TSpecialization>.Create;
 
     FPlayer := TPlayer.Create; // Créer l'instance du joueur
 
@@ -715,6 +718,12 @@ begin
   FCoreAttributeDefinitions.Free;
   FFixedMinorAttributeDefinitions.Free;
   FSkills.Free;
+  if Assigned(FSpecializations) then
+  begin
+    for var Spec in FSpecializations.Values do
+      Spec.Free;
+    FSpecializations.Free;
+  end;
   FPlayer.Free;
   inherited;
 end;
@@ -780,6 +789,12 @@ begin
   FCoreAttributeDefinitions.Clear;
   FFixedMinorAttributeDefinitions.Clear;
   FSkills.Clear;
+  if Assigned(FSpecializations) then
+  begin
+    for var Spec in FSpecializations.Values do
+      Spec.Free;
+    FSpecializations.Clear;
+  end;
 
   // recharger
   Init(TUtils.AssetsPath);
@@ -1071,14 +1086,12 @@ begin
   LoadGearModsFromJson(TPath.Combine(TUtils.AssetsPath, 'Gear_mods.json'));
   LoadGearPieceSetFromJson(TPath.Combine(TUtils.AssetsPath, 'Brands.json'));
   LoadSkillsFromJson(TPath.Combine(TUtils.AssetsPath, 'Skills.json'));
-  // Specializations are now loaded on demand by the main form
-  // LoadSpecializationsFromJson(TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
+  LoadSpecializationsFromJson(TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
   LoadPlayerFromJson(TPath.Combine(TUtils.AssetsPath, 'Player.json'));
 end;
 
 { ─────────── 1/8  – Specializations.json ─────────── }
-function TDataJsonIterator.LoadSpecializationsFromJson(const FileName: string)
-  : TDictionary<string, TSpecialization>;
+procedure TDataJsonIterator.LoadSpecializationsFromJson(const FileName: string);
 var
   LSR: TStringReader;
   JR: TJsonTextReader;
@@ -1088,7 +1101,9 @@ var
   BonusesDict: TDictionary<TWeaponFamily, Double>;
   GeneralBonusesDict: TDictionary<string, Double>;
 begin
-  Result := TDictionary<string, TSpecialization>.Create;
+  if not Assigned(FSpecializations) then
+    FSpecializations := TDictionary<string, TSpecialization>.Create;
+  FSpecializations.Clear;
 
   try
     try
@@ -1103,8 +1118,7 @@ begin
       JR := TJsonTextReader.Create(LSR);
       It := TJSONIterator.Create(JR);
 
-      if It.Next and (It.&Type in [TJsonToken.StartArray,
-        TJsonToken.StartObject]) then
+      if It.Next and (It.&Type in [TJsonToken.StartArray, TJsonToken.StartObject]) then
       begin
         while It.Next do
         begin
@@ -1129,8 +1143,7 @@ begin
                 CurrentSpec.LogoKey := It.AsString
               else if SameText(It.Key, 'unique_skill_variant') then
                 CurrentSpec.UniqueSkillVariant := It.AsString
-              else if SameText(It.Key, 'inherent_weapon_type_bonuses') and
-                (It.&Type = TJsonToken.StartObject) then
+              else if SameText(It.Key, 'inherent_weapon_type_bonuses') and (It.&Type = TJsonToken.StartObject) then
               begin
                 It.Recurse;
                 while It.Next do
@@ -1139,8 +1152,7 @@ begin
                 end;
                 It.Return;
               end
-              else if SameText(It.Key, 'general_bonuses') and
-                (It.&Type = TJsonToken.StartObject) then
+              else if SameText(It.Key, 'general_bonuses') and (It.&Type = TJsonToken.StartObject) then
               begin
                 It.Recurse;
                 while It.Next do
@@ -1157,7 +1169,7 @@ begin
 
             if not CurrentSpec.Name.IsEmpty then
             begin
-              Result.AddOrSetValue(CurrentSpec.Name, CurrentSpec);
+              FSpecializations.AddOrSetValue(CurrentSpec.Name, CurrentSpec);
               CurrentSpec := nil; // Ownership transferred to the dictionary
             end
             else
@@ -1177,16 +1189,10 @@ begin
   except
     on E: Exception do
     begin
-      HandleParsingError('Exception in LoadSpecializationsFromJson: ' +
-        E.Message);
-      Result.Free;
-      Result := nil; // Indicate failure
-      if Assigned(It) then
-        FreeAndNil(It);
-      if Assigned(JR) then
-        FreeAndNil(JR);
-      if Assigned(LSR) then
-        FreeAndNil(LSR);
+      HandleParsingError('Exception in LoadSpecializationsFromJson: ' + E.Message);
+      if Assigned(It) then FreeAndNil(It);
+      if Assigned(JR) then FreeAndNil(JR);
+      if Assigned(LSR) then FreeAndNil(LSR);
     end;
   end;
 end;
