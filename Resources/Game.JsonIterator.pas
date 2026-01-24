@@ -1123,18 +1123,10 @@ begin
                 CurrentSpec.Name := It.AsString
               else if SameText(It.Key, 'signature_weapon') then
                 CurrentSpec.SignatureWeaponName := It.AsString
-              else if SameText(It.Key, 'image_path') then
-              begin
-                CurrentSpec.image_path := It.AsString;
-                CurrentSpec.IconKey := TPath.GetFileNameWithoutExtension
-                  (It.AsString);
-              end
-              else if SameText(It.Key, 'logo_path') then
-              begin
-                CurrentSpec.LogoPath := It.AsString;
-                CurrentSpec.LogoKey := TPath.GetFileNameWithoutExtension
-                  (It.AsString);
-              end
+              else if SameText(It.Key, 'icon') then
+                CurrentSpec.IconKey := It.AsString
+              else if SameText(It.Key, 'logo') then
+                CurrentSpec.LogoKey := It.AsString
               else if SameText(It.Key, 'unique_skill_variant') then
                 CurrentSpec.UniqueSkillVariant := It.AsString
               else if SameText(It.Key, 'inherent_weapon_type_bonuses') and

@@ -728,60 +728,19 @@ end;
 procedure TMainForm.FillSpecializations;
 var
   Spec: Game.Types.TSpecialization;
-  Itm: TListBoxItem;
-  Img: TImage;
   SpecList: TList<TSpecialization>;
-  I: Integer;
-  IconBmp, LogoBmp: TBitmap;
-  LSourceItem: TCustomSourceItem;
-
-  procedure AddToImageList(const AKey, APath: string);
-  var
-    Bmp: TBitmap;
-    Src: TCustomSourceItem;
-    Dst: TCustomDestinationItem;
-    Lyr: TLayer;
-  begin
-    if (AKey = '') or (APath = '') or not Assigned(ImgListSpec) then
-      Exit;
-    if ImgListSpec.Source.IndexOf(AKey) >= 0 then
-      Exit; // Already exists
-
-    Bmp := TUtils.BitmapFromPath(APath);
-    if Assigned(Bmp) then
-    begin
-      try
-        Src := ImgListSpec.Source.Add;
-        Src.Name := AKey;
-        Src.MultiResBitmap.Add.Bitmap.Assign(Bmp);
-
-        Dst := ImgListSpec.Destination.Add;
-        Lyr := Dst.Layers.Add;
-        Lyr.Name := AKey; // Link layer to source by name
-      finally
-        Bmp.Free;
-      end;
-    end;
-  end;
-
+  LIconIndex: Integer;
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
 
-    // FSpecializations is now loaded in FormCreate
     if (FSpecializations = nil) or (FSpecializations.Count = 0) then
       Exit;
 
     if not Assigned(FSpecializationImageIndices) then
       FSpecializationImageIndices := TDictionary<string, Integer>.Create;
     FSpecializationImageIndices.Clear;
-
-    if Assigned(ImgListSpec) then
-    begin
-      ImgListSpec.Source.Clear;
-      ImgListSpec.Destination.Clear;
-    end;
 
     // Create a sorted list to ensure consistent order in the UI
     SpecList := TList<TSpecialization>.Create(FSpecializations.Values);
@@ -792,42 +751,19 @@ begin
           Result := CompareText(L.Name, R.Name);
         end));
 
-      // Add items and load images
-      for I := 0 to SpecList.Count - 1 do
+      // Add items and prepare image index cache
+      for Spec in SpecList do
       begin
-        Spec := SpecList[I];
         Slot_Specialization.Items.Add(Spec.Name);
 
-        // --- Load images into the single ImgListSpec ---
-        AddToImageList(Spec.IconKey, Spec.image_path);
-        AddToImageList(Spec.LogoKey, Spec.LogoPath);
-
-
-        // --- Style the dropdown list item ---
-        Itm := Slot_Specialization.ListBox.ListItems[I];
-        Itm.StyleLookup := 'ListBoxItem2Style1';
-        Itm.ApplyStyleLookup; // Apply style to access sub-components
-
-        IconBmp := TUtils.BitmapFromPath(Spec.image_path);
-        try
-          var StyleImg := Itm.FindStyleResource('ImgSpec');
-          if (StyleImg is TImage) and Assigned(IconBmp) then
-          begin
-            Img := StyleImg as TImage;
-            Img.Bitmap.Assign(IconBmp);
-          end;
-        finally
-          FreeAndNil(IconBmp);
-        end;
-
-        // --- Store main icon index for LoadoutList ---
-        var LIconIndex := -1;
+        // Find the index of the icon in the pre-loaded ImgListSpec.
+        // The key is stored in Spec.IconKey.
+        LIconIndex := -1;
         if Assigned(ImgListSpec) then
           LIconIndex := ImgListSpec.Source.IndexOf(Spec.IconKey);
 
         if LIconIndex <> -1 then
           FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
-
       end;
     finally
       SpecList.Free;
