@@ -264,6 +264,7 @@ type
     { for Skills.json }
 
     FController: TMainController;
+    FSpecializations: TDictionary<string, TSpecialization>;
     FSpecializationImageIndices: TDictionary<string, Integer>;
     FWeaponSelectedTalentIDs: array [TWeaponSlot] of Integer; // Kept for UI selection memory
     FExoticWeaponSelected: Boolean;
@@ -466,22 +467,32 @@ var
       LIndex := ImgListSpec.Source.IndexOf(AImageKey);
       if LIndex >= 0 then
       begin
-        LBitmap := ImgListSpec.Bitmap(TSizeF.Create(LImage.Width, LImage.Height), LIndex);
-        if Assigned(LBitmap) then
-        try
-          LImage.Bitmap.Assign(LBitmap);
-        finally
-          LBitmap.Free;
+        // Use Destination to get the correct bitmap, not the generic Bitmap method
+        if LIndex < ImgListSpec.Destination.Count then
+        begin
+          LBitmap := TBitmap.Create;
+          try
+            ImgListSpec.Destination.Items[LIndex].MultiResBitmap.Bitmaps[0].AssignTo(LBitmap);
+            LImage.Bitmap.Assign(LBitmap);
+          finally
+            LBitmap.Free;
+          end;
         end;
+      end else
+      begin
+        LImage.Bitmap := nil; // Clear if not found
       end;
     end;
   end;
+
+var
+  LBackgroundKey: string;
 
 begin
   if Slot_Specialization.ItemIndex < 0 then
     Exit;
 
-  if DataJsonIterator.Specializations.TryGetValue(Slot_Specialization.Items[Slot_Specialization.ItemIndex], SelectedSpecRecord) then
+  if FSpecializations.TryGetValue(Slot_Specialization.Items[Slot_Specialization.ItemIndex], SelectedSpecRecord) then
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
 
@@ -728,21 +739,48 @@ procedure TMainForm.FillSpecializations;
 var
   Spec: Game.Types.TSpecialization;
   SpecList: TList<TSpecialization>;
-  LIconIndex: Integer;
+  LAssetsPath: string;
+  LBitmap: TBitmap;
+
+  procedure LoadAndAddImage(const AKey, AFileName: string);
+  var
+    LPath: string;
+    LSourceItem: TCustomSourceItem;
+    LDestItem: TCustomDestinationItem;
+  begin
+    if (AKey = '') or (AFileName = '') or not Assigned(ImgListSpec) then Exit;
+
+    LPath := TPath.Combine(LAssetsPath, AFileName);
+    if TFile.Exists(LPath) then
+    begin
+      LSourceItem := ImgListSpec.Source.Add;
+      LSourceItem.Name := AKey;
+      LSourceItem.MultiResBitmap.LoadFromFile(LPath);
+
+      LDestItem := ImgListSpec.Destination.Add;
+      LDestItem.Layers.Add.Name := AKey;
+    end;
+  end;
+
+var
+  I: Integer;
+  TileName: string;
+
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
+    if not Assigned(ImgListSpec) then ImgListSpec := TImageList.Create(Self);
+    ImgListSpec.Source.Clear;
+    ImgListSpec.Destination.Clear;
 
-    if (DataJsonIterator = nil) or (DataJsonIterator.Specializations.Count = 0) then
+    if not Assigned(FSpecializations) or (FSpecializations.Count = 0) then
       Exit;
 
-    if not Assigned(FSpecializationImageIndices) then
-      FSpecializationImageIndices := TDictionary<string, Integer>.Create;
-    FSpecializationImageIndices.Clear;
+    LAssetsPath := TPath.Combine(TUtils.AssetsPath, 'Specialization');
 
     // Create a sorted list to ensure consistent order in the UI
-    SpecList := TList<TSpecialization>.Create(DataJsonIterator.Specializations.Values);
+    SpecList := TList<TSpecialization>.Create(FSpecializations.Values);
     try
       SpecList.Sort(TComparer<TSpecialization>.Construct(
         function(const L, R: TSpecialization): Integer
@@ -750,19 +788,12 @@ begin
           Result := CompareText(L.Name, R.Name);
         end));
 
-      // Add items and prepare image index cache
+      // Add specialization names to ComboBox and load their images
       for Spec in SpecList do
       begin
         Slot_Specialization.Items.Add(Spec.Name);
-
-        // Find the index of the icon in the pre-loaded ImgListSpec.
-        // The key is stored in Spec.IconKey.
-        LIconIndex := -1;
-        if Assigned(ImgListSpec) then
-          LIconIndex := ImgListSpec.Source.IndexOf(Spec.IconKey);
-
-        if LIconIndex <> -1 then
-          FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
+        LoadAndAddImage(Spec.IconKey, Spec.IconKey + '.png');
+        LoadAndAddImage(Spec.LogoKey, Spec.LogoKey + '.png');
       end;
     finally
       SpecList.Free;
@@ -2498,11 +2529,12 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
 
-  if DataJsonIterator = nil then // première Form seulement
+  if DataJsonIterator = nil then //
   begin
     DataJsonIterator := TDataJsonIterator.Create(nil);
-    DataJsonIterator.Reload; // ↔ charge toutes les ressources
   end;
+
+  FSpecializations := DataJsonIterator.LoadSpecializationsFromJson(TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
 
   // Create Controller
   FController := TMainController.Create(DataJsonIterator);
@@ -2549,6 +2581,13 @@ begin
 
   if Assigned(FSpecializationImageIndices) then
     FreeAndNil(FSpecializationImageIndices);
+
+  if Assigned(FSpecializations) then
+  begin
+    for var Spec in FSpecializations.Values do
+      Spec.Free;
+    FSpecializations.Free;
+  end;
 
   if Assigned(FGeneratedBuilds) then
     FreeAndNil(FGeneratedBuilds);

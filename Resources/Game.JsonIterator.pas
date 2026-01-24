@@ -34,7 +34,6 @@ type
     FCoreAttributeDefinitions: TDictionary<string, TCoreAttributeDefinition>;
     FFixedMinorAttributeDefinitions: TDictionary<string, TFixedMinorAttributeDefinition>;
     FSkills: TDictionary<string, TSkillData>;
-    FSpecializations: TDictionary<string, TSpecialization>;
     FPlayer: TPlayer; // Instance du joueur
 
     { low-level helpers }
@@ -53,7 +52,7 @@ type
     procedure LoadWeaponStats(const FileName: string);
     procedure LoadWeaponModsFromJson(const FileName: string);
 
-    procedure LoadSpecializationsFromJson(const FileName: string);
+    function LoadSpecializationsFromJson(const FileName: string): TDictionary<string, TSpecialization>;
 
     procedure LoadTalentsFromJson(const FileName: string);
     procedure LoadGearTalentsFromJson(const FileName: string);
@@ -119,7 +118,6 @@ type
       read FFixedMinorAttributeDefinitions;
     // property Skills: TDictionary<string, TSkillDefinition> read FSkills;
     property Skills: TDictionary<string, TSkillData> read FSkills;
-    property Specializations: TDictionary<string, TSpecialization> read FSpecializations;
     property Player: TPlayer read FPlayer;
     function FindGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
     function FindFullGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
@@ -677,8 +675,6 @@ begin
 //    FSkills.Clear
 //  else
     FSkills := TDictionary<string, TSkillData>.Create;
-    FSpecializations := TDictionary<string, TSpecialization>.Create;
-
     FPlayer := TPlayer.Create; // Créer l'instance du joueur
 
   // chargement + validation
@@ -718,12 +714,6 @@ begin
   FCoreAttributeDefinitions.Free;
   FFixedMinorAttributeDefinitions.Free;
   FSkills.Free;
-  if Assigned(FSpecializations) then
-  begin
-    for var Spec in FSpecializations.Values do
-      Spec.Free;
-    FSpecializations.Free;
-  end;
   FPlayer.Free;
   inherited;
 end;
@@ -789,12 +779,6 @@ begin
   FCoreAttributeDefinitions.Clear;
   FFixedMinorAttributeDefinitions.Clear;
   FSkills.Clear;
-  if Assigned(FSpecializations) then
-  begin
-    for var Spec in FSpecializations.Values do
-      Spec.Free;
-    FSpecializations.Clear;
-  end;
 
   // recharger
   Init(TUtils.AssetsPath);
@@ -1086,12 +1070,12 @@ begin
   LoadGearModsFromJson(TPath.Combine(TUtils.AssetsPath, 'Gear_mods.json'));
   LoadGearPieceSetFromJson(TPath.Combine(TUtils.AssetsPath, 'Brands.json'));
   LoadSkillsFromJson(TPath.Combine(TUtils.AssetsPath, 'Skills.json'));
-  LoadSpecializationsFromJson(TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
+  // Specializations are loaded on demand by the main form now.
   LoadPlayerFromJson(TPath.Combine(TUtils.AssetsPath, 'Player.json'));
 end;
 
 { ─────────── 1/8  – Specializations.json ─────────── }
-procedure TDataJsonIterator.LoadSpecializationsFromJson(const FileName: string);
+function TDataJsonIterator.LoadSpecializationsFromJson(const FileName: string): TDictionary<string, TSpecialization>;
 var
   LSR: TStringReader;
   JR: TJsonTextReader;
@@ -1101,9 +1085,7 @@ var
   BonusesDict: TDictionary<TWeaponFamily, Double>;
   GeneralBonusesDict: TDictionary<string, Double>;
 begin
-  if not Assigned(FSpecializations) then
-    FSpecializations := TDictionary<string, TSpecialization>.Create;
-  FSpecializations.Clear;
+  Result := TDictionary<string, TSpecialization>.Create;
 
   try
     try
@@ -1169,8 +1151,8 @@ begin
 
             if not CurrentSpec.Name.IsEmpty then
             begin
-              FSpecializations.AddOrSetValue(CurrentSpec.Name, CurrentSpec);
-              CurrentSpec := nil; // Ownership transferred to the dictionary
+              Result.AddOrSetValue(CurrentSpec.Name, CurrentSpec);
+              CurrentSpec := nil; // Ownership transferred
             end
             else
             begin
