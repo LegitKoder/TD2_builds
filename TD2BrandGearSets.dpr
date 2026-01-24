@@ -2,6 +2,7 @@ program TD2BrandGearSets;
 
 uses
   System.StartUpCopy,
+  FMX.Types,
   FMX.Forms,
   FMX.Skia,
   MainBuilds in 'MainBuilds.pas' {MainForm},
@@ -25,6 +26,11 @@ uses
 {$R *.res}
 
 begin
+  // Avoid crashing in GPU shader creation (style shadow/glow) on some drivers.
+  GlobalUseDXSoftware := True;
+  GlobalUseDirect2D := False;
+  GlobalUseHWEffects := False;
+
   GlobalUseSkia := True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

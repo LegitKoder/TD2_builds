@@ -36,12 +36,11 @@ object FormSlots: TFormSlots
       Text = 'Sets'
       TabOrder = 0
       object ListBoxSets: TListBox
-        Align = Top
-        Position.X = 7.000000000000000000
-        Position.Y = 21.000000000000000000
+        Align = Client
         Size.Width = 219.000000000000000000
         Size.Height = 400.000000000000000000
         Size.PlatformDefault = False
+        StyleLookup = 'transparentlistboxstyle'
         TabOrder = 0
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
@@ -49,20 +48,22 @@ object FormSlots: TFormSlots
         DefaultItemStyles.GroupFooterStyle = ''
         GroupingKind = Grouped
         OnItemClick = ListBoxSetsItemClick
-        Viewport.Width = 215.000000000000000000
-        Viewport.Height = 374.000000000000000000
+        Viewport.Width = 219.000000000000000000
+        Viewport.Height = 378.000000000000000000
         object SearchBox: TSearchBox
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Top
           TabOrder = 0
-          Size.Width = 215.000000000000000000
+          Size.Width = 219.000000000000000000
           Size.Height = 22.000000000000000000
           Size.PlatformDefault = False
         end
       end
       object Layout2: TLayout
-        Align = Client
+        Align = Bottom
         Margins.Top = 7.000000000000000000
+        Position.X = 7.000000000000000000
+        Position.Y = 428.000000000000000000
         Size.Width = 219.000000000000000000
         Size.Height = 29.000000000000000000
         Size.PlatformDefault = False
@@ -126,7 +127,7 @@ object FormSlots: TFormSlots
         Size.Width = 313.000000000000000000
         Size.Height = 53.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 37
+        TabOrder = 38
         ColumnCollection = <
           item
             Value = 60.000000000000000000
@@ -232,7 +233,7 @@ object FormSlots: TFormSlots
         Size.Width = 313.000000000000000000
         Size.Height = 355.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 37
+        TabOrder = 38
         ColumnCollection = <
           item
             Value = 50.006237987507500000
@@ -269,6 +270,7 @@ object FormSlots: TFormSlots
           Size.Width = 149.519531250000000000
           Size.Height = 355.000000000000000000
           Size.PlatformDefault = False
+          StyleLookup = 'transparentlistboxstyle'
           TabOrder = 38
           OnClick = ListBoxMinorAttributesClick
           DisableFocusEffect = True
@@ -277,8 +279,8 @@ object FormSlots: TFormSlots
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
           MultiSelectStyle = Extended
-          Viewport.Width = 145.500000000000000000
-          Viewport.Height = 351.000000000000000000
+          Viewport.Width = 149.500000000000000000
+          Viewport.Height = 355.000000000000000000
         end
         object ListBoxFixedMinorAttributes: TListBox
           Align = Client
@@ -287,13 +289,14 @@ object FormSlots: TFormSlots
           Size.Width = 71.250000000000000000
           Size.Height = 355.000000000000000000
           Size.PlatformDefault = False
+          StyleLookup = 'transparentlistboxstyle'
           TabOrder = 39
           DisableFocusEffect = True
           DefaultItemStyles.ItemStyle = ''
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
-          Viewport.Width = 67.200000000000000000
-          Viewport.Height = 351.000000000000000000
+          Viewport.Width = 71.200000000000000000
+          Viewport.Height = 355.000000000000000000
         end
         object ListBoxModAttributes: TListBox
           Align = Client
@@ -301,6 +304,7 @@ object FormSlots: TFormSlots
           Size.Width = 71.249984741210940000
           Size.Height = 355.000000000000000000
           Size.PlatformDefault = False
+          StyleLookup = 'transparentlistboxstyle'
           TabOrder = 40
           OnClick = ListBoxModAttributesClick
           DisableFocusEffect = True
@@ -309,8 +313,8 @@ object FormSlots: TFormSlots
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
           GroupingKind = Grouped
-          Viewport.Width = 67.200000000000000000
-          Viewport.Height = 351.000000000000000000
+          Viewport.Width = 71.200000000000000000
+          Viewport.Height = 355.000000000000000000
         end
       end
     end
@@ -763,14 +767,15 @@ object FormSlots: TFormSlots
         Size.Width = 172.000000000000000000
         Size.Height = 436.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 37
+        StyleLookup = 'transparentlistboxstyle'
+        TabOrder = 38
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
         GroupingKind = Grouped
-        Viewport.Width = 168.000000000000000000
-        Viewport.Height = 432.000000000000000000
+        Viewport.Width = 172.000000000000000000
+        Viewport.Height = 436.000000000000000000
       end
     end
   end

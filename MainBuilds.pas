@@ -4,29 +4,24 @@ interface
 
 uses
   {Delphi}
-  System.SysUtils, System.Types, System.UITypes, System.Classes,
-  System.Variants, System.Generics.Collections, System.TypInfo, Math,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
-  FMX.ListView.Types, FMX.ListView.Appearances,
-  FMX.ListView.Adapters.Base,
-  FMX.Bind.GenData, Data.Bind.GenData, Data.Bind.EngExt,
-  FMX.Bind.DBEngExt,
-  System.Rtti, System.Bindings.Outputs, FMX.Bind.Editors,
-  System.ImageList, System.StrUtils,
-  FMX.ImgList, FMX.Bind.Navigator, System.Actions, FMX.ActnList,
-  Data.Bind.Components, Data.Bind.ObjectScope, FMX.ListView,
-  FMX.MultiView,
-  FMX.ListBox, FMX.StdCtrls, FMX.Objects, FMX.Effects, FMX.Filter.Effects,
-  FMX.Layouts, FMX.Controls.Presentation, FMX.Header, FMX.Styles.Objects,
-  System.JSON.Builders, System.JSON.Readers,
-  System.JSON.Types, System.IOUtils, System.Generics.Defaults, FMX.Edit,
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  System.Generics.Collections, System.Generics.Defaults, System.TypInfo, System.Rtti,
+  System.Bindings.Outputs, System.Actions, System.ImageList, System.StrUtils,
+  System.JSON.Builders, System.JSON.Readers, System.JSON.Types, Math,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Controls.Presentation,
+  FMX.Layouts, FMX.ListView, FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
+  FMX.MultiView, FMX.ListBox, FMX.StdCtrls, FMX.Objects, FMX.Effects, FMX.Filter.Effects, FMX.Edit,
+  FMX.TabControl, FMX.SearchBox, FMX.Header, FMX.Styles.Objects, FMX.ActnList, FMX.ImgList,
+  FMX.Bind.GenData, FMX.Bind.DBEngExt, FMX.Bind.Editors, FMX.Bind.Navigator, FMX.DialogService,
+  FMX.DialogService.Async, Winapi.Messages, System.IOUtils, Data.Bind.GenData,
+  Data.Bind.EngExt, Data.Bind.Components, Data.Bind.ObjectScope,
   {Skia}
   Skia, FMX.Skia,
   {Forms}
-  Utils, Acrylic, FormSets, FormWeapons, FormSkills, BuildGenerator, RecommendationEngine, BuildArchetypes,
+  Utils, {Acrylic,} FormSets, FormWeapons, FormSkills, BuildGenerator, RecommendationEngine, BuildArchetypes,
   {SubjectStand,} LoadoutManager, FormRecPrefs,
-  Game.Types, Game.JsonIterator, CalcEngine, FMX.DialogService,
-  FMX.DialogService.Async, FMX.TabControl, FMX.SearchBox, MainController, WindowEffects;
+  Game.Types, Game.JsonIterator, CalcEngine, MainController, WindowEffects,
+  FMX.Ani;
 
 const
   MAX_SPEC_BONUS = 3;
@@ -43,7 +38,7 @@ type
     GridPanelLayoutMain: TGridPanelLayout;
     LayoutMain: TLayout;
     GridPanelLayoutWeapons: TGridPanelLayout;
-    Layout_W_Header: TLayout;
+    Layout_W_Header1: TLayout;
     H4_Weapons: TLabel;
     Specialization: TLayout;
     Slot_Specialization: TComboBox;
@@ -84,12 +79,6 @@ type
     Add: TSpeedButton;
     Del: TSpeedButton;
     ImgListSpec: TImageList;
-    Spec1: TListBoxItem;
-    Spec2: TListBoxItem;
-    Spec3: TListBoxItem;
-    Spec4: TListBoxItem;
-    Spec5: TListBoxItem;
-    Spec6: TListBoxItem;
     W_ar: TCheckBox;
     W_smg: TCheckBox;
     W_stg: TCheckBox;
@@ -97,7 +86,6 @@ type
     W_mmr: TCheckBox;
     W_rifle: TCheckBox;
     W_pistol: TCheckBox;
-    EditTitle: TEdit;
     Footer: TToolBar;
     Load: TSpeedButton;
     Save: TSpeedButton;
@@ -150,17 +138,6 @@ type
     Image_Chest: TImage;
     Image_Holster: TImage;
     Image_Kneepad: TImage;
-    Spec1_img: TImage;
-    Spec2_img: TImage;
-    Spec3_img: TImage;
-    Spec4_img: TImage;
-    Spec5_img: TImage;
-    Spec6_img: TImage;
-    Spec_rect: TRectangle;
-    GridPanelLayout1: TGridPanelLayout;
-    MaskedImage1: TMaskedImage;
-    Ammo_: TSkLabel;
-    Image1: TImage;
     StatusBar1: TStatusBar;
     BindingsList1: TBindingsList;
     SkLabel_BurstDPS: TSkLabel;
@@ -177,7 +154,6 @@ type
     Image_Primary: TImage;
     Image_Secondary: TImage;
     Image_Sidearm: TImage;
-    SP_Config: TGroupBox;
     Specialization_Config: TGridPanelLayout;
     Total_chc: TSkLabel;
     Total_chd: TSkLabel;
@@ -231,6 +207,8 @@ type
     Layout_L_Header: TLayout;
     GridPanelLayoutDetails: TGridPanelLayout;
     GridPanelLayoutLookup: TGridPanelLayout;
+    Layout_W_Header2: TLayout;
+    Label2: TLabel;
 
     procedure Slot_gPrimaryWeaponClick(Sender: TObject);
     procedure Slot_gSecondaryWeaponClick(Sender: TObject);
@@ -271,6 +249,8 @@ type
     procedure ListViewAttributesItemClick(const Sender: TObject; const AItem: TListViewItem);
     procedure ListViewAttributesSearchChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure LoadoutListUpdateObjects(const Sender: TObject;
+      const AItem: TListViewItem);
   private
     { Private declarations }
     FGenerationContext: TCoreAttributeType;
@@ -285,6 +265,7 @@ type
 
     FController: TMainController;
     FSpecializations: TDictionary<string, Game.Types.TSpecialization>;
+    FSpecializationImageIndices: TDictionary<string, Integer>;
     FWeaponSelectedTalentIDs: array [TWeaponSlot] of Integer; // Kept for UI selection memory
     FExoticWeaponSelected: Boolean;
     FExoticWeaponSlot: Game.Types.TWeaponSlot;
@@ -322,7 +303,12 @@ type
     procedure UpdateAttributeItemSelected(const AItem: TListViewItem; const AId: string);
     procedure BuildFromSelectedAttributes;
     function MapSelectedAttributesToMinorTypes: TArray<TMinorAttributeType>;
+    procedure ApplyAcrylicTextTheme(const Dark: Boolean);
+    procedure WndProc(var Message: TMessage);
   protected
+    { protected fields }
+    FCurrentEffect: TWindowEffect;
+    FEffectApplied: Boolean;
     { mapping simple entre enum-type et tableau booléen des 7 check-boxes }
     function WeaponChk(WT: TWeaponFamily): TCheckBox;
   public
@@ -438,6 +424,7 @@ begin
 end;
 
 {$ENDREGION}
+
 {$REGION ' -WEAPONSLOTS OPERATIONS'}
 
 procedure TMainForm.Slot_gPrimaryWeaponClick(Sender: TObject);
@@ -476,7 +463,7 @@ begin
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
     // Update the ComboBox's image for the selected specialization
-    Path := TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Image_Path);
+    Path := System.IOUtils.TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Image_Path);
     if TFile.Exists(Path) then
     begin
       Bmp := TBitmap.Create;
@@ -583,7 +570,6 @@ begin
     end;
 end;
 
-
 procedure TMainForm.UpdateWeaponUI(ASlot: Game.Types.TWeaponSlot;
   const W: TWeapon);
 var
@@ -619,7 +605,7 @@ begin
   begin
     if W.ID <> 0 then
     begin
-      ImagePath := TPath.Combine(TUtils.AssetsPath, W.ImagePath);
+      ImagePath := System.IOUtils.TPath.Combine(TUtils.AssetsPath, W.ImagePath);
       if TFile.Exists(ImagePath) then
       begin
         Bmp := TBitmap.Create;
@@ -652,11 +638,11 @@ begin
     begin
       case W.Rarity of
         wrExotic:
-          TargetComboBox.StyleLookup := 'ExoticSlot';
+          TargetComboBox.StyleLookup := 'Exotic_Style';
         wrNamed:
-          TargetComboBox.StyleLookup := 'NamedSlot';
+          TargetComboBox.StyleLookup := 'Brandset_Style';
         wrHighEnd:
-          TargetComboBox.StyleLookup := 'HighEndSlot';
+          TargetComboBox.StyleLookup := 'Brandset_Style';
       else
         TargetComboBox.StyleLookup := '';
       end;
@@ -737,11 +723,23 @@ var
   Img: TImage;
   SpecList: TList<TSpecialization>;
   I: Integer;
+  SpecBmp: TBitmap;
+  LSourceItem: TCustomSourceItem;
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
+
+    if not Assigned(FSpecializations) then
+      FSpecializations := TDictionary<string, TSpecialization>.Create;
     FSpecializations.Clear;
+
+    if not Assigned(FSpecializationImageIndices) then
+      FSpecializationImageIndices := TDictionary<string, Integer>.Create;
+    FSpecializationImageIndices.Clear;
+
+    if Assigned(ImgListSpec) then
+      ImgListSpec.Source.Clear;
 
     if Assigned(DataJsonIterator) and Assigned(DataJsonIterator.Specializations)
     then
@@ -769,12 +767,28 @@ begin
           // Apply the style immediately to find the resource
           Itm.ApplyStyleLookup;
 
-          var
-          StyleImg := Itm.FindStyleResource('ImgSpec');
-          if (StyleImg is TImage) then
+          SpecBmp := TUtils.BitmapFromPath(Spec.Image_Path);
+
+          // Populate ComboBox Image
+          var StyleImg := Itm.FindStyleResource('ImgSpec');
+          if (StyleImg is TImage) and Assigned(SpecBmp) then
           begin
             Img := StyleImg as TImage;
-            Img.Bitmap := TUtils.BitmapFromPath(Spec.Image_Path);
+            Img.Bitmap.Assign(SpecBmp);
+          end;
+
+          // Populate ImageList for LoadoutList
+          if Assigned(ImgListSpec) and Assigned(SpecBmp) then
+          begin
+            LSourceItem := ImgListSpec.Source.Add;
+            LSourceItem.Name := Spec.Name;
+            LSourceItem.MultiResBitmap.Add.Bitmap.Assign(SpecBmp);
+
+            var LDest := ImgListSpec.Destination.Add;
+            var LLayer := LDest.Layers.Add;
+            LLayer.Name := Spec.Name;
+
+            FSpecializationImageIndices.AddOrSetValue(Spec.Name, LDest.Index);
           end;
         end;
 
@@ -796,6 +810,7 @@ begin
 end;
 
 {$ENDREGION}
+
 {$REGION ' -GEARSLOTS OPERATIONS'}
 
 function SetTypeToCategoryKey(SetType: TSetType): string;
@@ -1051,7 +1066,7 @@ begin
     if GearPiece.Name = '' then
     begin
       TargetComboBox.StyleLookup := '';
-      TargetComboBox.Hint := 'BrandSetSlot';
+      TargetComboBox.Hint := 'Brandset_Style';
       if Assigned(TargetImage) then
       begin
         if Assigned(FGearSlotPlaceholders[SlotIndex]) then
@@ -1095,16 +1110,15 @@ begin
         TargetComboBox.Hint := GearPiece.Name;
 
       case GearPiece.SetType of
-        stBrandSet, stImprovised: TargetComboBox.StyleLookup := 'HighEndSlot';
-        stGearSet:                TargetComboBox.StyleLookup := 'GearSetSlot';
-        stNamedSet:               TargetComboBox.StyleLookup := 'NamedSlot';
-        stExoticSet:              TargetComboBox.StyleLookup := 'ExoticSlot';
+        stNamedSet, stBrandSet, stImprovised: TargetComboBox.StyleLookup := 'Brandset_style';
+        stGearSet:                TargetComboBox.StyleLookup := 'Gearset_style';
+        stExoticSet:              TargetComboBox.StyleLookup := 'Exotic_Style';
       else
-        TargetComboBox.StyleLookup := 'EmptySlot';
+        TargetComboBox.StyleLookup := 'Slot_equipment';
       end;
 
       // --- Talent icon inside the slot style (Glyph_talent) ---
-      if TargetComboBox.StyleLookup <> 'EmptySlot' then
+      if TargetComboBox.StyleLookup <> 'Slot_equipment' then
       begin
         TargetComboBox.ApplyStyleLookup;
         var LGlyph := TargetComboBox.FindStyleResource('Glyph_talent') as TGlyph;
@@ -1117,10 +1131,10 @@ begin
             var LImgIdx := DataJsonIterator.GetTalentImageIndex(LTalentName);
 
             // Fallback: some sources prefix Perfect/Perfectly while the talent definition uses the base name.
-            if (LImgIdx < 0) and StartsText('Perfectly ', LTalentName) then
-              LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfectly ') + 1, MaxInt).Trim);
-            if (LImgIdx < 0) and StartsText('Perfect ', LTalentName) then
-              LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfect ') + 1, MaxInt).Trim);
+//            if (LImgIdx < 0) and StartsText('Perfectly ', LTalentName) then
+//              LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfectly ') + 1, MaxInt).Trim);
+//            if (LImgIdx < 0) and StartsText('Perfect ', LTalentName) then
+//              LImgIdx := DataJsonIterator.GetTalentImageIndex(Copy(LTalentName, Length('Perfect ') + 1, MaxInt).Trim);
 
             LGlyph.ImageIndex := LImgIdx;
             LGlyph.Visible := (LImgIdx >= 0);
@@ -1132,25 +1146,6 @@ begin
           end;
         end;
       end;
-
-//      TargetComboBox.ApplyStyleLookup;
-//      var LGlyph := TargetComboBox.FindStyleResource('Glyph_talent') as TGlyph;
-//      if Assigned(LGlyph) then begin
-//          LGlyph.Images := DataJsonIterator.ImageList_GTalents;
-//          if GearPiece.Talent <> '' then
-//          begin
-//              // Get the icon key for the talent and find its index in the ImageList
-//              var LIconKey := DataJsonIterator.GetTalentIconKey(GearPiece.Talent);
-//              var LImgIdx  := DataJsonIterator.GetTalentImageIndex(LIconKey);
-//              LGlyph.ImageIndex := LImgIdx;
-//              LGlyph.Visible    := (LImgIdx >= 0);   // show glyph if a valid icon is set
-//          end else
-//          begin
-//              // No talent on this gear piece – hide the glyph
-//              LGlyph.ImageIndex := -1;
-//              LGlyph.Visible    := False;
-//          end;
-//      end;
 
     end;
   finally
@@ -1238,7 +1233,6 @@ begin
   end;
 end;
 
-
 procedure TMainForm.Slot_gBackPackClick(Sender: TObject);
 begin
   EquipGear(itBackpack);
@@ -1270,6 +1264,7 @@ begin
 end;
 
 {$ENDREGION}
+
 {$REGION ' -SKILLSLOTS OPERATIONS'}
 
 procedure TMainForm.Slot_Skill1Click(Sender: TObject);
@@ -1369,7 +1364,7 @@ begin
       Pic.WrapMode := TImageWrapMode.Fit;
       Pic.Margins.Rect := RectF(0, 5, 5, 0);
 
-      ImagePath := TPath.Combine(TUtils.AssetsPath, ASkillVariant.V_ImagePath);
+      ImagePath := System.IOUtils.TPath.Combine(TUtils.AssetsPath, ASkillVariant.V_ImagePath);
       if TFile.Exists(ImagePath) then
       begin
         Bmp := TBitmap.Create;
@@ -1618,7 +1613,6 @@ begin
   end;
 end;
 
-
 {$REGION ' -LOADOUTS'}
 
 procedure TMainForm.AddClick(Sender: TObject);
@@ -1709,6 +1703,271 @@ begin
   RefreshAllStats;
 end;
 
+
+procedure TMainForm.EditClick(Sender: TObject);
+begin
+  if not Assigned(FrmRecPrefs) then
+    Application.CreateForm(TFrmRecPrefs, FrmRecPrefs);
+
+  if FrmRecPrefs.ShowModal = mrOk then
+  begin
+    GenerateAndApplyPredefinedBuild(
+      procedure(var AArchetype: TBuildArchetype)
+      begin
+        AArchetype := FrmRecPrefs.GetUserPreferencesAsArchetype;
+      end
+    );
+  end;
+end;
+
+procedure TMainForm.EditTitleExit(Sender: TObject);
+begin
+//  if (EditTitle.Tag >= 0) and (EditTitle.Tag < LoadoutList.Items.Count) then
+//    (LoadoutList.Items[EditTitle.Tag].Objects.FindDrawable('Title')
+//      as TListItemText).Text := EditTitle.Text;
+//  EditTitle.Visible := False;
+end;
+
+procedure TMainForm.LoadoutListItemClick(const Sender: TObject;
+  const AItem: TListViewItem);
+var
+  LLoadout: TSerializableLoadout;
+begin
+  LLoadout := FController.GetSavedLoadout(AItem.Text);
+  if Assigned(LLoadout) then
+    ApplySerializableLoadout(LLoadout);
+
+  MultiView_Loadout.HideMaster;
+end;
+
+procedure TMainForm.LoadoutListItemClickEx(const Sender: TObject;
+  ItemIndex: Integer; const LocalClickPos: TPointF;
+  const ItemObject: TListItemDrawable);
+var
+  TextItem: TListItemText;
+  ItemRect: TRectF;
+begin
+  // 1) Sécurité de base
+  if (ItemObject = nil) then
+    Exit;
+
+  if not (ItemObject is TListItemText) then
+    Exit;
+
+  if (ItemIndex < 0) or (ItemIndex >= LoadoutList.Items.Count) then
+    Exit;
+
+  TextItem := TListItemText(ItemObject);
+
+  // 2) On ne gère que le drawable "Title"
+  if not SameText(TextItem.Name, 'Title') then
+    Exit;
+
+  // 3) Mise en place de l’éditeur
+//  EditTitle.Text := TextItem.Text;
+//
+//  // Option plus robuste que le calcul à partir de ItemHeight :
+//  ItemRect := LoadoutList.GetItemRect(ItemIndex);
+//  EditTitle.Position.X := ItemRect.Left + LocalClickPos.X;
+//  EditTitle.Position.Y := ItemRect.Top  + LocalClickPos.Y;
+//
+//  EditTitle.Width   := TextItem.Width;
+//  EditTitle.Visible := True;
+//  EditTitle.Tag     := ItemIndex;  // pour retrouver l’item plus tard
+//  EditTitle.SetFocus;
+end;
+
+
+procedure TMainForm.LoadoutListUpdateObjects(const Sender: TObject;
+  const AItem: TListViewItem);
+var
+  Title, Details, Nb: TListItemText;
+  SpecIcon: TListItemImage;
+  LLoadout: TSerializableLoadout;
+  SpecIndex: Integer;
+
+  SetCounts: TDictionary<string, Integer>;
+  MainSetName: string;
+  MaxCount: Integer;
+  WeaponName: string;
+  GP: TSerializableGearPiece;
+  W: TSerializableWeapon;
+  WDef: TWeapon;
+begin
+  // Text Colors
+  Title := TListItemText(AItem.View.FindDrawable('Title'));
+  Details := TListItemText(AItem.View.FindDrawable('Details'));
+  Nb := TListItemText(AItem.View.FindDrawable('Nb'));
+  SpecIcon := AItem.Objects.FindDrawable('Spec_Icon') as TListItemImage;
+
+  if (TListView(Sender).Selected = AItem) then
+  begin
+    if Assigned(Title) then Title.TextColor := TAlphaColorRec.Black;
+    if Assigned(Details) then Details.TextColor := TAlphaColorRec.Black;
+    if Assigned(Nb) then Nb.TextColor := TAlphaColorRec.Black;
+  end
+  else
+  begin
+    if Assigned(Title) then Title.TextColor := TAlphaColorRec.White;
+    if Assigned(Details) then Details.TextColor := TAlphaColorRec.Lightgray;
+    if Assigned(Nb) then Nb.TextColor := TAlphaColorRec.White;
+  end;
+
+  // Title Text
+  if Assigned(Title) then
+    Title.Text := AItem.Text;
+
+  // Number
+  if Assigned(Nb) then
+    Nb.Text := IntToStr(AItem.Index + 1);
+
+  // Loadout Details (Spec Icon + Detail Text)
+  LLoadout := FController.GetSavedLoadout(AItem.Text);
+  if Assigned(LLoadout) then
+  begin
+    // Calculate shared items count (Saved vs Equipped)
+    if Assigned(Details) then
+    begin
+      var SharedCount := 0;
+      var EquippedGP: TGearPiece;
+      var EquippedW: TWeapon;
+      var EquippedS: TEquippedSkill;
+      var SavedS: TSerializableSkill;
+
+      // Check Gear
+      for var Slot := itMask to itKneepads do
+      begin
+        if LLoadout.GearPieces.TryGetValue(Slot, GP) and (GP.PieceName <> '') then
+        begin
+          EquippedGP := FController.GetEquippedGearPiece(Slot);
+          // Compare by Name (assuming Name is sufficient for identity in this context)
+          if SameText(GP.PieceName, EquippedGP.Name) then
+            Inc(SharedCount);
+        end;
+      end;
+
+      // Check Weapons
+      for var WSlot := wsPrimary to wsSideArm do
+      begin
+        if LLoadout.Weapons.TryGetValue(WSlot, W) and (W.WeaponID <> 0) then
+        begin
+          EquippedW := FController.GetSelectedWeapon(WSlot);
+          if W.WeaponID = EquippedW.ID then
+            Inc(SharedCount);
+        end;
+      end;
+
+      // Check Skills
+      for var SSlot := ssPrimary to ssSecondary do
+      begin
+        if LLoadout.Skills.TryGetValue(SSlot, SavedS) and (SavedS.VariantName <> '') then
+        begin
+          EquippedS := FController.GetEquippedSkill(SSlot);
+          if SameText(SavedS.VariantName, EquippedS.Variant.VariantName) then
+            Inc(SharedCount);
+        end;
+      end;
+
+      Details.Text := Format('Equipped %d / %d', [SharedCount, LoadoutList.Items.Count]);
+    end;
+
+    if Assigned(SpecIcon) and Assigned(FSpecializationImageIndices) then
+    begin
+      if FSpecializationImageIndices.TryGetValue(LLoadout.SpecializationName, SpecIndex) then
+        SpecIcon.ImageIndex := SpecIndex
+      else
+        SpecIcon.ImageIndex := -1;
+    end;
+  end;
+end;
+
+procedure TMainForm.SaveClick(Sender: TObject);
+var
+  LSelected: TListViewItem;
+begin
+  LSelected := TListViewItem(LoadoutList.Selected);
+  if not Assigned(LSelected) then
+  begin
+    TDialogService.ShowMessage('Please select a loadout to save over.');
+    Exit;
+  end;
+
+  // Sync UI state to Controller for Specialization Bonuses
+  var LActivatedBonuses: TArray<TWeaponFamily>;
+  SetLength(LActivatedBonuses, 0);
+  for var WT: TWeaponFamily := Low(TWeaponFamily) to High(TWeaponFamily) do
+    if Assigned(WeaponChk(WT)) and WeaponChk(WT).IsChecked then
+    begin
+      SetLength(LActivatedBonuses, Length(LActivatedBonuses) + 1);
+      LActivatedBonuses[High(LActivatedBonuses)] := WT;
+    end;
+  FController.ActivatedSpecBonuses := LActivatedBonuses;
+
+  FController.SaveCurrentLoadout(LSelected.Text);
+  TDialogService.ShowMessage('Loadout "' + LSelected.Text + '" has been updated.');
+end;
+
+procedure TMainForm.LoadClick(Sender: TObject);
+var
+  Names: TArray<string>;
+  Name: string;
+begin
+  FController.LoadSavedLoadouts;
+  LoadoutList.Items.Clear;
+
+  Names := FController.GetSavedLoadoutNames;
+  for Name in Names do
+  begin
+    var LItem := LoadoutList.Items.Add;
+    LItem.Text := Name;
+  end;
+end;
+
+procedure TMainForm.ResetClick(Sender: TObject);
+var
+  Slot: TWeaponSlot;
+  SkillSlot: TSkillSlot;
+  WF: TWeaponFamily;
+  I: TItemType;
+begin
+  FController.ResetAll;
+
+  // Reset weapons (data + UI)
+  FExoticWeaponSelected := False;
+  FExoticWeaponSlot := wsNone;
+  for Slot := Low(TWeaponSlot) to High(TWeaponSlot) do
+  begin
+    FWeaponSelectedTalentIDs[Slot] := 0;
+    UpdateWeaponUI(Slot, FController.GetSelectedWeapon(Slot));
+  end;
+
+  // Reset gear pieces
+  for I := itMask to itKneepads do
+  begin
+    UpdateGearSlotUI(FController.GetEquippedGearPiece(I), I);
+  end;
+
+  // Reset skills
+  for SkillSlot := ssPrimary to ssSecondary do
+  begin
+    UpdateSkillUI(SkillSlot, FController.GetEquippedSkill(SkillSlot).Variant);
+  end;
+
+  // Reset specialization and weapon-type bonuses
+  Slot_Specialization.ItemIndex := -1;
+  for WF := Low(TWeaponFamily) to High(TWeaponFamily) do
+    if Assigned(WeaponChk(WF)) then
+    begin
+      WeaponChk(WF).IsChecked := False;
+      WeaponChk(WF).Enabled := False;
+    end;
+
+  RefreshAllStats;
+end;
+
+{$ENDREGION}
+
+{$REGION ' -GENERATOR BUILD'}
 procedure TMainForm.ApplyBuild(const ABuild: TGearLoadout);
 var
   Slot: TItemType;
@@ -1928,7 +2187,6 @@ begin
   );
 end;
 
-
 procedure TMainForm.ShowSidePanel(AContext: TCoreAttributeType);
 begin
   FGenerationContext := AContext;
@@ -1995,7 +2253,6 @@ begin
   end;
 end;
 
-
 procedure TMainForm.ListViewAttributesItemClick(const Sender: TObject; const AItem: TListViewItem);
 var
   AttrId: string;
@@ -2036,7 +2293,6 @@ begin
   // Relance la génération en fonction de tous les attributs sélectionnés
   BuildFromSelectedAttributes;
 end;
-
 
 procedure TMainForm.ListViewAttributesSearchChange(Sender: TObject);
 begin
@@ -2187,7 +2443,6 @@ begin
   Tab_Loadouts.ActiveTab := Builds;
 end;
 
-
 procedure TMainForm.ListView1ItemClick(const Sender: TObject; const AItem: TListViewItem);
 var
   LIndex: Integer;
@@ -2199,180 +2454,79 @@ begin
   end;
 end;
 
-
-procedure TMainForm.EditClick(Sender: TObject);
-begin
-  if not Assigned(FrmRecPrefs) then
-    Application.CreateForm(TFrmRecPrefs, FrmRecPrefs);
-
-  if FrmRecPrefs.ShowModal = mrOk then
-  begin
-    GenerateAndApplyPredefinedBuild(
-      procedure(var AArchetype: TBuildArchetype)
-      begin
-        AArchetype := FrmRecPrefs.GetUserPreferencesAsArchetype;
-      end
-    );
-  end;
-end;
-
-procedure TMainForm.EditTitleExit(Sender: TObject);
-begin
-  if (EditTitle.Tag >= 0) and (EditTitle.Tag < LoadoutList.Items.Count) then
-    (LoadoutList.Items[EditTitle.Tag].Objects.FindDrawable('Title')
-      as TListItemText).Text := EditTitle.Text;
-  EditTitle.Visible := False;
-end;
-
-procedure TMainForm.LoadoutListItemClick(const Sender: TObject;
-  const AItem: TListViewItem);
-var
-  LLoadout: TSerializableLoadout;
-begin
-  LLoadout := FController.GetSavedLoadout(AItem.Text);
-  if Assigned(LLoadout) then
-    ApplySerializableLoadout(LLoadout);
-
-  MultiView_Loadout.HideMaster;
-end;
-
-procedure TMainForm.LoadoutListItemClickEx(const Sender: TObject;
-  ItemIndex: Integer; const LocalClickPos: TPointF;
-  const ItemObject: TListItemDrawable);
-var
-  TextItem: TListItemText;
-  ItemRect: TRectF;
-begin
-  // 1) Sécurité de base
-  if (ItemObject = nil) then
-    Exit;
-
-  if not (ItemObject is TListItemText) then
-    Exit;
-
-  if (ItemIndex < 0) or (ItemIndex >= LoadoutList.Items.Count) then
-    Exit;
-
-  TextItem := TListItemText(ItemObject);
-
-  // 2) On ne gère que le drawable "Title"
-  if not SameText(TextItem.Name, 'Title') then
-    Exit;
-
-  // 3) Mise en place de l’éditeur
-  EditTitle.Text := TextItem.Text;
-
-  // Option plus robuste que le calcul à partir de ItemHeight :
-  ItemRect := LoadoutList.GetItemRect(ItemIndex);
-  EditTitle.Position.X := ItemRect.Left + LocalClickPos.X;
-  EditTitle.Position.Y := ItemRect.Top  + LocalClickPos.Y;
-
-  EditTitle.Width   := TextItem.Width;
-  EditTitle.Visible := True;
-  EditTitle.Tag     := ItemIndex;  // pour retrouver l’item plus tard
-  EditTitle.SetFocus;
-end;
-
-
-procedure TMainForm.SaveClick(Sender: TObject);
-var
-  LSelected: TListViewItem;
-begin
-  LSelected := TListViewItem(LoadoutList.Selected);
-  if not Assigned(LSelected) then
-  begin
-    TDialogService.ShowMessage('Please select a loadout to save over.');
-    Exit;
-  end;
-
-  // Sync UI state to Controller for Specialization Bonuses
-  var LActivatedBonuses: TArray<TWeaponFamily>;
-  SetLength(LActivatedBonuses, 0);
-  for var WT: TWeaponFamily := Low(TWeaponFamily) to High(TWeaponFamily) do
-    if Assigned(WeaponChk(WT)) and WeaponChk(WT).IsChecked then
-    begin
-      SetLength(LActivatedBonuses, Length(LActivatedBonuses) + 1);
-      LActivatedBonuses[High(LActivatedBonuses)] := WT;
-    end;
-  FController.ActivatedSpecBonuses := LActivatedBonuses;
-
-  FController.SaveCurrentLoadout(LSelected.Text);
-  TDialogService.ShowMessage('Loadout "' + LSelected.Text + '" has been updated.');
-end;
-
-procedure TMainForm.LoadClick(Sender: TObject);
-var
-  Names: TArray<string>;
-  Name: string;
-begin
-  FController.LoadSavedLoadouts;
-  LoadoutList.Items.Clear;
-
-  Names := FController.GetSavedLoadoutNames;
-  for Name in Names do
-  begin
-    var LItem := LoadoutList.Items.Add;
-    LItem.Text := Name;
-  end;
-end;
-
-
-procedure TMainForm.ResetClick(Sender: TObject);
-var
-  Slot: TWeaponSlot;
-  SkillSlot: TSkillSlot;
-  WF: TWeaponFamily;
-  I: TItemType;
-begin
-  FController.ResetAll;
-
-  // Reset weapons (data + UI)
-  FExoticWeaponSelected := False;
-  FExoticWeaponSlot := wsNone;
-  for Slot := Low(TWeaponSlot) to High(TWeaponSlot) do
-  begin
-    FWeaponSelectedTalentIDs[Slot] := 0;
-    UpdateWeaponUI(Slot, FController.GetSelectedWeapon(Slot));
-  end;
-
-  // Reset gear pieces
-  for I := itMask to itKneepads do
-  begin
-    UpdateGearSlotUI(FController.GetEquippedGearPiece(I), I);
-  end;
-
-  // Reset skills
-  for SkillSlot := ssPrimary to ssSecondary do
-  begin
-    UpdateSkillUI(SkillSlot, FController.GetEquippedSkill(SkillSlot).Variant);
-  end;
-
-  // Reset specialization and weapon-type bonuses
-  Slot_Specialization.ItemIndex := -1;
-  for WF := Low(TWeaponFamily) to High(TWeaponFamily) do
-    if Assigned(WeaponChk(WF)) then
-    begin
-      WeaponChk(WF).IsChecked := False;
-      WeaponChk(WF).Enabled := False;
-    end;
-
-  RefreshAllStats;
-end;
-
 {$ENDREGION}
+
+procedure TMainForm.WndProc(var Message: TMessage);
+begin
+  inherited;
+  if (Message.Msg = WM_SETTINGCHANGE) then
+    if (PChar(Message.LParam) <> nil) and (StrPas(PChar(Message.LParam)) = 'ImmersiveColorSet') then
+    begin
+      // System theme changed – reapply effect and text theme
+      var nowDark := TWindowEffects.IsAppsDarkMode;
+      TWindowEffects.ApplyEffect(Self, FCurrentEffect, nowDark);
+      ApplyAcrylicTextTheme(nowDark);
+    end;
+end;
+
+procedure TMainForm.ApplyAcrylicTextTheme(const Dark: Boolean);
+const
+  DARK_PRIMARY   = TAlphaColor($FFFFFFFF);
+  DARK_SECONDARY = TAlphaColor($B3FFFFFF);
+  LIGHT_PRIMARY  = TAlphaColor($FF1A1A1A);
+  LIGHT_SECONDARY= TAlphaColor($99000000);
+var
+  Primary, Secondary: TAlphaColor;
+
+  procedure ApplyTextSettings(Obj: TFmxObject; const AColor: TAlphaColor);
+  var
+    TS: ITextSettings;
+  begin
+    // Handles TLabel, TButton, TEdit, TCheckBox, many others
+    if Supports(Obj, ITextSettings, TS) then
+    begin
+      TS.StyledSettings := TS.StyledSettings - [TStyledSetting.FontColor];
+      TS.TextSettings.FontColor := AColor;
+      Exit;
+    end;
+
+    // Skia label
+    if Obj is TSkLabel then
+    begin
+      TSkLabel(Obj).StyledSettings := TSkLabel(Obj).StyledSettings - [TStyledSetting.FontColor];
+      TSkLabel(Obj).TextSettings.FontColor := AColor;
+      Exit;
+    end;
+  end;
+
+  procedure Walk(Obj: TFmxObject);
+  begin
+    if Obj is TStyledControl then
+      TStyledControl(Obj).ApplyStyleLookup; // prevent late style override
+
+    ApplyTextSettings(Obj, Primary);
+
+    for var i := 0 to Obj.ChildrenCount - 1 do
+      Walk(Obj.Children[i]);
+  end;
+
+begin
+  if Dark then
+  begin
+    Primary := DARK_PRIMARY;
+    Secondary := DARK_SECONDARY;
+  end
+  else
+  begin
+    Primary := LIGHT_PRIMARY;
+    Secondary := LIGHT_SECONDARY;
+  end;
+
+  Walk(Self);
+end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  // Prepare form for visual effects (Transparency)
-  Self.Fill.Kind := TBrushKind.None; // Ensure FMX background doesn't paint over DWM effect
-
-  // Apply Mica/Acrylic Effect
-  // Defaulting to Mica (weMica) and Dark Mode.
-//  TWindowEffects.ApplyEffect(Self, TWindowEffect.weMica, True);
-
-  // Tweaks for background translucency
-  if Assigned(Spec_rect) then
-    Spec_rect.Fill.Kind := TBrushKind.None; // Or TBrushKind.Solid with Opacity < 1
 
   if DataJsonIterator = nil then // première Form seulement
   begin
@@ -2385,7 +2539,7 @@ begin
   FController.LoadSavedLoadouts;
 
   { 1) spécialisation + bonus armes + bonus watch }
-  FSpecializations := TDictionary<string, TSpecialization>.Create;
+//  FSpecializations := TDictionary<string, TSpecialization>.Create;
   FillSpecializations;
   Slot_Specialization.ItemIndex := -1;
 
@@ -2402,6 +2556,9 @@ begin
   FAttributeInfos := TList<TAttributeCatalogEntry>.Create;
   FSelectedAttributeIDs := TList<string>.Create;
   ListView1.OnItemClick := ListView1ItemClick;
+
+  // Wire up LoadoutList custom drawing/updating
+  LoadoutList.OnUpdateObjects := LoadoutListUpdateObjects;
 
   { 3) nettoyage UI }
   RefreshAllStats;
@@ -2428,6 +2585,10 @@ begin
     FSpecializations.Free;
     FSpecializations := nil;
   end;
+
+  if Assigned(FSpecializationImageIndices) then
+    FreeAndNil(FSpecializationImageIndices);
+
   if Assigned(FGeneratedBuilds) then
     FreeAndNil(FGeneratedBuilds);
   FreeAndNil(FPieceSets);
@@ -2442,12 +2603,39 @@ procedure TMainForm.FormResize(Sender: TObject);
 begin
   // GridPanelLayout1.ColumnCollection := Self.ClientWidth div 200;
   // GridPanelLayout1.Rows := Self.ClientHeight div 200;
+  {$IFDEF MSWINDOWS}
+  // Re-apply effect on resize if needed
+  if FCurrentEffect <> weNone then
+    TWindowEffects.ApplyEffect(Self, FCurrentEffect, True);
+  {$ENDIF}
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
+var
+  Dark: Boolean;
 begin
   {$IFDEF MSWINDOWS}
-  TWindowEffects.ApplyEffect(Self, weMica, True);
+  Dark := TWindowEffects.IsAppsDarkMode;
+
+  Fill.Color := TAlphaColors.Null;
+  Fill.Kind := TBrushKind.None;
+
+  // Mica:
+//  TWindowEffects.ApplyEffect(Self, weMica, True);
+
+  // Or Acrylic:
+  FCurrentEffect := weAcrylic;
+  TWindowEffects.ApplyEffect(Self, FCurrentEffect, Dark);
+
+  // Or Mica Alt for tabbed:
+//  TWindowEffects.ApplyEffect(Self, weTabbed, True);
+
+  TThread.Queue(nil,
+    procedure
+    begin
+      ApplyAcrylicTextTheme(Dark);
+    end);
+
   {$ENDIF}
 end;
 

@@ -58,6 +58,7 @@ type
     FSelectedGearPiece: TGearPiece;
     FPieceSets: TList<TPieceSet>;
     FRollableMinorLimit: Integer;
+    FData: TDataJsonIterator;
     procedure UpdateMinorAttributeList;
     procedure PopulateCoreAttributes;
     function GetSelectedMinorAttributeImageIndex(Index: Integer): Integer;
@@ -82,6 +83,7 @@ type
     procedure ConfigureFixedMinorColumnVisibility(const HasFixed: Boolean);
     procedure ApplyFixedMinorAttributes(const APart: TPart);
     procedure SetGearSlot(const Value: TItemType);
+    procedure ItemApplyStyleLookup(Sender: TObject);
   public
     { Public declarations }
     FSelectedMinorAttributeImageIndices: array of Integer;
@@ -491,6 +493,28 @@ begin
   SlotText := ItemTypeToStr(Value);
   GroupBox1.Text := 'Sets ' + SlotText;
   Caption := 'Sets ' + SlotText;
+end;
+
+procedure TFormSlots.ItemApplyStyleLookup(Sender: TObject);
+var
+  LItem: TListBoxItem;
+  G: TGlyph;
+begin
+  if not (Sender is TListBoxItem) then Exit;
+  LItem := TListBoxItem(Sender);
+
+  // Find Glyph
+  G := LItem.FindStyleResource('glyphstyle') as TGlyph;
+  if not Assigned(G) then
+    G := LItem.FindStyleResource('glyph') as TGlyph;
+
+  if Assigned(G) and Assigned(FData) then
+  begin
+    G.Images := FData.ImageList_GTalents;
+    G.ImageIndex := LItem.ImageIndex;
+    G.Visible := (LItem.ImageIndex >= 0);
+    G.HitTest := False;
+  end;
 end;
 
 procedure TFormSlots.FormCreate(Sender: TObject);
@@ -978,50 +1002,6 @@ var
   TalentList: TList<string>;
   ImgIdx: Integer;
 
-//  procedure AddTalentItem(const ATalentName: string; IsFixed: Boolean = False);
-//  var
-//    LImgIdx: Integer;
-//    LItem: TListBoxItem;
-//    LGlyph: TGlyph;
-//  begin
-//    LItem := TListBoxItem.Create(ListBoxTalents);
-//    LItem.Text := ATalentName;
-//    LImgIdx := AData.GetTalentImageIndex(ATalentName);
-//    if LImgIdx >= 0 then
-//    begin
-//      // Create a glyph to display the icon.
-//      // We set specific margins and alignment to ensure it is visible and positioned correctly.
-//      LGlyph := TGlyph.Create(LItem);
-//      LGlyph.Parent := LItem;
-//      LGlyph.Align := TAlignLayout.Left;
-//      LGlyph.Margins.Left := 5;
-//      LGlyph.Margins.Right := 5;
-//      LGlyph.Margins.Top := 2;
-//      LGlyph.Margins.Bottom := 2;
-//      LGlyph.Width := 40; // Explicit width
-//      LGlyph.Height := 40; // Explicit height (crucial if parent height varies)
-//
-//      // Assign the ImageList from AData
-//      LGlyph.Images := AData.ImageList_GTalents;
-//      LGlyph.ImageIndex := LImgIdx;
-//
-//      LGlyph.HitTest := False; // Pass clicks to the item
-//      LGlyph.Visible := True;
-//    end
-//    else
-//    begin
-//      AData.WriteLog(['PopulateTalents: Image index not found for ' + ATalentName]);
-//    end;
-//
-//    if IsFixed then
-//    begin
-//      LItem.Selectable := True;
-//      LItem.IsSelected := True;
-//    end;
-//
-//    ListBoxTalents.AddObject(LItem);
-//  end;
-
   procedure AddTalentItem(const ATalentName: string; IsFixed: Boolean = False);
   var
     LItem: TListBoxItem;
@@ -1037,6 +1017,9 @@ var
 //    LImgIdx  := AData.FindImageIndexByName(LIconKey);   // index in ImageList_GTalents
     LImgIdx := AData.GetTalentImageIndex(ATalentName);
     LItem.ImageIndex := LImgIdx;
+
+    // Assign the OnApplyStyleLookup handler to ensure icons persist after scrolling
+    LItem.OnApplyStyleLookup := ItemApplyStyleLookup;
 
     // IMPORTANT: add to list BEFORE ApplyStyleLookup
     ListBoxTalents.AddObject(LItem);
@@ -1075,6 +1058,8 @@ var
 begin
   if not Assigned(AData) or not Assigned(AData.GearTalents) then
     Exit;
+
+  FData := AData;
 
   // Ensure the listbox knows about the image list before we start
   if (ListBoxTalents.Images = nil) and Assigned(AData) then

@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Classes, System.IOUtils, System.Rtti, System.StrUtils,
   System.JSON, System.JSON.Types, System.JSON.Readers, System.JSON.Builders,
-  System.Generics.Collections, System.TypInfo, System.Variants,
+  System.Generics.Collections, System.Generics.Defaults, System.TypInfo, System.Variants,
   FMX.DialogService, FMX.Dialogs, Winapi.Windows, FMX.Graphics, FMX.MultiResBitmap,
   {units}
   Game.Player, Game.Types, Utils, System.ImageList, FMX.ImgList;
@@ -480,7 +480,7 @@ begin
     Exit;
 
   Result := nil;
-  if FGearTalentDefinitions.TryGetValue(TalentName, Def) and (Def.IconFilename <> '') then
+  if FGearTalentDefinitions.TryGetValue(TalentName.Trim, Def) and (Def.IconFilename <> '') then
   begin
     // ---------------------------------------------------------
     // 1. Hybrid Approach: Key-Based Lookup (Recommended)
@@ -565,7 +565,7 @@ begin
   Result := -1;
 
   // 2. Resolve Definition
-  if not FGearTalentDefinitions.TryGetValue(TalentName, Def) then
+  if not FGearTalentDefinitions.TryGetValue(TalentName.Trim, Def) then
   begin
     WriteLog(['GetTalentImageIndex: Talent not found in definitions: ' + TalentName]);
     Exit;
@@ -597,7 +597,14 @@ begin
       LSourceItem.Name := NormalizedKey;
       LSourceItem.MultiResBitmap.Add.Bitmap.Assign(Bmp);
 
-      Result := LSourceItem.Index;
+      // Add corresponding Destination item if using ImageList
+      // Check if a destination item already exists for this name (unlikely if source wasn't there)
+      // We must add a destination so it can be indexed by the UI
+      var LDestItem := ImageList_GTalents.Destination.Add;
+      var LLayer := LDestItem.Layers.Add;
+      LLayer.Name := NormalizedKey;
+
+      Result := LDestItem.Index;
       FTalentImageIndices.Add(TalentName, Result);
     end
     else
@@ -611,20 +618,26 @@ begin
 end;
 
 function TDataJsonIterator.FindImageIndexByName(const AName: string): Integer;
+var
+  I: Integer;
+  LName, LNoExt: string;
 begin
   Result := -1;
-  if (AName = '') or (ImageList_GTalents = nil) then
+  if not Assigned(ImageList_GTalents) then
     Exit;
 
-  // Robust: SameText (case-insensitive) over Source items
-  for var I := 0 to ImageList_GTalents.Source.Count - 1 do
-    if SameText(ImageList_GTalents.Source[I].Name, AName) then
+  // match by Source item name, with or without extension, case-insensitive
+  for I := 0 to ImageList_GTalents.Source.Count - 1 do
+  begin
+    LName := ImageList_GTalents.Source[I].Name;
+    if SameText(LName, AName) or SameText(LName, AName + '.png') then
       Exit(I);
 
-  // Optional: if your ImageList items are named with ".png"
-  for var I := 0 to ImageList_GTalents.Source.Count - 1 do
-    if SameText(ImageList_GTalents.Source[I].Name, AName + '.png') then
+    // Also handle cases where the ImageList item is named with extension
+    LNoExt := TPath.GetFileNameWithoutExtension(LName);
+    if SameText(LNoExt, AName) then
       Exit(I);
+  end;
 end;
 
 function TDataJsonIterator.GetTalentIconKey(const TalentName: string): string;
@@ -632,8 +645,8 @@ var
   Def: TGearTalentDefinition;
 begin
   Result := '';
-  if FGearTalentDefinitions.TryGetValue(TalentName, Def) then
-    Result := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
+  if FGearTalentDefinitions.TryGetValue(TalentName.Trim, Def) then
+    Result := Def.IconFilename.Trim.ToLower;
 end;
 
 constructor TDataJsonIterator.Create(AOwner: TComponent);
@@ -649,10 +662,10 @@ begin
   FWeaponStats := TDictionary<Integer, TWeaponStat>.Create;
   FMods := TDictionary<Integer, TWeaponMod>.Create;
   FTalents := TDictionary<Integer, TWeaponTalent>.Create;
-  FGearTalents := TDictionary<string, TDictionary<string, TList<string>>>.Create;
-  FGearTalentDefinitions := TDictionary<string, TGearTalentDefinition>.Create;
-  FTalentIconCache := TObjectDictionary<string, TBitmap>.Create([doOwnsValues]);
-  FTalentImageIndices := TDictionary<string, Integer>.Create;
+  FGearTalents := TDictionary<string, TDictionary<string, TList<string>>>.Create(TStringComparer.Ordinal);
+  FGearTalentDefinitions := TDictionary<string, TGearTalentDefinition>.Create(TStringComparer.Ordinal);
+  FTalentIconCache := TObjectDictionary<string, TBitmap>.Create([doOwnsValues], TStringComparer.Ordinal);
+  FTalentImageIndices := TDictionary<string, Integer>.Create(TStringComparer.Ordinal);
   FGearModsData := TDictionary<Integer, TGearModDefinition>.Create;
   // Create GearMods dictionary
   FAllPieceSetDefinitions := TDictionary<string, TPieceSet>.Create;
@@ -1860,7 +1873,7 @@ begin
                         while It.Next do
                         begin
                           if It.Key = 'name' then
-                            TalentDef.Name := It.AsString
+                            TalentDef.Name := It.AsString.Trim
                           else if It.Key = 'description' then
                             TalentDef.Description := It.AsString
                           else if It.Key = 'icon' then
@@ -1882,10 +1895,45 @@ begin
               end
               else
               begin
-                // If it's StartObject but NOT brandSets (unexpected for provided JSON, but safe fallback)
-                It.Recurse;
-                while It.Next do; // Skip content
-                It.Return;
+//                // If it's StartObject but NOT brandSets (unexpected for provided JSON, but safe fallback)
+//                It.Recurse;
+//                while It.Next do; // Skip content
+//                It.Return;
+
+                // Support other top-level groups (gearSets / named / exotic) that also use:
+                //   Slot -> Category -> [ {name, description, icon, ...}, ... ]
+                It.Recurse; // enter Slot object
+                while It.Next do
+                begin
+                  if It.&Type = TJsonToken.StartArray then
+                  begin
+                    // Parse the array of talent objects
+                    It.Recurse;
+                    while It.Next do
+                    begin
+                      if It.&Type = TJsonToken.StartObject then
+                      begin
+                        TalentDef := Default(TGearTalentDefinition);
+                        It.Recurse;
+                        while It.Next do
+                        begin
+                          if It.Key = 'name' then
+                            TalentDef.Name := It.AsString.Trim
+                          else if It.Key = 'description' then
+                            TalentDef.Description := It.AsString
+                          else if It.Key = 'icon' then
+                            TalentDef.IconFilename := TPath.GetFileNameWithoutExtension(It.AsString).Trim.ToLower;
+                        end;
+                        It.Return;
+
+                        if TalentDef.Name <> '' then
+                          FGearTalentDefinitions.AddOrSetValue(TalentDef.Name, TalentDef);
+                      end;
+                    end;
+                    It.Return; // exit array
+                  end;
+                end;
+                It.Return; // exit slot object
               end;
             end
             // Case 2: Slot value is an Array (e.g., named -> Vest: [ {...}, ... ])
@@ -1916,7 +1964,7 @@ begin
                   while It.Next do
                   begin
                     if It.Key = 'name' then
-                      TalentDef.Name := It.AsString
+                      TalentDef.Name := It.AsString.Trim
                     else if It.Key = 'description' then
                       TalentDef.Description := It.AsString
                     else if It.Key = 'icon' then
