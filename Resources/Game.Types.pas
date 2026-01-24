@@ -31,6 +31,9 @@ type
     UniqueSkillVariant: string;  // e.g., "Banshee Pulse"
     UniqueGrenadeType: string;
     image_path: string;
+    IconKey: string;
+    LogoKey: string;
+    LogoPath: string;
     // UniqueWeaponAttachment: TWeaponMod; // Could be complex, maybe just a name/description for now
     UniqueWeaponAttachmentName: string;
     UniqueWeaponAttachmentBonusDesc: string; // Description of what the attachment does

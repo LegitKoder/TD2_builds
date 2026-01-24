@@ -19772,6 +19772,7 @@ object MainForm: TMainForm
             Size.PlatformDefault = False
             TabOrder = 5
             object Slot_Specialization: TComboBox
+        StyleLookup = 'Slot_specialization'
               Align = Contents
               Images = ImgListSpec
               Size.Width = 161.475006103515600000
@@ -20109,6 +20110,7 @@ object MainForm: TMainForm
             Size.PlatformDefault = False
             TabOrder = 2
             object Slot_Secondary: TComboBox
+
               Align = Client
               Size.Width = 161.475006103515600000
               Size.Height = 69.680000305175780000

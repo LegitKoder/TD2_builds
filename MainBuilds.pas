@@ -452,40 +452,51 @@ procedure TMainForm.Slot_SpecializationChange(Sender: TObject);
 var
   SelectedSpecRecord: Game.Types.TSpecialization;
   WT: TWeaponFamily;
-  Path: string;
-  Bmp: TBitmap;
+
+  // Helper to find and set an image from the ImgListSpec
+  procedure SetStyledImage(const AResourceName, AImageKey: string);
+  var
+    LImage: TImage;
+    LIndex: Integer;
+    LBitmap: TBitmap;
+  begin
+    if AImageKey = '' then Exit;
+    LImage := Slot_Specialization.FindStyleResource(AResourceName) as TImage;
+    if Assigned(LImage) then
+    begin
+      LIndex := ImgListSpec.Source.IndexOf(AImageKey);
+      if LIndex >= 0 then
+      begin
+        LBitmap := ImgListSpec.Bitmap(TSizeF.Create(LImage.Width, LImage.Height), LIndex);
+        if Assigned(LBitmap) then
+        try
+          LImage.Bitmap.Assign(LBitmap);
+        finally
+          LBitmap.Free;
+        end;
+      end;
+    end;
+  end;
+
 begin
   if Slot_Specialization.ItemIndex < 0 then
     Exit;
 
-  if FSpecializations.TryGetValue(Slot_Specialization.Items
-    [Slot_Specialization.ItemIndex], SelectedSpecRecord) then
+  if FSpecializations.TryGetValue(Slot_Specialization.Items[Slot_Specialization.ItemIndex], SelectedSpecRecord) then
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
-    // Update the ComboBox's image for the selected specialization
-    Path := System.IOUtils.TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Image_Path);
-    if TFile.Exists(Path) then
-    begin
-      Bmp := TBitmap.Create;
-      try
-        Bmp.LoadFromFile(Path);
-        // Update the image in the ComboBox's style
-        Slot_Specialization.ApplyStyleLookup;
-        Slot_Specialization.StylesData['MaskedImage1Style.Bitmap'] :=
-          TValue.From<TBitmap>(Bmp);
-      finally
-        Bmp.Free;
-      end;
-    end;
+
+    Slot_Specialization.ApplyStyleLookup;
+    SetStyledImage('icon', SelectedSpecRecord.IconKey);
+    SetStyledImage('logo', SelectedSpecRecord.LogoKey);
 
     // Update weapon type bonus checkboxes based on the selected specialization's capabilities
     for WT := Low(TWeaponFamily) to High(TWeaponFamily) do
     begin
       if Assigned(WeaponChk(WT)) then
       begin
-        // Enable checkbox if this specialization *can* offer a bonus for this weapon type
         if Assigned(FController.SelectedSpecialization.InherentWeaponTypeBonuses) and
-          FController.SelectedSpecialization.InherentWeaponTypeBonuses.ContainsKey(WT) then
+           FController.SelectedSpecialization.InherentWeaponTypeBonuses.ContainsKey(WT) then
         begin
           WeaponChk(WT).Enabled := True;
         end
@@ -494,14 +505,12 @@ begin
           WeaponChk(WT).Enabled := False;
         end;
         WeaponChk(WT).IsChecked := False;
-        // Uncheck all when spec changes; user will re-select up to 3
       end;
     end;
-  end;
 
-  UpdateSpecWeaponChkAvailability;
-  // Enforce "max 3 active bonuses" rule and update enabled state of checkboxes
-  RefreshAllStats;
+    UpdateSpecWeaponChkAvailability;
+    RefreshAllStats;
+  end;
 end;
 
 procedure TMainForm.SpecWeaponChkChange(Sender: TObject);
@@ -723,84 +732,110 @@ var
   Img: TImage;
   SpecList: TList<TSpecialization>;
   I: Integer;
-  SpecBmp: TBitmap;
+  IconBmp, LogoBmp: TBitmap;
   LSourceItem: TCustomSourceItem;
+
+  procedure AddToImageList(const AKey, APath: string);
+  var
+    Bmp: TBitmap;
+    Src: TCustomSourceItem;
+    Dst: TCustomDestinationItem;
+    Lyr: TLayer;
+  begin
+    if (AKey = '') or (APath = '') or not Assigned(ImgListSpec) then
+      Exit;
+    if ImgListSpec.Source.IndexOf(AKey) >= 0 then
+      Exit; // Already exists
+
+    Bmp := TUtils.BitmapFromPath(APath);
+    if Assigned(Bmp) then
+    begin
+      try
+        Src := ImgListSpec.Source.Add;
+        Src.Name := AKey;
+        Src.MultiResBitmap.Add.Bitmap.Assign(Bmp);
+
+        Dst := ImgListSpec.Destination.Add;
+        Lyr := Dst.Layers.Add;
+        Lyr.Name := AKey; // Link layer to source by name
+      finally
+        Bmp.Free;
+      end;
+    end;
+  end;
+
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
 
-    if not Assigned(FSpecializations) then
-      FSpecializations := TDictionary<string, TSpecialization>.Create;
-    FSpecializations.Clear;
+    // FSpecializations is now loaded in FormCreate
+    if (FSpecializations = nil) or (FSpecializations.Count = 0) then
+      Exit;
 
     if not Assigned(FSpecializationImageIndices) then
       FSpecializationImageIndices := TDictionary<string, Integer>.Create;
     FSpecializationImageIndices.Clear;
 
     if Assigned(ImgListSpec) then
-      ImgListSpec.Source.Clear;
-
-    if Assigned(DataJsonIterator) and Assigned(DataJsonIterator.Specializations)
-    then
     begin
-      // Create a sorted list to ensure consistent order
-      SpecList := TList<TSpecialization>.Create
-        (DataJsonIterator.Specializations.Values);
-      try
-        SpecList.Sort(TComparer<TSpecialization>.Construct(
-          function(const L, R: TSpecialization): Integer
-          begin
-            Result := CompareText(L.Name, R.Name);
-          end));
+      ImgListSpec.Source.Clear;
+      ImgListSpec.Destination.Clear;
+    end;
 
-        // Add items and apply the style
-        for I := 0 to SpecList.Count - 1 do
+    // Create a sorted list to ensure consistent order in the UI
+    SpecList := TList<TSpecialization>.Create(FSpecializations.Values);
+    try
+      SpecList.Sort(TComparer<TSpecialization>.Construct(
+        function(const L, R: TSpecialization): Integer
         begin
-          Spec := SpecList[I];
-          FSpecializations.AddOrSetValue(Spec.Name, Spec);
-          Slot_Specialization.Items.Add(Spec.Name);
+          Result := CompareText(L.Name, R.Name);
+        end));
 
-          Itm := Slot_Specialization.ListBox.ListItems[I];
-          Itm.StyleLookup := 'ListBoxItem2Style1';
+      // Add items and load images
+      for I := 0 to SpecList.Count - 1 do
+      begin
+        Spec := SpecList[I];
+        Slot_Specialization.Items.Add(Spec.Name);
 
-          // Apply the style immediately to find the resource
-          Itm.ApplyStyleLookup;
+        // --- Load images into the single ImgListSpec ---
+        AddToImageList(Spec.IconKey, Spec.image_path);
+        AddToImageList(Spec.LogoKey, Spec.LogoPath);
 
-          SpecBmp := TUtils.BitmapFromPath(Spec.Image_Path);
 
-          // Populate ComboBox Image
+        // --- Style the dropdown list item ---
+        Itm := Slot_Specialization.ListBox.ListItems[I];
+        Itm.StyleLookup := 'ListBoxItem2Style1';
+        Itm.ApplyStyleLookup; // Apply style to access sub-components
+
+        IconBmp := TUtils.BitmapFromPath(Spec.image_path);
+        try
           var StyleImg := Itm.FindStyleResource('ImgSpec');
-          if (StyleImg is TImage) and Assigned(SpecBmp) then
+          if (StyleImg is TImage) and Assigned(IconBmp) then
           begin
             Img := StyleImg as TImage;
-            Img.Bitmap.Assign(SpecBmp);
+            Img.Bitmap.Assign(IconBmp);
           end;
-
-          // Populate ImageList for LoadoutList
-          if Assigned(ImgListSpec) and Assigned(SpecBmp) then
-          begin
-            LSourceItem := ImgListSpec.Source.Add;
-            LSourceItem.Name := Spec.Name;
-            LSourceItem.MultiResBitmap.Add.Bitmap.Assign(SpecBmp);
-
-            var LDest := ImgListSpec.Destination.Add;
-            var LLayer := LDest.Layers.Add;
-            LLayer.Name := Spec.Name;
-
-            FSpecializationImageIndices.AddOrSetValue(Spec.Name, LDest.Index);
-          end;
+        finally
+          FreeAndNil(IconBmp);
         end;
 
-      finally
-        SpecList.Free;
+        // --- Store main icon index for LoadoutList ---
+        var LIconIndex := -1;
+        if Assigned(ImgListSpec) then
+          LIconIndex := ImgListSpec.Source.IndexOf(Spec.IconKey);
+
+        if LIconIndex <> -1 then
+          FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
+
       end;
+    finally
+      SpecList.Free;
     end;
 
     if Slot_Specialization.Count > 0 then
     begin
       Slot_Specialization.ItemIndex := 0;
-      // paint the collapsed button image now (uses current selection)
       Slot_SpecializationChange(Slot_Specialization);
     end;
 
@@ -2539,7 +2574,8 @@ begin
   FController.LoadSavedLoadouts;
 
   { 1) spécialisation + bonus armes + bonus watch }
-//  FSpecializations := TDictionary<string, TSpecialization>.Create;
+  FSpecializations := DataJsonIterator.LoadSpecializationsFromJson
+    (TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
   FillSpecializations;
   Slot_Specialization.ItemIndex := -1;
 
@@ -2582,6 +2618,8 @@ begin
   // that is managed by a TSpecializationWrapper in FSpecializations
   if Assigned(FSpecializations) then
   begin
+    for var LSpec in FSpecializations.Values do
+      LSpec.Free;
     FSpecializations.Free;
     FSpecializations := nil;
   end;
