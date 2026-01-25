@@ -209,6 +209,7 @@ type
     GridPanelLayoutLookup: TGridPanelLayout;
     Layout_W_Header2: TLayout;
     Label2: TLabel;
+    Spec_Item: TListBoxItem;
 
     procedure Slot_gPrimaryWeaponClick(Sender: TObject);
     procedure Slot_gSecondaryWeaponClick(Sender: TObject);
@@ -272,6 +273,7 @@ type
 
     function IsExoticGearEquipped: Boolean;
     function CanEquipGearPiece(const AGearPiece: TGearPiece): Boolean;
+    function FindSpecImageIndex(const AKey: string): Integer;
     procedure EquipGear(const AGearSlot: TItemType);
     procedure FillSpecializations;
     procedure ChooseWeaponForSlot(ASlot: Game.Types.TWeaponSlot;
@@ -413,6 +415,24 @@ begin
     TDialogService.ShowMessage('You can only equip one exotic gear piece at a time. Please unequip the other exotic first.');
 end;
 
+function TMainForm.FindSpecImageIndex(const AKey: string): Integer;
+var
+  LKeyNoExt: string;
+begin
+  Result := -1;
+  if (AKey = '') or (not Assigned(ImgListSpec)) then
+    Exit;
+
+  LKeyNoExt := TPath.GetFileNameWithoutExtension(AKey);
+  for var i := 0 to ImgListSpec.Destination.Count - 1 do
+  begin
+    if (ImgListSpec.Destination[i].Layers.Count > 0) and
+       (SameText(ImgListSpec.Destination[i].Layers[0].Name, AKey) or
+        SameText(ImgListSpec.Destination[i].Layers[0].Name, LKeyNoExt)) then
+      Exit(i);
+  end;
+end;
+
 function HasModSlot(const GearPiece: TGearPiece): Boolean;
 const
   GearWithMods = [itMask, itBackpack, itChest];
@@ -458,24 +478,38 @@ var
   procedure SetStyledImage(const AResourceName, AImageKey: string);
   var
     LImage: TImage;
+    LCacheBmp: TBitmap;
+    LPath: string;
     LIndex: Integer;
-    LBitmap: TBitmap;
+    LDestRect: TRectF;
   begin
     if AImageKey = '' then Exit;
     LImage := Slot_Specialization.FindStyleResource(AResourceName) as TImage;
     if Assigned(LImage) then
     begin
-      LIndex := ImgListSpec.Source.IndexOf(AImageKey);
-      if LIndex >= 0 then
+      LIndex := FindSpecImageIndex(AImageKey);
+      if (LIndex >= 0) and Assigned(ImgListSpec) then
       begin
-        LBitmap := ImgListSpec.Bitmap(TSizeF.Create(LImage.Width, LImage.Height), LIndex);
-        if Assigned(LBitmap) then
+        LImage.Bitmap.SetSize(Max(1, Round(LImage.Width)), Max(1, Round(LImage.Height)));
+        LImage.Bitmap.Clear(TAlphaColorRec.Null);
+        LDestRect := RectF(0, 0, LImage.Bitmap.Width, LImage.Bitmap.Height);
+        if LImage.Bitmap.Canvas.BeginScene then
         try
-          LImage.Bitmap.Assign(LBitmap);
+          ImgListSpec.Draw(LImage.Bitmap.Canvas, LDestRect, LIndex, 1.0);
         finally
-          LBitmap.Free;
+          LImage.Bitmap.Canvas.EndScene;
         end;
+        Exit;
       end;
+
+      if TPath.GetExtension(AImageKey) = '' then
+        LPath := TPath.Combine('Specialization', AImageKey + '.png')
+      else
+        LPath := TPath.Combine('Specialization', AImageKey);
+
+      LCacheBmp := TUtils.BitmapFromPath(LPath);
+      if Assigned(LCacheBmp) then
+        LImage.Bitmap.Assign(LCacheBmp);
     end;
   end;
 
@@ -487,10 +521,10 @@ begin
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
 
-    Slot_Specialization.ApplyStyleLookup;
+//    Slot_Specialization.ApplyStyleLookup;
     SetStyledImage('icon', SelectedSpecRecord.IconKey);
     SetStyledImage('logo', SelectedSpecRecord.LogoKey);
-    SetStyledImage('special_ammo', SelectedSpecRecord.LogoKey);
+    SetStyledImage('spec_ammo', SelectedSpecRecord.Special_ammo);
 
     // Update weapon type bonus checkboxes based on the selected specialization's capabilities
     for WT := Low(TWeaponFamily) to High(TWeaponFamily) do
@@ -729,22 +763,13 @@ end;
 
 procedure TMainForm.FillSpecializations;
 var
-  Spec: Game.Types.TSpecialization;
-//  Itm: TListBoxItem;
-//  Img: TImage;
+  Spec: TSpecialization;
   SpecList: TList<TSpecialization>;
-//  I: Integer;
-//  SpecBmp: TBitmap;
-//  LSourceItem: TCustomSourceItem;
   LIconIndex: Integer;
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
-
-//    if not Assigned(FSpecializations) then
-//      FSpecializations := TDictionary<string, TSpecialization>.Create;
-//    FSpecializations.Clear;
 
     if (DataJsonIterator = nil) or (DataJsonIterator.Specializations.Count = 0) then
       Exit;
@@ -753,16 +778,6 @@ begin
       FSpecializationImageIndices := TDictionary<string, Integer>.Create;
     FSpecializationImageIndices.Clear;
 
-    if Assigned(ImgListSpec) then
-      ImgListSpec.Source.Clear;
-
-//    if Assigned(DataJsonIterator) and Assigned(DataJsonIterator.Specializations)
-//    then
-//    begin
-//      // Create a sorted list to ensure consistent order
-//      SpecList := TList<TSpecialization>.Create
-//        (DataJsonIterator.Specializations.Values);
-      // Create a sorted list to ensure consistent order in the UI
     SpecList := TList<TSpecialization>.Create(DataJsonIterator.Specializations.Values);
     try
       SpecList.Sort(TComparer<TSpecialization>.Construct(
@@ -770,53 +785,16 @@ begin
         begin
           Result := CompareText(L.Name, R.Name);
         end));
-
-      // Add items and apply the style
-//        for I := 0 to SpecList.Count - 1 do
       // Add items and prepare image index cache
       for Spec in SpecList do
       begin
-//          Spec := SpecList[I];
-//          FSpecializations.AddOrSetValue(Spec.Name, Spec);
         Slot_Specialization.Items.Add(Spec.Name);
+        // Find the index of the icon in the pre-loaded ImgListSpec.
+        // The key is stored in Spec.IconKey.
+        LIconIndex := FindSpecImageIndex(Spec.IconKey);
 
-//          Itm := Slot_Specialization.ListBox.ListItems[I];
-//          Itm.StyleLookup := 'ListBoxItem2Style1';
-//
-//          // Apply the style immediately to find the resource
-//          Itm.ApplyStyleLookup;
-//
-//          SpecBmp := TUtils.BitmapFromPath(Spec.Image_Path);
-//
-//          // Populate ComboBox Image
-//          var StyleImg := Itm.FindStyleResource('ImgSpec');
-//          if (StyleImg is TImage) and Assigned(SpecBmp) then
-//          begin
-//            Img := StyleImg as TImage;
-//            Img.Bitmap.Assign(SpecBmp);
-//          end;
-//
-//          // Populate ImageList for LoadoutList
-//          if Assigned(ImgListSpec) and Assigned(SpecBmp) then
-//          begin
-//            LSourceItem := ImgListSpec.Source.Add;
-//            LSourceItem.Name := Spec.Name;
-//            LSourceItem.MultiResBitmap.Add.Bitmap.Assign(SpecBmp);
-//
-//            var LDest := ImgListSpec.Destination.Add;
-//            var LLayer := LDest.Layers.Add;
-//            LLayer.Name := Spec.Name;
-//
-//            FSpecializationImageIndices.AddOrSetValue(Spec.Name, LDest.Index);
-          // Find the index of the icon in the pre-loaded ImgListSpec.
-          // The key is stored in Spec.IconKey.
-          LIconIndex := -1;
-          if Assigned(ImgListSpec) then
-            LIconIndex := ImgListSpec.Source.IndexOf(Spec.IconKey);
-
-          if LIconIndex <> -1 then
-            FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
-
+        if LIconIndex <> -1 then
+          FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
       end;
 
     finally

@@ -7,7 +7,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -133,7 +133,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -297,7 +297,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -395,7 +395,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -551,7 +551,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -661,7 +661,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -710,7 +710,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -812,7 +812,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -925,7 +925,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1018,7 +1018,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1129,7 +1129,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1265,7 +1265,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1433,7 +1433,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1555,7 +1555,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1649,7 +1649,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1749,7 +1749,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1865,7 +1865,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -1961,7 +1961,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2039,7 +2039,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2140,7 +2140,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2256,7 +2256,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2354,7 +2354,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2438,7 +2438,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2513,7 +2513,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2601,7 +2601,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2692,7 +2692,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2784,7 +2784,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2924,7 +2924,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -2997,7 +2997,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3116,7 +3116,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3186,7 +3186,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3362,7 +3362,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3449,7 +3449,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3563,7 +3563,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3660,7 +3660,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3803,7 +3803,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3872,7 +3872,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -3961,7 +3961,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4079,7 +4079,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4168,7 +4168,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4259,7 +4259,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4350,7 +4350,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4397,7 +4397,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4548,7 +4548,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4646,7 +4646,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4735,7 +4735,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4843,7 +4843,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -4961,7 +4961,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5046,7 +5046,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5129,7 +5129,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5256,7 +5256,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5375,7 +5375,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5476,7 +5476,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5607,7 +5607,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5806,7 +5806,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5919,7 +5919,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -5992,7 +5992,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6099,7 +6099,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6250,7 +6250,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6283,7 +6283,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6422,7 +6422,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6534,7 +6534,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6734,7 +6734,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6880,7 +6880,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -6971,7 +6971,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7094,7 +7094,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7177,7 +7177,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7273,7 +7273,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7394,7 +7394,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7531,7 +7531,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7668,7 +7668,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7746,7 +7746,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7891,7 +7891,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -7989,7 +7989,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8083,7 +8083,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8177,7 +8177,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8282,7 +8282,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8358,7 +8358,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8430,7 +8430,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8552,7 +8552,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8677,7 +8677,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8774,7 +8774,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8866,7 +8866,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -8984,7 +8984,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9073,7 +9073,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9189,7 +9189,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9345,7 +9345,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9504,7 +9504,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9600,7 +9600,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9703,7 +9703,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9798,7 +9798,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9924,7 +9924,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -9996,7 +9996,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -10157,7 +10157,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -10271,7 +10271,7 @@ object DataJsonIterator: TDataJsonIterator
       item
         MultiResBitmap = <
           item
-            Scale = 8.000000000000000000
+            Scale = 8.00000000000000000
             Width = 128
             Height = 128
             PNG = {
@@ -10698,8 +10698,8 @@ object DataJsonIterator: TDataJsonIterator
         Layers = <
           item
             Name = 'talents'
-            SourceRect.Right = 128.000000000000000000
-            SourceRect.Bottom = 128.000000000000000000
+            SourceRect.Right = 128.00000000000000000
+            SourceRect.Bottom = 128.00000000000000000
           end>
       end
       item

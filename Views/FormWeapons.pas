@@ -330,9 +330,6 @@ begin
     Named_weapons.EndUpdate;
     Exo_weapons.EndUpdate;
   end;
-//  ShowMessage('Exo count=' + IntToStr(Exo_weapons.Count));
-//  ShowMessage('Named count=' + IntToStr(Named_weapons.Count));
-//  ShowMessage('Reg count=' + IntToStr(Reg_weapons.Count));
 end;
 
 procedure TFormCw.WeaponListChange(Sender: TObject);
