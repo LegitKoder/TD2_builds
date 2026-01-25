@@ -1,4 +1,4 @@
-﻿unit MainBuilds;
+unit MainBuilds;
 
 interface
 
@@ -453,41 +453,6 @@ var
   SelectedSpecRecord: Game.Types.TSpecialization;
   WT: TWeaponFamily;
 
-  // Helper to find and set an image from the ImgListSpec
-  procedure SetStyledImage(const AResourceName, AImageKey: string);
-  var
-    LImage: TImage;
-    LIndex: Integer;
-    LBitmap: TBitmap;
-  begin
-    if AImageKey = '' then Exit;
-    LImage := Slot_Specialization.FindStyleResource(AResourceName) as TImage;
-    if Assigned(LImage) then
-    begin
-      LIndex := ImgListSpec.Source.IndexOf(AImageKey);
-      if LIndex >= 0 then
-      begin
-        // Use Destination to get the correct bitmap, not the generic Bitmap method
-        if LIndex < ImgListSpec.Destination.Count then
-        begin
-          LBitmap := TBitmap.Create;
-          try
-            ImgListSpec.Destination.Items[LIndex].MultiResBitmap.Bitmaps[0].AssignTo(LBitmap);
-            LImage.Bitmap.Assign(LBitmap);
-          finally
-            LBitmap.Free;
-          end;
-        end;
-      end else
-      begin
-        LImage.Bitmap := nil; // Clear if not found
-      end;
-    end;
-  end;
-
-var
-  LBackgroundKey: string;
-
 begin
   if Slot_Specialization.ItemIndex < 0 then
     Exit;
@@ -495,11 +460,6 @@ begin
   if FSpecializations.TryGetValue(Slot_Specialization.Items[Slot_Specialization.ItemIndex], SelectedSpecRecord) then
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
-
-    Slot_Specialization.ApplyStyleLookup;
-    SetStyledImage('icon', SelectedSpecRecord.IconKey);
-    SetStyledImage('logo', SelectedSpecRecord.LogoKey);
-
     // Update weapon type bonus checkboxes based on the selected specialization's capabilities
     for WT := Low(TWeaponFamily) to High(TWeaponFamily) do
     begin
@@ -739,45 +699,18 @@ procedure TMainForm.FillSpecializations;
 var
   Spec: Game.Types.TSpecialization;
   SpecList: TList<TSpecialization>;
-  LAssetsPath: string;
-  LBitmap: TBitmap;
-
-  procedure LoadAndAddImage(const AKey, AFileName: string);
-  var
-    LPath: string;
-    LSourceItem: TCustomSourceItem;
-    LDestItem: TCustomDestinationItem;
-  begin
-    if (AKey = '') or (AFileName = '') or not Assigned(ImgListSpec) then Exit;
-
-    LPath := TPath.Combine(LAssetsPath, AFileName);
-    if TFile.Exists(LPath) then
-    begin
-      LSourceItem := ImgListSpec.Source.Add;
-      LSourceItem.Name := AKey;
-      LSourceItem.MultiResBitmap.LoadFromFile(LPath);
-
-      LDestItem := ImgListSpec.Destination.Add;
-      LDestItem.Layers.Add.Name := AKey;
-    end;
-  end;
-
-var
-  I: Integer;
-  TileName: string;
-
+  LIconIndex: Integer;
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
-    if not Assigned(ImgListSpec) then ImgListSpec := TImageList.Create(Self);
-    ImgListSpec.Source.Clear;
-    ImgListSpec.Destination.Clear;
 
-    if not Assigned(FSpecializations) or (FSpecializations.Count = 0) then
+    if (DataJsonIterator = nil) or (FSpecializations.Count = 0) then
       Exit;
 
-    LAssetsPath := TPath.Combine(TUtils.AssetsPath, 'Specialization');
+    if not Assigned(FSpecializationImageIndices) then
+      FSpecializationImageIndices := TDictionary<string, Integer>.Create;
+    FSpecializationImageIndices.Clear;
 
     // Create a sorted list to ensure consistent order in the UI
     SpecList := TList<TSpecialization>.Create(FSpecializations.Values);
@@ -788,12 +721,19 @@ begin
           Result := CompareText(L.Name, R.Name);
         end));
 
-      // Add specialization names to ComboBox and load their images
+      // Add items and prepare image index cache
       for Spec in SpecList do
       begin
         Slot_Specialization.Items.Add(Spec.Name);
-        LoadAndAddImage(Spec.IconKey, Spec.IconKey + '.png');
-        LoadAndAddImage(Spec.LogoKey, Spec.LogoKey + '.png');
+
+        // Find the index of the icon in the pre-loaded ImgListSpec.
+        // The key is stored in Spec.IconKey.
+        LIconIndex := -1;
+        if Assigned(ImgListSpec) then
+          LIconIndex := ImgListSpec.Source.IndexOf(Spec.IconKey);
+
+        if LIconIndex <> -1 then
+          FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
       end;
     finally
       SpecList.Free;
