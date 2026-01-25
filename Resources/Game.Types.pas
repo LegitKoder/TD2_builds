@@ -28,10 +28,11 @@ type
     // These are the potential bonuses the player can choose from via checkboxes.
     InherentWeaponTypeBonuses: TDictionary<TWeaponFamily, Double>;
     SignatureWeaponName: string; // e.g., "Minigun"
+    Icon: string;
     UniqueSkillVariant: string;  // e.g., "Banshee Pulse"
     UniqueGrenadeType: string;
-    IconKey: string;
-    LogoKey: string;
+    Logo: string;
+    Tile: string;
     // UniqueWeaponAttachment: TWeaponMod; // Could be complex, maybe just a name/description for now
     UniqueWeaponAttachmentName: string;
     UniqueWeaponAttachmentBonusDesc: string; // Description of what the attachment does

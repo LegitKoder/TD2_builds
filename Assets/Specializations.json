@@ -2,9 +2,9 @@
   {
     "name": "Gunner",
     "signature_weapon": "Minigun",
-    "icon": "sig_minigun_icon",
-    "logo": "Ico_Gunner",
-    "special_ammo": "Am_Minigun",
+    "icon": "sw_mg_minigun_icon.png",
+    "logo": "Ico_Gunner.png",
+    "tile": "tile008.png",
     "unique_skill_variant": "Banshee Pulse (Gunner variant)",
     "inherent_weapon_type_bonuses": {
       "Light Machine Gun": 15.0,
@@ -20,9 +20,9 @@
   {
     "name": "Sharpshooter",
     "signature_weapon": ".50 Cal Sniper Rifle",
-    "icon": "sig_50cal_icon",
-    "logo": "Ico_Tac",
-    "special_ammo": "Am_Tac",
+    "icon": "sw_sr_mcmillan_50cal_icon.png",
+    "logo": "Ico_Cross.png",
+    "tile": "tile001.png",
     "unique_skill_variant": "Tactician-Drone (Sharpshooter variant)",
     "inherent_weapon_type_bonuses": {
       "Light Machine Gun": 15.0,
@@ -38,9 +38,9 @@
   {
     "name": "Firewall",
     "signature_weapon": "K8-JetStream",
-    "icon": "sig_flamethrower_icon",
-    "logo": "Ico_K8",
-    "special_ammo": "Am_K8",
+    "icon": "sw_ft_flamethrower_icon.png",
+    "logo": "Ico_K8.png",
+    "tile": "tile010.png",
     "unique_skill_variant": "Striker Shield (Firewall variant)",
     "inherent_weapon_type_bonuses": {
       "Light Machine Gun": 15.0,
@@ -56,9 +56,9 @@
   {
     "name": "Technician",
     "signature_weapon": "P-017 Launcher",
-    "icon": "sig_missile_icon",
-    "logo": "Ico_Tech",
-    "special_ammo": "Am_P017",
+    "icon": "sw_ml_missile_icon.png",
+    "logo": "Ico_Tech.png",
+    "tile": "tile009.png",
     "unique_skill_variant": "Skill Variant (Technician variant)",
     "inherent_weapon_type_bonuses": {
       "Light Machine Gun": 15.0,
@@ -74,9 +74,9 @@
   {
     "name": "Demolitionist",
     "signature_weapon": "M32A1 Grenade Launcher",
-    "icon": "sig_m32_v1_icon",
-    "logo": "Ico_Bom",
-    "special_ammo": "Am_M32A1",
+    "icon": "w_cw_m32_a1_icon.png",
+    "logo": "Ico_Bom_.png",
+    "tile": "tile003.png",
     "unique_skill_variant": "Artillery Turret (Demolitionist variant)",
     "inherent_weapon_type_bonuses": {
       "Light Machine Gun": 15.0,
@@ -92,9 +92,9 @@
   {
     "name": "Survivalist",
     "signature_weapon": "Crossbow",
-    "icon": "sig_crossbow_a1_icon",
-    "logo": "Ico_Surv",
-    "special_ammo": "Am_Cross",
+    "icon": "w_cw_crossbow_a1_icon.png",
+    "logo": "Ico_Surv.png",
+    "tile": "tile002.png",
     "unique_skill_variant": "The Mender seeker mine (Survivalist variant)",
     "inherent_weapon_type_bonuses": {
       "Light Machine Gun": 15.0,

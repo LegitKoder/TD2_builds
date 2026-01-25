@@ -1,4 +1,4 @@
-unit MainBuilds;
+﻿unit MainBuilds;
 
 interface
 
@@ -264,7 +264,7 @@ type
     { for Skills.json }
 
     FController: TMainController;
-    FSpecializations: TDictionary<string, TSpecialization>;
+    FSpecializations: TDictionary<string, Game.Types.TSpecialization>;
     FSpecializationImageIndices: TDictionary<string, Integer>;
     FWeaponSelectedTalentIDs: array [TWeaponSlot] of Integer; // Kept for UI selection memory
     FExoticWeaponSelected: Boolean;
@@ -452,7 +452,7 @@ procedure TMainForm.Slot_SpecializationChange(Sender: TObject);
 var
   SelectedSpecRecord: Game.Types.TSpecialization;
   WT: TWeaponFamily;
-
+  LIcon, LLogo, LBackground: TBitmap;
 begin
   if Slot_Specialization.ItemIndex < 0 then
     Exit;
@@ -460,13 +460,19 @@ begin
   if FSpecializations.TryGetValue(Slot_Specialization.Items[Slot_Specialization.ItemIndex], SelectedSpecRecord) then
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
-    // Update weapon type bonus checkboxes based on the selected specialization's capabilities
+
+    LIcon := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Icon));
+    LLogo := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Logo));
+    Slot_Specialization.ApplyStyleLookup;
+    Slot_Specialization.StylesData['icon'] := LIcon;
+    Slot_Specialization.StylesData['logo'] := LLogo;
+
     for WT := Low(TWeaponFamily) to High(TWeaponFamily) do
     begin
       if Assigned(WeaponChk(WT)) then
       begin
         if Assigned(FController.SelectedSpecialization.InherentWeaponTypeBonuses) and
-           FController.SelectedSpecialization.InherentWeaponTypeBonuses.ContainsKey(WT) then
+          FController.SelectedSpecialization.InherentWeaponTypeBonuses.ContainsKey(WT) then
         begin
           WeaponChk(WT).Enabled := True;
         end
@@ -477,10 +483,10 @@ begin
         WeaponChk(WT).IsChecked := False;
       end;
     end;
-
-    UpdateSpecWeaponChkAvailability;
-    RefreshAllStats;
   end;
+
+  UpdateSpecWeaponChkAvailability;
+  RefreshAllStats;
 end;
 
 procedure TMainForm.SpecWeaponChkChange(Sender: TObject);
@@ -698,21 +704,39 @@ end;
 procedure TMainForm.FillSpecializations;
 var
   Spec: Game.Types.TSpecialization;
+  Itm: TListBoxItem;
+  I: Integer;
+  LSourceItem: TCustomSourceItem;
+  LLayer: TCustomLayer;
+  LDest: TCustomDestinationItem;
+  LIcon: TBitmap;
   SpecList: TList<TSpecialization>;
-  LIconIndex: Integer;
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
+    ImgListSpec.Source.Clear;
+    ImgListSpec.Destination.Clear;
 
-    if (DataJsonIterator = nil) or (FSpecializations.Count = 0) then
-      Exit;
-
+    if not Assigned(FSpecializations) then
+      FSpecializations := TDictionary<string, TSpecialization>.Create;
     if not Assigned(FSpecializationImageIndices) then
       FSpecializationImageIndices := TDictionary<string, Integer>.Create;
+
+    for Spec in FSpecializations.Values do
+      Spec.Free;
+    FSpecializations.Clear;
     FSpecializationImageIndices.Clear;
 
-    // Create a sorted list to ensure consistent order in the UI
+    var LLoadedSpecs := DataJsonIterator.LoadSpecializationsFromJson(
+      TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
+    try
+      for Spec in LLoadedSpecs.Values do
+        FSpecializations.Add(Spec.Name, Spec);
+    finally
+      LLoadedSpecs.Free;
+    end;
+
     SpecList := TList<TSpecialization>.Create(FSpecializations.Values);
     try
       SpecList.Sort(TComparer<TSpecialization>.Construct(
@@ -721,19 +745,32 @@ begin
           Result := CompareText(L.Name, R.Name);
         end));
 
-      // Add items and prepare image index cache
-      for Spec in SpecList do
+      for I := 0 to SpecList.Count - 1 do
       begin
+        Spec := SpecList[I];
         Slot_Specialization.Items.Add(Spec.Name);
+        Itm := Slot_Specialization.ListBox.ListItems[I];
+        Itm.StyleLookup := 'Slot_specialization';
 
-        // Find the index of the icon in the pre-loaded ImgListSpec.
-        // The key is stored in Spec.IconKey.
-        LIconIndex := -1;
-        if Assigned(ImgListSpec) then
-          LIconIndex := ImgListSpec.Source.IndexOf(Spec.IconKey);
+        var LIcon := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, Spec.Icon));
+        var LLogo := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, Spec.Logo));
 
-        if LIconIndex <> -1 then
-          FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
+        Itm.StylesData['icon'] := LIcon;
+        Itm.StylesData['logo'] := LLogo;
+
+        if Assigned(LIcon) then
+        begin
+          LSourceItem := ImgListSpec.Source.Add;
+          LSourceItem.Name := Spec.Name;
+          LSourceItem.MultiResBitmap.Add.Bitmap.Assign(LIcon);
+          // Do not free LIcon here, StylesData takes ownership
+          LDest := ImgListSpec.Destination.Add;
+          LLayer := LDest.Layers.Add;
+          LLayer.Name := Spec.Name;
+          FSpecializationImageIndices.AddOrSetValue(Spec.Name, LDest.Index);
+        end
+        else
+          FSpecializationImageIndices.AddOrSetValue(Spec.Name, -1);
       end;
     finally
       SpecList.Free;
@@ -2468,19 +2505,17 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-
-  if DataJsonIterator = nil then //
+  if DataJsonIterator = nil then
   begin
     DataJsonIterator := TDataJsonIterator.Create(nil);
+    DataJsonIterator.Reload;
   end;
 
-  FSpecializations := DataJsonIterator.LoadSpecializationsFromJson(TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
-
-  // Create Controller
   FController := TMainController.Create(DataJsonIterator);
   FController.LoadSavedLoadouts;
 
-  { 1) spécialisation + bonus armes + bonus watch }
+  FSpecializations := TDictionary<string, TSpecialization>.Create;
+  FSpecializationImageIndices := TDictionary<string, Integer>.Create;
   FillSpecializations;
   Slot_Specialization.ItemIndex := -1;
 
@@ -2489,46 +2524,36 @@ begin
 
   FExoticWeaponSelected := False;
   FExoticWeaponSlot := wsNone;
-
   FGearSlotIndex := itUnknown;
-
   FPieceSets := TList<TPieceSet>.Create;
   FGeneratedBuilds := nil;
   FAttributeInfos := TList<TAttributeCatalogEntry>.Create;
   FSelectedAttributeIDs := TList<string>.Create;
   ListView1.OnItemClick := ListView1ItemClick;
-
-  // Wire up LoadoutList custom drawing/updating
   LoadoutList.OnUpdateObjects := LoadoutListUpdateObjects;
 
-  { 3) nettoyage UI }
   RefreshAllStats;
 
-  // Load gear pieces data into FGearPieces here...
   if not Assigned(FormSlots) then
     Application.CreateForm(TFormSlots, FormSlots);
-
   if not Assigned(FormCw) then
     Application.CreateForm(TFormCw, FormCw);
-
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 var
   I: TItemType;
+  Spec: TSpecialization;
 begin
   FreeAndNil(FController);
-
-  if Assigned(FSpecializationImageIndices) then
-    FreeAndNil(FSpecializationImageIndices);
-
   if Assigned(FSpecializations) then
   begin
-    for var Spec in FSpecializations.Values do
+    for Spec in FSpecializations.Values do
       Spec.Free;
-    FSpecializations.Free;
+    FreeAndNil(FSpecializations);
   end;
-
+  if Assigned(FSpecializationImageIndices) then
+    FreeAndNil(FSpecializationImageIndices);
   if Assigned(FGeneratedBuilds) then
     FreeAndNil(FGeneratedBuilds);
   FreeAndNil(FPieceSets);
