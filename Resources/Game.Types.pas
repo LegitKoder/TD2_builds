@@ -24,24 +24,12 @@ type
     FGeneralBonuses: TDictionary<string, Double>;
   public
     Name: string;
-    // Base weapon type bonuses inherent to the specialization (e.g., Gunner inherently gets +15% LMG Dmg).
-    // These are the potential bonuses the player can choose from via checkboxes.
-    InherentWeaponTypeBonuses: TDictionary<TWeaponFamily, Double>;
-    SignatureWeaponName: string; // e.g., "Minigun"
+    SignatureWeaponName: string;
     Icon: string;
-    UniqueSkillVariant: string;  // e.g., "Banshee Pulse"
-    UniqueGrenadeType: string;
     Logo: string;
-    Tile: string;
-    // UniqueWeaponAttachment: TWeaponMod; // Could be complex, maybe just a name/description for now
-    UniqueWeaponAttachmentName: string;
-    UniqueWeaponAttachmentBonusDesc: string; // Description of what the attachment does
-    TacticalLinkDesc: string;
-    ArmorKitTalentDesc: string;
-    SignatureAmmoTalentDesc: string;
-    PartySignatureAmmoTalentDesc: string;
-    // Other general bonuses not tied to the selectable weapon type checkboxes (e.g., +10% Skill Haste for Technician)
-    // These could be a TDictionary<string, Double> or specific fields if few and fixed.
+    SpecialAmmo: string;
+    UniqueSkillVariant: string;
+    InherentWeaponTypeBonuses: TDictionary<TWeaponFamily, Double>;
     GeneralBonuses: TDictionary<string, Double>;
 
     constructor Create;

@@ -1087,6 +1087,10 @@ var
   GeneralBonusesDict: TDictionary<string, Double>;
 begin
   Result := TDictionary<string, TSpecialization>.Create;
+  LSR := nil;
+  JR := nil;
+  It := nil;
+  CurrentSpec := nil;
 
   try
     try
@@ -1101,21 +1105,19 @@ begin
       JR := TJsonTextReader.Create(LSR);
       It := TJSONIterator.Create(JR);
 
-      if It.Next and (It.&Type in [TJsonToken.StartArray,
-        TJsonToken.StartObject]) then
+      if It.Next and (It.&Type = TJsonToken.StartArray) then
       begin
-        while It.Next do
+        It.Recurse; // Enter the main array
+        while It.Next and (It.&Type <> TJsonToken.EndArray) do
         begin
-          if It.&Type = TJsonToken.EndArray then
-            Break;
           if It.&Type = TJsonToken.StartObject then
           begin
             CurrentSpec := TSpecialization.Create;
             BonusesDict := TDictionary<TWeaponFamily, Double>.Create;
             GeneralBonusesDict := TDictionary<string, Double>.Create;
 
-            It.Recurse;
-            while It.Next do
+            It.Recurse; // Enter the specialization object
+            while It.Next and (It.&Type <> TJsonToken.EndObject) do
             begin
               if SameText(It.Key, 'name') then
                 CurrentSpec.Name := It.AsString
@@ -1125,15 +1127,15 @@ begin
                 CurrentSpec.Icon := It.AsString
               else if SameText(It.Key, 'logo') then
                 CurrentSpec.Logo := It.AsString
-              else if SameText(It.Key, 'tile') then
-                CurrentSpec.Tile := It.AsString
+              else if SameText(It.Key, 'special_ammo') then
+                CurrentSpec.SpecialAmmo := It.AsString
               else if SameText(It.Key, 'unique_skill_variant') then
                 CurrentSpec.UniqueSkillVariant := It.AsString
               else if SameText(It.Key, 'inherent_weapon_type_bonuses') and
                 (It.&Type = TJsonToken.StartObject) then
               begin
                 It.Recurse;
-                while It.Next do
+                while It.Next and (It.&Type <> TJsonToken.EndObject) do
                 begin
                   BonusesDict.Add(StrToWeaponType(It.Key), It.AsDouble);
                 end;
@@ -1143,14 +1145,14 @@ begin
                 (It.&Type = TJsonToken.StartObject) then
               begin
                 It.Recurse;
-                while It.Next do
+                while It.Next and (It.&Type <> TJsonToken.EndObject) do
                 begin
                   GeneralBonusesDict.Add(It.Key, It.AsDouble);
                 end;
                 It.Return;
               end;
             end;
-            It.Return;
+            It.Return; // Exit the specialization object
 
             CurrentSpec.InherentWeaponTypeBonuses := BonusesDict;
             CurrentSpec.GeneralBonuses := GeneralBonusesDict;
@@ -1158,7 +1160,7 @@ begin
             if not CurrentSpec.Name.IsEmpty then
             begin
               Result.AddOrSetValue(CurrentSpec.Name, CurrentSpec);
-              CurrentSpec := nil;
+              CurrentSpec := nil; // Ownership transferred to the dictionary
             end
             else
             begin
@@ -1168,24 +1170,27 @@ begin
             end;
           end;
         end;
+        It.Return; // Exit the main array
       end;
     finally
       FreeAndNil(It);
       FreeAndNil(JR);
       FreeAndNil(LSR);
-//      FreeAndNil(CurrentSpec);
+      if Assigned(CurrentSpec) then // Free if an error occurred mid-parse
+        CurrentSpec.Free;
     end;
   except
     on E: Exception do
     begin
-      HandleParsingError('Exception in LoadSpecializationsFromJson: ' +
-        E.Message);
-      if Assigned(It) then
-        FreeAndNil(It);
-      if Assigned(JR) then
-        FreeAndNil(JR);
-      if Assigned(LSR) then
-        FreeAndNil(LSR);
+      HandleParsingError('Exception in LoadSpecializationsFromJson: ' + E.Message);
+      // Clean up resources in case of exception
+      FreeAndNil(It);
+      FreeAndNil(JR);
+      FreeAndNil(LSR);
+      // Free any partially created objects before re-raising or exiting
+      for var Spec in Result.Values do Spec.Free;
+      Result.Free;
+      Result := TDictionary<string, TSpecialization>.Create; // Return empty dict on error
     end;
   end;
 end;

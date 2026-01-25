@@ -452,7 +452,9 @@ procedure TMainForm.Slot_SpecializationChange(Sender: TObject);
 var
   SelectedSpecRecord: Game.Types.TSpecialization;
   WT: TWeaponFamily;
-  LIcon, LLogo, LBackground: TBitmap;
+  LIconBitmapItem, LLogoBitmapItem: TCustomBitmapItem;
+  LSize: TSize;
+  LIconBmp, LLogoBmp: TBitmap;
 begin
   if Slot_Specialization.ItemIndex < 0 then
     Exit;
@@ -461,11 +463,23 @@ begin
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
 
-    LIcon := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Icon));
-    LLogo := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, SelectedSpecRecord.Logo));
+    LIconBmp := nil;
+    LLogoBmp := nil;
+
+    if ImgListSpec.BitmapItemByName(SelectedSpecRecord.Icon, LIconBitmapItem, LSize) then
+    begin
+        LIconBmp := TBitmap.Create;
+        LIconBmp.Assign(LIconBitmapItem.Bitmap);
+    end;
+    if ImgListSpec.BitmapItemByName(SelectedSpecRecord.Logo, LLogoBitmapItem, LSize) then
+    begin
+        LLogoBmp := TBitmap.Create;
+        LLogoBmp.Assign(LLogoBitmapItem.Bitmap);
+    end;
+
     Slot_Specialization.ApplyStyleLookup;
-    Slot_Specialization.StylesData['icon'] := LIcon;
-    Slot_Specialization.StylesData['logo'] := LLogo;
+    Slot_Specialization.StylesData['icon'] := LIconBmp;
+    Slot_Specialization.StylesData['logo'] := LLogoBmp;
 
     for WT := Low(TWeaponFamily) to High(TWeaponFamily) do
     begin
@@ -706,37 +720,38 @@ var
   Spec: Game.Types.TSpecialization;
   Itm: TListBoxItem;
   I: Integer;
-  LSourceItem: TCustomSourceItem;
-  LLayer: TCustomLayer;
-  LDest: TCustomDestinationItem;
-  LIcon: TBitmap;
   SpecList: TList<TSpecialization>;
+  LIconBitmapItem, LLogoBitmapItem: TCustomBitmapItem;
+  LSize: TSize;
+  LIconBmp, LLogoBmp: TBitmap;
+  LIconIndex: Integer;
 begin
   Slot_Specialization.BeginUpdate;
   try
     Slot_Specialization.Clear;
-    ImgListSpec.Source.Clear;
-    ImgListSpec.Destination.Clear;
 
     if not Assigned(FSpecializations) then
       FSpecializations := TDictionary<string, TSpecialization>.Create;
     if not Assigned(FSpecializationImageIndices) then
       FSpecializationImageIndices := TDictionary<string, Integer>.Create;
 
+    // Free old spec objects before clearing the dictionary
     for Spec in FSpecializations.Values do
       Spec.Free;
     FSpecializations.Clear;
     FSpecializationImageIndices.Clear;
 
+    // Load spec definitions
     var LLoadedSpecs := DataJsonIterator.LoadSpecializationsFromJson(
       TPath.Combine(TUtils.AssetsPath, 'Specializations.json'));
     try
       for Spec in LLoadedSpecs.Values do
         FSpecializations.Add(Spec.Name, Spec);
     finally
-      LLoadedSpecs.Free;
+      LLoadedSpecs.Free; // The dictionary is freed, but not the TSpecialization objects it held
     end;
 
+    // Sort and populate UI
     SpecList := TList<TSpecialization>.Create(FSpecializations.Values);
     try
       SpecList.Sort(TComparer<TSpecialization>.Construct(
@@ -752,25 +767,41 @@ begin
         Itm := Slot_Specialization.ListBox.ListItems[I];
         Itm.StyleLookup := 'Slot_specialization';
 
-        var LIcon := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, Spec.Icon));
-        var LLogo := TUtils.BitmapFromPath(TPath.Combine(TUtils.AssetsPath, Spec.Logo));
+        LIconBmp := nil;
+        LLogoBmp := nil;
+        LIconBitmapItem := nil;
 
-        Itm.StylesData['icon'] := LIcon;
-        Itm.StylesData['logo'] := LLogo;
-
-        if Assigned(LIcon) then
+        // Get bitmaps from the design-time ImageList by name
+        if ImgListSpec.BitmapItemByName(Spec.Icon, LIconBitmapItem, LSize) then
         begin
-          LSourceItem := ImgListSpec.Source.Add;
-          LSourceItem.Name := Spec.Name;
-          LSourceItem.MultiResBitmap.Add.Bitmap.Assign(LIcon);
-          // Do not free LIcon here, StylesData takes ownership
-          LDest := ImgListSpec.Destination.Add;
-          LLayer := LDest.Layers.Add;
-          LLayer.Name := Spec.Name;
-          FSpecializationImageIndices.AddOrSetValue(Spec.Name, LDest.Index);
-        end
-        else
-          FSpecializationImageIndices.AddOrSetValue(Spec.Name, -1);
+            LIconBmp := TBitmap.Create;
+            LIconBmp.Assign(LIconBitmapItem.Bitmap);
+        end;
+        if ImgListSpec.BitmapItemByName(Spec.Logo, LLogoBitmapItem, LSize) then
+        begin
+            LLogoBmp := TBitmap.Create;
+            LLogoBmp.Assign(LLogoBitmapItem.Bitmap);
+        end;
+
+        Itm.StylesData['icon'] := LIconBmp; // StylesData takes ownership
+        Itm.StylesData['logo'] := LLogoBmp; // StylesData takes ownership
+
+        // Find the image index of the icon to store for the Loadout view
+        LIconIndex := -1;
+        if Assigned(LIconBitmapItem) then
+        begin
+          // Find the index in the destination list, which is what UI controls use for ImageIndex
+          for var j := 0 to ImgListSpec.Destination.Count - 1 do
+          begin
+            if (ImgListSpec.Destination.Items[j].Layers.Count > 0) and
+               SameText(ImgListSpec.Destination.Items[j].Layers[0].Name, LIconBitmapItem.Name) then
+            begin
+              LIconIndex := j;
+              Break;
+            end;
+          end;
+        end;
+        FSpecializationImageIndices.AddOrSetValue(Spec.Name, LIconIndex);
       end;
     finally
       SpecList.Free;
