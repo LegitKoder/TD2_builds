@@ -43,7 +43,6 @@ type
     Specialization: TLayout;
     Slot_Specialization: TComboBox;
     Specialization_G: TLayout;
-    Slot_Special_SideArm: TComboBox;
     Primary_Weapon: TLayout;
     Slot_Primary: TComboBox;
     Secondary_Weapon: TLayout;
@@ -209,7 +208,7 @@ type
     GridPanelLayoutLookup: TGridPanelLayout;
     Layout_W_Header2: TLayout;
     Label2: TLabel;
-    Spec_Item: TListBoxItem;
+    Slot_Modifier: TComboBox;
 
     procedure Slot_gPrimaryWeaponClick(Sender: TObject);
     procedure Slot_gSecondaryWeaponClick(Sender: TObject);
@@ -488,19 +487,6 @@ var
     if Assigned(LImage) then
     begin
       LIndex := FindSpecImageIndex(AImageKey);
-      if (LIndex >= 0) and Assigned(ImgListSpec) then
-      begin
-        LImage.Bitmap.SetSize(Max(1, Round(LImage.Width)), Max(1, Round(LImage.Height)));
-        LImage.Bitmap.Clear(TAlphaColorRec.Null);
-        LDestRect := RectF(0, 0, LImage.Bitmap.Width, LImage.Bitmap.Height);
-        if LImage.Bitmap.Canvas.BeginScene then
-        try
-          ImgListSpec.Draw(LImage.Bitmap.Canvas, LDestRect, LIndex, 1.0);
-        finally
-          LImage.Bitmap.Canvas.EndScene;
-        end;
-        Exit;
-      end;
 
       if TPath.GetExtension(AImageKey) = '' then
         LPath := TPath.Combine('Specialization', AImageKey + '.png')
@@ -521,6 +507,7 @@ begin
   begin
     FController.SelectedSpecialization := SelectedSpecRecord;
 
+//    Slot_Specialization.ListBoxResource := 'Slot_specialization';
 //    Slot_Specialization.ApplyStyleLookup;
     SetStyledImage('icon', SelectedSpecRecord.IconKey);
     SetStyledImage('logo', SelectedSpecRecord.LogoKey);
@@ -785,7 +772,9 @@ begin
         begin
           Result := CompareText(L.Name, R.Name);
         end));
+
       // Add items and prepare image index cache
+      Slot_Specialization.Items.Clear;
       for Spec in SpecList do
       begin
         Slot_Specialization.Items.Add(Spec.Name);
