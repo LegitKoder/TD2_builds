@@ -480,7 +480,6 @@ var
     LCacheBmp: TBitmap;
     LPath: string;
     LIndex: Integer;
-    LDestRect: TRectF;
   begin
     if AImageKey = '' then Exit;
     LImage := Slot_Specialization.FindStyleResource(AResourceName) as TImage;
