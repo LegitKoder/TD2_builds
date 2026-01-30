@@ -512,6 +512,7 @@ begin
   begin
     G.Images := FData.ImageList_GTalents;
     G.ImageIndex := LItem.ImageIndex;
+//    G.AutoHide := False;
     G.Visible := (LItem.ImageIndex >= 0);
     G.HitTest := False;
   end;

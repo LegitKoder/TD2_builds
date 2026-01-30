@@ -14,31 +14,31 @@ object FormSlots: TFormSlots
   DesignerMasterStyle = 0
   object Layout1: TLayout
     Align = Left
-    Margins.Left = 8.000000000000000000
-    Margins.Top = 8.000000000000000000
-    Margins.Right = 3.000000000000000000
-    Margins.Bottom = 8.000000000000000000
-    Position.X = 8.000000000000000000
-    Position.Y = 8.000000000000000000
-    Size.Width = 233.000000000000000000
-    Size.Height = 464.000000000000000000
+    Margins.Left = 8.00000000000000000
+    Margins.Top = 8.00000000000000000
+    Margins.Right = 3.00000000000000000
+    Margins.Bottom = 8.00000000000000000
+    Position.X = 8.00000000000000000
+    Position.Y = 8.00000000000000000
+    Size.Width = 233.00000000000000000
+    Size.Height = 464.00000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object GroupBox1: TGroupBox
       Align = Client
-      Padding.Left = 7.000000000000000000
-      Padding.Top = 21.000000000000000000
-      Padding.Right = 7.000000000000000000
-      Padding.Bottom = 7.000000000000000000
-      Size.Width = 233.000000000000000000
-      Size.Height = 464.000000000000000000
+      Padding.Left = 7.00000000000000000
+      Padding.Top = 21.00000000000000000
+      Padding.Right = 7.00000000000000000
+      Padding.Bottom = 7.00000000000000000
+      Size.Width = 233.00000000000000000
+      Size.Height = 464.00000000000000000
       Size.PlatformDefault = False
       Text = 'Sets'
       TabOrder = 0
       object ListBoxSets: TListBox
         Align = Client
-        Size.Width = 219.000000000000000000
-        Size.Height = 400.000000000000000000
+        Size.Width = 219.00000000000000000
+        Size.Height = 400.00000000000000000
         Size.PlatformDefault = False
         StyleLookup = 'transparentlistboxstyle'
         TabOrder = 0
@@ -48,45 +48,43 @@ object FormSlots: TFormSlots
         DefaultItemStyles.GroupFooterStyle = ''
         GroupingKind = Grouped
         OnItemClick = ListBoxSetsItemClick
-        Viewport.Width = 219.000000000000000000
-        Viewport.Height = 378.000000000000000000
+        Viewport.Width = 219.00000000000000000
+        Viewport.Height = 378.00000000000000000
         object SearchBox: TSearchBox
           Touch.InteractiveGestures = [LongTap, DoubleTap]
           Align = Top
           TabOrder = 0
-          Size.Width = 219.000000000000000000
-          Size.Height = 22.000000000000000000
+          Size.Width = 219.00000000000000000
+          Size.Height = 22.00000000000000000
           Size.PlatformDefault = False
         end
       end
       object Layout2: TLayout
         Align = Bottom
-        Margins.Top = 7.000000000000000000
-        Position.X = 7.000000000000000000
-        Position.Y = 428.000000000000000000
-        Size.Width = 219.000000000000000000
-        Size.Height = 29.000000000000000000
+        Margins.Top = 7.00000000000000000
+        Position.X = 7.00000000000000000
+        Position.Y = 428.00000000000000000
+        Size.Width = 219.00000000000000000
+        Size.Height = 29.00000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
         object Cancel: TSpeedButton
           Align = Right
           ModalResult = 2
-          Position.X = 139.000000000000000000
-          Size.Width = 80.000000000000000000
-          Size.Height = 29.000000000000000000
+          Position.X = 139.00000000000000000
+          Size.Width = 80.00000000000000000
+          Size.Height = 29.00000000000000000
           Size.PlatformDefault = False
           Text = 'Cancel'
-          TextSettings.Trimming = None
         end
         object Ok: TSpeedButton
           Align = Left
           ModalResult = 1
-          Size.Width = 80.000000000000000000
-          Size.Height = 29.000000000000000000
+          Size.Width = 80.00000000000000000
+          Size.Height = 29.00000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'OkStyle1'
           Text = 'Ok'
-          TextSettings.Trimming = None
           OnClick = OkClick
         end
       end
@@ -95,45 +93,45 @@ object FormSlots: TFormSlots
   object Splitter1: TSplitter
     Align = Left
     Cursor = crHSplit
-    MinSize = 21.000000000000000000
-    Position.X = 244.000000000000000000
-    Size.Width = 4.000000000000000000
-    Size.Height = 480.000000000000000000
+    MinSize = 21.00000000000000000
+    Position.X = 244.00000000000000000
+    Size.Width = 4.00000000000000000
+    Size.Height = 480.00000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'Splitter1Style1'
   end
   object LayoutAttr: TLayout
     Align = Client
-    Margins.Top = 8.000000000000000000
-    Margins.Bottom = 8.000000000000000000
-    Size.Width = 327.000000000000000000
-    Size.Height = 464.000000000000000000
+    Margins.Top = 8.00000000000000000
+    Margins.Bottom = 8.00000000000000000
+    Size.Width = 327.00000000000000000
+    Size.Height = 464.00000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
     object Group_CoreAttributes: TGroupBox
       Align = Top
-      Padding.Left = 7.000000000000000000
-      Padding.Top = 21.000000000000000000
-      Padding.Right = 7.000000000000000000
-      Padding.Bottom = 7.000000000000000000
-      Size.Width = 327.000000000000000000
-      Size.Height = 81.000000000000000000
+      Padding.Left = 7.00000000000000000
+      Padding.Top = 21.00000000000000000
+      Padding.Right = 7.00000000000000000
+      Padding.Bottom = 7.00000000000000000
+      Size.Width = 327.00000000000000000
+      Size.Height = 81.00000000000000000
       Size.PlatformDefault = False
       StyleLookup = 'Group_CoreAttributesStyle1'
       Text = 'Core Attributes'
       TabOrder = 1
       object GridPanelLayout1: TGridPanelLayout
         Align = Client
-        Size.Width = 313.000000000000000000
-        Size.Height = 53.000000000000000000
+        Size.Width = 313.00000000000000000
+        Size.Height = 53.00000000000000000
         Size.PlatformDefault = False
-        TabOrder = 38
+        TabOrder = 37
         ColumnCollection = <
           item
-            Value = 60.000000000000000000
+            Value = 60.00000000000000000
           end
           item
-            Value = 40.000000000000000000
+            Value = 40.00000000000000000
           end>
         ControlCollection = <
           item
@@ -158,19 +156,19 @@ object FormSlots: TFormSlots
           end>
         RowCollection = <
           item
-            Value = 30.000000000000000000
+            Value = 30.00000000000000000
           end
           item
-            Value = 70.000000000000000000
+            Value = 70.00000000000000000
           end>
         object Base_Core: TSkLabel
           Align = Client
-          Margins.Right = 7.000000000000000000
-          Size.Width = 180.800003051757800000
-          Size.Height = 15.899999618530270000
+          Margins.Right = 7.00000000000000000
+          Size.Width = 180.80000305175780000
+          Size.Height = 15.89999961853027000
           Size.PlatformDefault = False
           StyledSettings = [Family, Style, FontColor]
-          TextSettings.Font.Size = 12.000000000000000000
+          TextSettings.Font.Size = 12.00000000000000000
           Words = <
             item
               Text = 'Base:'
@@ -178,11 +176,11 @@ object FormSlots: TFormSlots
         end
         object Base_maxStats: TSkLabel
           Align = Client
-          Size.Width = 125.199996948242200000
-          Size.Height = 15.899999618530270000
+          Size.Width = 125.19999694824220000
+          Size.Height = 15.89999961853027000
           Size.PlatformDefault = False
           StyledSettings = [Family, Style, FontColor]
-          TextSettings.Font.Size = 12.000000000000000000
+          TextSettings.Font.Size = 12.00000000000000000
           Words = <
             item
               Text = 'Max Stats'
@@ -192,11 +190,11 @@ object FormSlots: TFormSlots
           Align = Client
           Images = ImgListCore
           DropDownKind = Custom
-          Margins.Top = 7.000000000000000000
-          Margins.Right = 7.000000000000000000
-          Margins.Bottom = 7.000000000000000000
-          Size.Width = 180.800003051757800000
-          Size.Height = 23.100000381469730000
+          Margins.Top = 7.00000000000000000
+          Margins.Right = 7.00000000000000000
+          Margins.Bottom = 7.00000000000000000
+          Size.Width = 180.80000305175780000
+          Size.Height = 23.10000038146973000
           Size.PlatformDefault = False
           StyleLookup = 'CoreAttributesStyle1'
           TabOrder = 38
@@ -209,40 +207,40 @@ object FormSlots: TFormSlots
           Cursor = crIBeam
           ValueType = Float
           KeyboardType = NumbersAndPunctuation
-          Margins.Top = 7.000000000000000000
-          Margins.Bottom = 7.000000000000000000
-          Size.Width = 125.199996948242200000
-          Size.Height = 23.100000381469730000
+          Margins.Top = 7.00000000000000000
+          Margins.Bottom = 7.00000000000000000
+          Size.Width = 125.19999694824220000
+          Size.Height = 23.10000038146973000
           Size.PlatformDefault = False
         end
       end
     end
     object Group_Attributes_Mods: TGroupBox
       Align = Client
-      Padding.Left = 7.000000000000000000
-      Padding.Top = 21.000000000000000000
-      Padding.Right = 7.000000000000000000
-      Padding.Bottom = 7.000000000000000000
-      Size.Width = 327.000000000000000000
-      Size.Height = 383.000000000000000000
+      Padding.Left = 7.00000000000000000
+      Padding.Top = 21.00000000000000000
+      Padding.Right = 7.00000000000000000
+      Padding.Bottom = 7.00000000000000000
+      Size.Width = 327.00000000000000000
+      Size.Height = 383.00000000000000000
       Size.PlatformDefault = False
       Text = 'Minor Attributes | Mods'
       TabOrder = 0
       object GridPanelLayout2: TGridPanelLayout
         Align = Client
-        Size.Width = 313.000000000000000000
-        Size.Height = 355.000000000000000000
+        Size.Width = 313.00000000000000000
+        Size.Height = 355.00000000000000000
         Size.PlatformDefault = False
-        TabOrder = 38
+        TabOrder = 37
         ColumnCollection = <
           item
-            Value = 50.006237987507500000
+            Value = 50.00623798750750000
           end
           item
-            Value = 25.000000000000000000
+            Value = 25.00000000000000000
           end
           item
-            Value = 25.000000000000000000
+            Value = 25.00000000000000000
           end>
         ControlCollection = <
           item
@@ -262,13 +260,13 @@ object FormSlots: TFormSlots
           end>
         RowCollection = <
           item
-            Value = 100.000000000000000000
+            Value = 100.00000000000000000
           end>
         object ListBoxMinorAttributes: TListBox
           Align = Client
-          Margins.Right = 7.000000000000000000
-          Size.Width = 149.519531250000000000
-          Size.Height = 355.000000000000000000
+          Margins.Right = 7.00000000000000000
+          Size.Width = 149.51953125000000000
+          Size.Height = 355.00000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'transparentlistboxstyle'
           TabOrder = 38
@@ -279,15 +277,15 @@ object FormSlots: TFormSlots
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
           MultiSelectStyle = Extended
-          Viewport.Width = 149.500000000000000000
-          Viewport.Height = 355.000000000000000000
+          Viewport.Width = 149.50000000000000000
+          Viewport.Height = 355.00000000000000000
         end
         object ListBoxFixedMinorAttributes: TListBox
           Align = Client
           HitTest = False
-          Margins.Right = 7.000000000000000000
-          Size.Width = 71.250000000000000000
-          Size.Height = 355.000000000000000000
+          Margins.Right = 7.00000000000000000
+          Size.Width = 71.25000000000000000
+          Size.Height = 355.00000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'transparentlistboxstyle'
           TabOrder = 39
@@ -295,14 +293,14 @@ object FormSlots: TFormSlots
           DefaultItemStyles.ItemStyle = ''
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
-          Viewport.Width = 71.200000000000000000
-          Viewport.Height = 355.000000000000000000
+          Viewport.Width = 71.20000000000000000
+          Viewport.Height = 355.00000000000000000
         end
         object ListBoxModAttributes: TListBox
           Align = Client
-          Margins.Left = 7.000000000000000000
-          Size.Width = 71.249984741210940000
-          Size.Height = 355.000000000000000000
+          Margins.Left = 7.00000000000000000
+          Size.Width = 71.24998474121093000
+          Size.Height = 355.00000000000000000
           Size.PlatformDefault = False
           StyleLookup = 'transparentlistboxstyle'
           TabOrder = 40
@@ -313,8 +311,8 @@ object FormSlots: TFormSlots
           DefaultItemStyles.GroupHeaderStyle = ''
           DefaultItemStyles.GroupFooterStyle = ''
           GroupingKind = Grouped
-          Viewport.Width = 71.200000000000000000
-          Viewport.Height = 355.000000000000000000
+          Viewport.Width = 71.20000000000000000
+          Viewport.Height = 355.00000000000000000
         end
       end
     end
@@ -740,42 +738,42 @@ object FormSlots: TFormSlots
   end
   object LayoutTalents: TLayout
     Align = MostRight
-    Margins.Left = 3.000000000000000000
-    Margins.Top = 8.000000000000000000
-    Margins.Right = 8.000000000000000000
-    Margins.Bottom = 8.000000000000000000
-    Position.X = 578.000000000000000000
-    Position.Y = 8.000000000000000000
-    Size.Width = 186.000000000000000000
-    Size.Height = 464.000000000000000000
+    Margins.Left = 3.00000000000000000
+    Margins.Top = 8.00000000000000000
+    Margins.Right = 8.00000000000000000
+    Margins.Bottom = 8.00000000000000000
+    Position.X = 578.00000000000000000
+    Position.Y = 8.00000000000000000
+    Size.Width = 186.00000000000000000
+    Size.Height = 464.00000000000000000
     Size.PlatformDefault = False
     TabOrder = 5
     object Talents: TGroupBox
       Align = Client
       StyledSettings = [Family, Size, FontColor, Other]
-      Padding.Left = 7.000000000000000000
-      Padding.Top = 21.000000000000000000
-      Padding.Right = 7.000000000000000000
-      Padding.Bottom = 7.000000000000000000
-      Size.Width = 186.000000000000000000
-      Size.Height = 464.000000000000000000
+      Padding.Left = 7.00000000000000000
+      Padding.Top = 21.00000000000000000
+      Padding.Right = 7.00000000000000000
+      Padding.Bottom = 7.00000000000000000
+      Size.Width = 186.00000000000000000
+      Size.Height = 464.00000000000000000
       Size.PlatformDefault = False
       Text = 'Talents'
       TabOrder = 0
       object ListBoxTalents: TListBox
         Align = Client
-        Size.Width = 172.000000000000000000
-        Size.Height = 436.000000000000000000
+        Size.Width = 172.00000000000000000
+        Size.Height = 436.00000000000000000
         Size.PlatformDefault = False
         StyleLookup = 'transparentlistboxstyle'
-        TabOrder = 38
+        TabOrder = 37
         DisableFocusEffect = True
         DefaultItemStyles.ItemStyle = ''
         DefaultItemStyles.GroupHeaderStyle = ''
         DefaultItemStyles.GroupFooterStyle = ''
         GroupingKind = Grouped
-        Viewport.Width = 172.000000000000000000
-        Viewport.Height = 436.000000000000000000
+        Viewport.Width = 172.00000000000000000
+        Viewport.Height = 436.00000000000000000
       end
     end
   end
@@ -1828,88 +1826,88 @@ object FormSlots: TFormSlots
         Layers = <
           item
             Name = 'Red'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'Blue'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'Yellow'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'CH'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'AM'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'SK'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'Empty_Atr'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'Mod_ch'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'Mod_am'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'Mod_skill'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end
       item
         Layers = <
           item
             Name = 'Mod_empty'
-            SourceRect.Right = 135.000000000000000000
-            SourceRect.Bottom = 135.000000000000000000
+            SourceRect.Right = 135.00000000000000000
+            SourceRect.Bottom = 135.00000000000000000
           end>
       end>
     Left = 320
