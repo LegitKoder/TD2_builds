@@ -45,7 +45,7 @@ type
     constructor Create(ADataIterator: TDataJsonIterator);
     destructor Destroy; override;
     function GenerateBuilds(const AArchetype: TBuildArchetype;
-      const AWeights: TDictionary<string, Double> = nil): TList<TGearLoadout>;
+      const AWeights: TDictionary<string, Double> = nil; const AAttributeID: string = ''): TList<TGearLoadout>;
   end;
 
 implementation
@@ -121,7 +121,7 @@ begin
 end;
 
 function TRecommendationEngine.GenerateBuilds(const AArchetype: TBuildArchetype;
-  const AWeights: TDictionary<string, Double> = nil): TList<TGearLoadout>;
+  const AWeights: TDictionary<string, Double> = nil; const AAttributeID: string = ''): TList<TGearLoadout>;
 var
   LInitialBuild: TGearLoadout;
   LGearPool: TDictionary<TItemType, TList<TGearPiece>>;
@@ -136,7 +136,7 @@ begin
   // Always create counts dictionary to track max piece limits
   LBrandCounts := TDictionary<string, Integer>.Create(TIStringComparer.Ordinal);
 
-  PreFilterGear(AArchetype, LGearPool, AWeights);
+  PreFilterGear(AArchetype, LGearPool, AWeights, AAttributeID);
   try
     LMaxBuilds := 25;
     if Assigned(AWeights) and (AWeights.Count > 0) then
@@ -157,7 +157,7 @@ end;
 
 procedure TRecommendationEngine.PreFilterGear(const AArchetype: TBuildArchetype;
   out AGearPool: TDictionary<TItemType, TList<TGearPiece>>;
-  const AWeights: TDictionary<string, Double> = nil);
+  const AWeights: TDictionary<string, Double> = nil; const AAttributeID: string = '');
 var
   LGearPiece: TGearPiece;
   LBrandSet: TPieceSet;
@@ -228,6 +228,26 @@ begin
 
       for var LPart in LBrandSet.Parts do
       begin
+        var LIsRelevant := True;
+        if (AAttributeID <> '') then
+        begin
+          LIsRelevant := False;
+          for var LBonus in LBrandSet.Bonuses do
+            if SameText(LBonus.AttributeID, AAttributeID) then
+            begin
+              LIsRelevant := True;
+              Break;
+            end;
+          if not LIsRelevant then
+            for var LFixedId in LPart.FixedMinorAttributeIDs do
+              if SameText(LFixedId, AAttributeID) then
+              begin
+                LIsRelevant := True;
+                Break;
+              end;
+        end;
+        if not LIsRelevant then Continue;
+
         FillChar(LGearPiece, SizeOf(LGearPiece), 0);
         LGearPiece.SetName := CalcEngine.CanonicalSetName(LBrandSet.Name);
         LGearPiece.Name := LPart.Name;
@@ -296,7 +316,7 @@ begin
     end;
 
     // Sort each slot list to prioritize sets whose bonuses match weighted attributes
-    if Assigned(AWeights) and (AWeights.Count > 0) then
+    if (AAttributeID = '') and Assigned(AWeights) and (AWeights.Count > 0) then
       for LItemType := Low(TItemType) to itKneepads do
       begin
         AGearPool[LItemType].Sort(
@@ -319,15 +339,9 @@ begin
 
         // Heuristic Beam Search / Optimization:
         // Limit the pool to the top K candidates per slot to prevent combinatorial explosion.
-        // If we have weights, we only care about the best-fitting items.
-        // Keeping top 15 ensures 15^6 = ~11 million combinations max, which is manageable
-        // with the FSearchIterations limit and pruning. Unbounded lists (e.g. 50 items) cause freezes.
         if AGearPool[LItemType].Count > 15 then
         begin
-          AGearPool[LItemType].Count := 15; // Truncate the list efficiently
-          // Note: TList.Count setter truncates the list and frees items if OwnsObjects is true.
-          // TDictionary<..., TList<...>> usually owns the list, but the list itself might not own TGearPiece if they are records.
-          // TGearPiece is a record, so no memory leak from truncation.
+          AGearPool[LItemType].Count := 15;
         end;
       end;
   finally
@@ -592,72 +606,76 @@ procedure TRecommendationEngine.GenerateBuildsRecursive(
 var
   LGearPiece: TGearPiece;
   LNextSlot: TItemType;
-  LBrandTracked: Boolean;
   LCount: Integer;
   LRemainingSlots: Integer;
   LBrandKey: string;
 begin
-  if FGeneratedBuilds.Count >= AMaxBuilds then
+  if (FGeneratedBuilds.Count >= AMaxBuilds) or (FSearchIterations > 500000) then
     Exit;
-
-  // Safety brake against infinite loops/massive combinations
   Inc(FSearchIterations);
-  if FSearchIterations > 500000 then
-    Exit;
 
-  // Défensif : on ne traite que les slots d'équipement réels
   if (ACurrentSlot < itMask) or (ACurrentSlot > itKneepads) then
-    Exit;
-
-  if not AGearPool.ContainsKey(ACurrentSlot) then
-    Exit;
-
-  for LGearPiece in AGearPool[ACurrentSlot] do
   begin
-    if FGeneratedBuilds.Count >= AMaxBuilds then
-      Exit;
-
-    // Check Max Piece Limit
-    // Note: LGearPiece.SetName is already canonicalized in PreFilterGear
-    LBrandKey := LGearPiece.SetName;
-    if not ABrandCounts.TryGetValue(LBrandKey, LCount) then
-      LCount := 0;
-
-    if LCount >= GetMaxPieceCount(LGearPiece.SetType) then
-      Continue;
-
-    // Place la pièce dans le slot courant
-    ACurrentBuild.GearPieces[ACurrentSlot] := LGearPiece;
-
-    // Track du nombre de pièces de ce brand
-    ABrandCounts.AddOrSetValue(LBrandKey, LCount + 1);
-
-    // Slots restants après celui-ci
-    LRemainingSlots := Ord(itKneepads) - Ord(ACurrentSlot);
-
-    if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots) and
-       not PotentialGearSetIssues(ABrandCounts, LRemainingSlots) then
-    begin
-      if ACurrentSlot < itKneepads then
+    var LIsEmpty := True;
+    for var i := Low(TItemType) to High(TItemType) do
+      if ACurrentBuild.GearPieces[i].Name <> '' then
       begin
-        LNextSlot := Succ(ACurrentSlot);
-        GenerateBuildsRecursive(ACurrentBuild, LNextSlot, AArchetype,
-          AGearPool, ARequiredBrands, ABrandCounts, AMaxBuilds);
-      end
-      else
-      begin
-        if IsValidGearSetCombination(ACurrentBuild) and MeetsBuildRequirements(ACurrentBuild, AArchetype) then
-          FGeneratedBuilds.Add(ACurrentBuild);
+        LIsEmpty := False;
+        Break;
       end;
-    end;
+    if LIsEmpty then Exit;
 
-    // Backtrack Count
-    if ABrandCounts.TryGetValue(LBrandKey, LCount) then
+    // Base Case: We've processed all slots. Add the build.
+    if IsValidGearSetCombination(ACurrentBuild) and MeetsBuildRequirements(ACurrentBuild, AArchetype) then
+      FGeneratedBuilds.Add(ACurrentBuild);
+    Exit;
+  end;
+
+  // Path 1: Recurse with the current slot empty
+  LRemainingSlots := Ord(itKneepads) - Ord(ACurrentSlot) + 1;
+  if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots - 1) then
+  begin
+    ACurrentBuild.GearPieces[ACurrentSlot] := Default(TGearPiece);
+    GenerateBuildsRecursive(ACurrentBuild, Succ(ACurrentSlot), AArchetype, AGearPool, ARequiredBrands, ABrandCounts, AMaxBuilds);
+    if FGeneratedBuilds.Count >= AMaxBuilds then Exit;
+  end;
+
+  // Path 2: Iterate through all available pieces for the current slot
+  if AGearPool.ContainsKey(ACurrentSlot) then
+  begin
+    for LGearPiece in AGearPool[ACurrentSlot] do
     begin
-      if LCount <= 1 then
-        ABrandCounts.Remove(LBrandKey)
-      else
-        ABrandCounts.AddOrSetValue(LBrandKey, LCount - 1);
+      if FGeneratedBuilds.Count >= AMaxBuilds then Exit;
+
+      LBrandKey := LGearPiece.SetName;
+      if not ABrandCounts.TryGetValue(LBrandKey, LCount) then LCount := 0;
+      if LCount >= GetMaxPieceCount(LGearPiece.SetType) then Continue;
+
+      // Check for exotic conflict before placing
+      if (LGearPiece.SetType = stExoticSet) then
+      begin
+        var LExoticCount := 0;
+        for var i := Low(TItemType) to Pred(ACurrentSlot) do
+          if ACurrentBuild.GearPieces[i].SetType = stExoticSet then
+            Inc(LExoticCount);
+        if LExoticCount > 0 then Continue;
+      end;
+
+      ACurrentBuild.GearPieces[ACurrentSlot] := LGearPiece;
+      ABrandCounts.AddOrSetValue(LBrandKey, LCount + 1);
+
+      if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots - 1) and
+         not PotentialGearSetIssues(ABrandCounts, LRemainingSlots - 1) then
+      begin
+        GenerateBuildsRecursive(ACurrentBuild, Succ(ACurrentSlot), AArchetype, AGearPool, ARequiredBrands, ABrandCounts, AMaxBuilds);
+      end;
+
+      // Backtrack
+      if ABrandCounts.TryGetValue(LBrandKey, LCount) then
+      begin
+        if LCount <= 1 then ABrandCounts.Remove(LBrandKey)
+        else ABrandCounts.AddOrSetValue(LBrandKey, LCount - 1);
+      end;
     end;
   end;
 end;

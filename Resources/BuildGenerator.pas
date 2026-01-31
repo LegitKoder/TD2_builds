@@ -50,85 +50,78 @@ begin
 end;
 
 /// <summary>
-/// Calcule un score pour un build en fonction des statistiques agrégées et des attributs ciblés.
-/// Les poids sont ajustables selon l’importance de chaque attribut.
+/// Calculates a score for a build based on aggregated stats and a target attribute.
+/// The score is the direct value of the single target attribute.
 /// </summary>
 function ScoreBuild(const AggStats: TPlayerAggregatedStats; const DispStats: TLoadoutAggregatedStats_Display; Weights: TDictionary<string, Double>): Double;
 var
   Attr, NormAttr: string;
-  Weight: Double;
 begin
   Result := 0;
-  if (Weights = nil) or (Weights.Count = 0) then Exit;
+  if (Weights = nil) or (Weights.Count <> 1) then Exit;
 
-  for Attr in Weights.Keys do
-  begin
-    Weight   := Weights[Attr];
-    NormAttr := NormalizeAttrKey(Attr);
+  Attr := Weights.Keys.First;
+  NormAttr := NormalizeAttrKey(Attr);
 
-    // Skills
-    if ContainsText(NormAttr, 'repairskills') then
-      Result := Result + AggStats.TotalRepairSkills * Weight
-    else if ContainsText(NormAttr, 'skillhaste') then
-      Result := Result + AggStats.TotalSkillHaste * Weight
-    else if ContainsText(NormAttr, 'skilldamage') then
-      Result := Result + AggStats.TotalSkillDamage * Weight
-    else if ContainsText(NormAttr, 'statuseffects') then
-      Result := Result + AggStats.TotalStatusEffects * Weight
-
-    // Crit / HSD
-    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'chance') then
-      Result := Result + DispStats.FinalCHC_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'damage') then
-      Result := Result + DispStats.FinalCHD_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'headshot') then
-      Result := Result + DispStats.FinalHSD_Pct_Display * Weight
-
-    // Armor / tank
-    else if ContainsText(NormAttr, 'armorregen') then
-      Result := Result + DispStats.TotalArmorRegenPct * Weight
-    else if ContainsText(NormAttr, 'armoronkill') or
-            ContainsText(NormAttr, 'healthonkill') then
-      Result := Result + DispStats.TotalArmorOnKillPct * Weight
-    else if ContainsText(NormAttr, 'totalarmor') or
-            (ContainsText(NormAttr, 'armor') and not ContainsText(NormAttr, 'regen')) then
-      Result := Result + DispStats.TotalArmor_Display * Weight
-    else if ContainsText(NormAttr, 'health') then
-      Result := Result + DispStats.TotalHealth_Display * Weight
-    else if ContainsText(NormAttr, 'incomingrepair') then
-      Result := Result + DispStats.TotalIncomingRepairsPct * Weight
-
-    // Weapon damage / handling
-    else if ContainsText(NormAttr, 'weapondamage') then
-      Result := Result + DispStats.TotalWeaponDamage_AWD_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'accuracy') then
-      Result := Result + DispStats.TotalHandling_Accuracy_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'stability') then
-      Result := Result + DispStats.TotalHandling_Stability_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'reload') then
-      Result := Result + DispStats.TotalHandling_ReloadSpeed_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'weaponhandling') then
-      Result := Result + (DispStats.TotalHandling_Accuracy_Pct_Display +
-                          DispStats.TotalHandling_Stability_Pct_Display +
-                          DispStats.TotalHandling_ReloadSpeed_Pct_Display) * Weight
-
-    // Résistances génériques
-    else if ContainsText(NormAttr, 'explosiveresistance') then
-      Result := Result + DispStats.TotalExplosiveResistancePct * Weight
-    else if ContainsText(NormAttr, 'hazardprotection') then
-      Result := Result + DispStats.TotalHazardProtectionPct * Weight
-    else if ContainsText(NormAttr, 'resistance') then
-      Result := Result + 1.0 * Weight; // fallback générique
-  end;
+  // The logic is simplified to score based on the single selected attribute.
+  // The 'Weight' is assumed to be 1.0 for the direct score calculation.
+  if SameText(NormAttr, C_ATTR_REPAIR_SKILLS) then
+    Result := AggStats.TotalRepairSkills
+  else if SameText(NormAttr, C_ATTR_SKILL_HASTE) then
+    Result := AggStats.TotalSkillHaste
+  else if SameText(NormAttr, C_ATTR_SKILL_DAMAGE) then
+    Result := AggStats.TotalSkillDamage
+  else if SameText(NormAttr, C_ATTR_STATUS_EFFECTS) then
+    Result := AggStats.TotalStatusEffects
+  else if SameText(NormAttr, C_ATTR_CRITICAL_HIT_CHANCE) then
+    Result := DispStats.FinalCHC_Pct_Display
+  else if SameText(NormAttr, C_ATTR_CRITICAL_HIT_DAMAGE) then
+    Result := DispStats.FinalCHD_Pct_Display
+  else if SameText(NormAttr, C_ATTR_HEADSHOT_DAMAGE) then
+    Result := DispStats.FinalHSD_Pct_Display
+  else if SameText(NormAttr, C_ATTR_ARMOR_REGEN) then
+    Result := DispStats.TotalArmorRegenPct
+  else if SameText(NormAttr, C_ATTR_ARMOR_ON_KILL) then
+    Result := DispStats.TotalArmorOnKillPct
+  else if SameText(NormAttr, C_ATTR_TOTAL_ARMOR) then
+    Result := DispStats.TotalArmor_Display
+  else if SameText(NormAttr, C_ATTR_HEALTH) then
+    Result := DispStats.TotalHealth_Display
+  else if SameText(NormAttr, C_ATTR_INCOMING_REPAIRS) then
+    Result := DispStats.TotalIncomingRepairsPct
+  else if SameText(NormAttr, C_ATTR_WEAPON_DAMAGE) then
+    Result := DispStats.TotalWeaponDamage_AWD_Pct_Display
+  else if SameText(NormAttr, C_ATTR_ACCURACY) then
+    Result := DispStats.TotalHandling_Accuracy_Pct_Display
+  else if SameText(NormAttr, C_ATTR_STABILITY) then
+    Result := DispStats.TotalHandling_Stability_Pct_Display
+  else if SameText(NormAttr, C_ATTR_RELOAD_SPEED) then
+    Result := DispStats.TotalHandling_ReloadSpeed_Pct_Display
+  else if SameText(NormAttr, C_ATTR_WEAPON_HANDLING) then
+    Result := (DispStats.TotalHandling_Accuracy_Pct_Display +
+               DispStats.TotalHandling_Stability_Pct_Display +
+               DispStats.TotalHandling_ReloadSpeed_Pct_Display)
+  else if SameText(NormAttr, C_ATTR_EXPLOSIVE_RESISTANCE) then
+    Result := DispStats.TotalExplosiveResistancePct
+  else if SameText(NormAttr, C_ATTR_HAZARD_PROTECTION) then
+    Result := DispStats.TotalHazardProtectionPct;
 end;
 
 function TBuildGenerator.GenerateBuilds(const AArchetype: TBuildArchetype;
   const Weights: TDictionary<string, Double> = nil): TList<TGearLoadout>;
 var
   Candidates : TList<TGearLoadout>;
+  LAttributeID: string;
 begin
+  LAttributeID := '';
+  if (Weights <> nil) and (Weights.Count = 1) then
+  begin
+    // If there's exactly one weight, we assume it's our target attribute for generation
+    LAttributeID := Weights.Keys.First;
+  end;
+
   // on génère d’abord tous les builds via le moteur de recommandation
-  Candidates := FRecommendationEngine.GenerateBuilds(AArchetype, Weights);
+  Candidates := FRecommendationEngine.GenerateBuilds(AArchetype, Weights, LAttributeID);
 
   if (Weights <> nil) and (Weights.Count > 0) and (Candidates <> nil) then
   begin
