@@ -108,6 +108,9 @@ function AggregatePlayerStats(const APlayerLoadout: TFullLoadoutInput;
   const AAllPieceSetDefinitions: TDictionary<string, TPieceSet>)
   : TPlayerAggregatedStats;
 
+function AggregateAllStats(const AInput: TFullLoadoutInput;
+  const AAllPieceSetDefinitions: TDictionary<string, TPieceSet>): TDictionary<string, Double>;
+
 function CalculateSkillPerformance(const ASkillVariant: TSkillVariant;
   const APlayerStats: TPlayerAggregatedStats; const ASkillTier: Integer;
   const AIsOvercharged: Boolean; const AIsPvp: Boolean)
@@ -1423,9 +1426,8 @@ begin
   Result := True; // Success
 end;
 
-function AggregatePlayerStats(const APlayerLoadout: TFullLoadoutInput;
-  const AAllPieceSetDefinitions: TDictionary<string, TPieceSet>)
-  : TPlayerAggregatedStats;
+function AggregateAllStats(const AInput: TFullLoadoutInput;
+  const AAllPieceSetDefinitions: TDictionary<string, TPieceSet>): TDictionary<string, Double>;
 var
   LGearPiece: TGearPiece;
   LMinorAttr: TMinorAttribute;
@@ -1434,104 +1436,64 @@ var
   LCount: Integer;
   LSetBonus: TSetBonus;
   I, J: Integer;
-  LPairKeys: TArray<string>;
+  LPairKey: string;
+  LPairValue: TPieceSet;
   LGearArray: TArray<TGearPiece>;
-begin
-  FillChar(Result, SizeOf(Result), 0);
 
-  // 1. From Gear Minor/Mod Attributes
-  for I := Ord(Low(APlayerLoadout.EquippedGear)) to Ord(High(APlayerLoadout.EquippedGear)) do
+  procedure AddStat(const AID: string; AVal: Double);
+  var
+    NormID: string;
+    Current: Double;
   begin
-    LGearPiece := APlayerLoadout.EquippedGear[TItemType(I)];
+    NormID := LowerCase(AID.Trim);
+    if not Result.TryGetValue(NormID, Current) then Current := 0;
+    Result.AddOrSetValue(NormID, Current + AVal);
+  end;
 
+begin
+  Result := TDictionary<string, Double>.Create;
+
+  // 1. From Gear
+  for I := Ord(Low(AInput.EquippedGear)) to Ord(High(AInput.EquippedGear)) do
+  begin
+    LGearPiece := AInput.EquippedGear[TItemType(I)];
+    if LGearPiece.Name = '' then Continue;
+
+    // Core
+    if LGearPiece.CoreAttribute.ID <> '' then
+       AddStat(LGearPiece.CoreAttribute.ID, LGearPiece.CoreAttribute.Value);
+
+    // Minors
     for J := 0 to High(LGearPiece.MinorAttributes) do
-    begin
-      LMinorAttr := LGearPiece.MinorAttributes[J];
-      case LMinorAttr.MinorAttribute of
-        madSkillDamage:
-          Result.TotalSkillDamage := Result.TotalSkillDamage + LMinorAttr.Value;
-        madSkillHaste:
-          Result.TotalSkillHaste := Result.TotalSkillHaste + LMinorAttr.Value;
-        madStatusEffects:
-          Result.TotalStatusEffects := Result.TotalStatusEffects +
-            LMinorAttr.Value;
-        madRepairSkills:
-          Result.TotalRepairSkills := Result.TotalRepairSkills +
-            LMinorAttr.Value;
-        // madSkillDuration: Result.TotalSkillDuration := Result.TotalSkillDuration + LMinorAttr.Value;
-      end;
-    end;
+      AddStat(MinorAttrEnumToId(LGearPiece.MinorAttributes[J].MinorAttribute), LGearPiece.MinorAttributes[J].Value);
 
+    // Fixed
     for LFixedAttr in LGearPiece.FixedMinorAttributes do
-    begin
-      if SameText(LFixedAttr.ID, 'skillDamage') then
-        Result.TotalSkillDamage := Result.TotalSkillDamage + LFixedAttr.Value
-      else if SameText(LFixedAttr.ID, 'skillHaste') then
-        Result.TotalSkillHaste := Result.TotalSkillHaste + LFixedAttr.Value
-      else if SameText(LFixedAttr.ID, 'statusEffects') then
-        Result.TotalStatusEffects := Result.TotalStatusEffects + LFixedAttr.Value
-      else if SameText(LFixedAttr.ID, 'repairSkills') then
-        Result.TotalRepairSkills := Result.TotalRepairSkills + LFixedAttr.Value
-      else if SameText(LFixedAttr.ID, 'skillDuration') then
-        Result.TotalSkillDuration := Result.TotalSkillDuration + LFixedAttr.Value
-      else if SameText(LFixedAttr.ID, 'skillHealth') then
-        Result.TotalSkillHealth := Result.TotalSkillHealth + LFixedAttr.Value;
-    end;
+      AddStat(LFixedAttr.ID, LFixedAttr.Value);
 
+    // Mod
     if LGearPiece.ModAttribute.ModEffect <> gmetUnknown then
-    begin
-      case LGearPiece.ModAttribute.ModEffect of
-        gmetSkillDamage:
-          Result.TotalSkillDamage := Result.TotalSkillDamage +
-            LGearPiece.ModAttribute.Value;
-        gmetSkillHaste:
-          Result.TotalSkillHaste := Result.TotalSkillHaste +
-            LGearPiece.ModAttribute.Value;
-        gmetSkillDuration:
-          Result.TotalSkillDuration := Result.TotalSkillDuration +
-            LGearPiece.ModAttribute.Value;
-      end;
-    end;
+      AddStat(GetEnumName(TypeInfo(TGearModEffectType), Ord(LGearPiece.ModAttribute.ModEffect)), LGearPiece.ModAttribute.Value);
   end;
 
   // 2. From Set Bonuses
   SetLength(LGearArray, Ord(itKneepads) + 1);
   for var k := Low(TItemType) to itKneepads do
-    LGearArray[Ord(k)] := APlayerLoadout.EquippedGear[k];
+    LGearArray[Ord(k)] := AInput.EquippedGear[k];
 
   EquippedSetCounts := GetEffectiveSetCounts(LGearArray);
   try
-    LPairKeys := AAllPieceSetDefinitions.Keys.ToArray;
-    for I := 0 to High(LPairKeys) do
+    for LPairKey in AAllPieceSetDefinitions.Keys do
     begin
-      var LPairKey := LPairKeys[I];
-      var LPairValue := AAllPieceSetDefinitions.Items[LPairKey];
+      LPairValue := AAllPieceSetDefinitions[LPairKey];
       if EquippedSetCounts.TryGetValue(LPairKey, LCount) and (LCount > 0) then
         for J := 0 to High(LPairValue.Bonuses) do
         begin
           LSetBonus := LPairValue.Bonuses[J];
           if LCount >= LSetBonus.ItemsRequired then
           begin
-            if SameText(LSetBonus.AttributeID, 'skill_damage') then
-              Result.TotalSkillDamage := Result.TotalSkillDamage +
-                LSetBonus.Value
-            else if SameText(LSetBonus.AttributeID, 'skill_haste') then
-              Result.TotalSkillHaste := Result.TotalSkillHaste + LSetBonus.Value
-            else if SameText(LSetBonus.AttributeID, 'status_effects') then
-              Result.TotalStatusEffects := Result.TotalStatusEffects +
-                LSetBonus.Value
-            else if SameText(LSetBonus.AttributeID, 'explosive_damage') then
-              Result.TotalExplosiveDamage := Result.TotalExplosiveDamage +
-                LSetBonus.Value
-            else if SameText(LSetBonus.AttributeID, 'repair_skills') then
-              Result.TotalRepairSkills := Result.TotalRepairSkills +
-                LSetBonus.Value
-            else if SameText(LSetBonus.AttributeID, 'skill_duration') then
-              Result.TotalSkillDuration := Result.TotalSkillDuration +
-                LSetBonus.Value
-            else if SameText(LSetBonus.AttributeID, 'skill_health') then
-              Result.TotalSkillHealth := Result.TotalSkillHealth +
-                LSetBonus.Value;
+             if LSetBonus.AttributeID <> '' then
+               AddStat(LSetBonus.AttributeID, LSetBonus.Value);
           end;
         end;
     end;
@@ -1539,24 +1501,55 @@ begin
     EquippedSetCounts.Free;
   end;
 
-  // 3. From Watch Bonuses
-  Result.TotalSkillDamage := Result.TotalSkillDamage +
-    APlayerLoadout.WatchBonuses.SkillDamagePct;
-  Result.TotalSkillHaste := Result.TotalSkillHaste +
-    APlayerLoadout.WatchBonuses.SkillHastePct;
-  Result.TotalSkillDuration := Result.TotalSkillDuration +
-    APlayerLoadout.WatchBonuses.SkillDurationPct;
-  Result.TotalRepairSkills := Result.TotalRepairSkills +
-    APlayerLoadout.WatchBonuses.RepairSkillsPct;
+  // 3. Watch
+  AddStat('weaponDamage', AInput.WatchBonuses.WeaponDamagePct);
+  AddStat('criticalHitChance', AInput.WatchBonuses.CriticalHitChancePct);
+  AddStat('criticalHitDamage', AInput.WatchBonuses.CriticalHitDamagePct);
+  AddStat('headshotDamage', AInput.WatchBonuses.HeadshotDamagePct);
+  AddStat('reloadSpeed', AInput.WatchBonuses.ReloadSpeedPct);
+  AddStat('accuracy', AInput.WatchBonuses.AccuracyPct);
+  AddStat('stability', AInput.WatchBonuses.StabilityPct);
+  AddStat('ammoCapacity', AInput.WatchBonuses.AmmoPct);
+  AddStat('totalArmor', AInput.WatchBonuses.ArmorPct);
+  AddStat('health', AInput.WatchBonuses.HealthPct);
+  AddStat('explosiveResistance', AInput.WatchBonuses.ExplosiveResistancePct);
+  AddStat('hazardProtection', AInput.WatchBonuses.HazardProtectionPct);
+  AddStat('skillDamage', AInput.WatchBonuses.SkillDamagePct);
+  AddStat('skillHaste', AInput.WatchBonuses.SkillHastePct);
+  AddStat('skillDuration', AInput.WatchBonuses.SkillDurationPct);
+  AddStat('repairSkills', AInput.WatchBonuses.RepairSkillsPct);
+end;
 
-  // Convert all totals to fractional percentages for calculation
-  Result.TotalSkillDamage := Result.TotalSkillDamage / 100.0;
-  Result.TotalSkillHaste := Result.TotalSkillHaste / 100.0;
-  Result.TotalSkillDuration := Result.TotalSkillDuration / 100.0;
-  Result.TotalSkillHealth := Result.TotalSkillHealth / 100.0;
-  Result.TotalStatusEffects := Result.TotalStatusEffects / 100.0;
-  Result.TotalExplosiveDamage := Result.TotalExplosiveDamage / 100.0;
-  Result.TotalRepairSkills := Result.TotalRepairSkills / 100.0;
+function AggregatePlayerStats(const APlayerLoadout: TFullLoadoutInput;
+  const AAllPieceSetDefinitions: TDictionary<string, TPieceSet>)
+  : TPlayerAggregatedStats;
+var
+  LDynamic: TDictionary<string, Double>;
+  function GetVal(const ID: string): Double;
+  begin
+    if not LDynamic.TryGetValue(LowerCase(ID), Result) then Result := 0;
+  end;
+begin
+  FillChar(Result, SizeOf(Result), 0);
+  LDynamic := AggregateAllStats(APlayerLoadout, AAllPieceSetDefinitions);
+  try
+    Result.TotalSkillDamage := GetVal('skillDamage') / 100.0;
+    Result.TotalSkillHaste := GetVal('skillHaste') / 100.0;
+    Result.TotalStatusEffects := GetVal('statusEffects') / 100.0;
+    Result.TotalRepairSkills := GetVal('repairSkills') / 100.0;
+    Result.TotalExplosiveDamage := GetVal('explosiveDamage') / 100.0;
+    Result.TotalSkillDuration := GetVal('skillDuration') / 100.0;
+    Result.TotalSkillHealth := GetVal('skillHealth') / 100.0;
+
+    // Skill Tier calculation
+    Result.TotalSkillTier := Round(GetVal('skillTier'));
+    for var i := itMask to itKneepads do
+      if APlayerLoadout.EquippedGear[i].CoreAttribute.AttrType = catSkillTier then
+        Inc(Result.TotalSkillTier);
+
+  finally
+    LDynamic.Free;
+  end;
 end;
 
 function CalculateSkillPerformance(const ASkillVariant: TSkillVariant;

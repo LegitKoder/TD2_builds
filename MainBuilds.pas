@@ -2398,11 +2398,15 @@ end;
 
 procedure TMainForm.DisplayGeneratedBuilds(ABuilds: TList<TGearLoadout>);
 var
-  I: Integer;
+  I, j: Integer;
   LItem: TListViewItem;
-  LBuildName, LDetails: string;
+  LBuildName, LDetails, LStatText: string;
   LGearPiece: TGearPiece;
   TitleObj, DetailObj: TListItemText;
+  LDynamic: TDictionary<string, Double>;
+  LInput: TFullLoadoutInput;
+  LAttrID: string;
+  LVal: Double;
 begin
   if Assigned(FGeneratedBuilds) then
     FGeneratedBuilds.Free;
@@ -2414,25 +2418,52 @@ begin
 
     for I := 0 to FGeneratedBuilds.Count - 1 do
     begin
+      // Calcul des stats pour l'affichage du détail
+      FillChar(LInput, SizeOf(LInput), 0);
+      for j := Low(FGeneratedBuilds[I].GearPieces) to High(FGeneratedBuilds[I].GearPieces) do
+        LInput.EquippedGear[TItemType(j)] := FGeneratedBuilds[I].GearPieces[j];
+
+      LDynamic := CalcEngine.AggregateAllStats(LInput, DataJsonIterator.AllPieceSetDefinitions);
+      try
+        LStatText := '';
+        if Assigned(FSelectedAttributeIDs) then
+          for LAttrID in FSelectedAttributeIDs do
+          begin
+            if LDynamic.TryGetValue(LowerCase(LAttrID), LVal) then
+            begin
+               var DisplayName := LAttrID;
+               for var Entry in GetAttributeCatalog do
+                 if SameText(Entry.ID, LAttrID) then begin DisplayName := Entry.DisplayName; Break; end;
+
+               LStatText := LStatText + Format('%s: %.1f, ', [DisplayName, LVal]);
+            end;
+          end;
+        if LStatText <> '' then SetLength(LStatText, Length(LStatText) - 2);
+      finally
+        LDynamic.Free;
+      end;
+
       // Texte principal (titre)
       LBuildName := Format('Build %d (Score: %.1f)', [I + 1, FGeneratedBuilds[I].Score]);
 
-      // Détail : liste des brands/sets trouvés
+      // Détail : liste des brands/sets trouvés + stats cibles
       LDetails := '';
+      if LStatText <> '' then LDetails := '[' + LStatText + '] ';
+
+      var LSets := '';
       for LGearPiece in FGeneratedBuilds[I].GearPieces do
         if LGearPiece.Name <> '' then
-          LDetails := LDetails + LGearPiece.SetName + ', ';
-      if LDetails <> '' then
-        SetLength(LDetails, Length(LDetails) - 2); // enlever la dernière virgule
+          LSets := LSets + LGearPiece.SetName + ', ';
+      if LSets <> '' then SetLength(LSets, Length(LSets) - 2);
+
+      LDetails := LDetails + LSets;
 
       LItem := ListView1.Items.Add;
       LItem.Tag := I;
 
-      // 1) on remplit quand même Text / Detail au cas où
       LItem.Text   := LBuildName;
       LItem.Detail := LDetails;
 
-      // 2) on force les drawables du style
       TitleObj := LItem.Objects.FindDrawable('Title') as TListItemText;
       if Assigned(TitleObj) then
         TitleObj.Text := LBuildName;
