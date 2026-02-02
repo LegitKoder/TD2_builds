@@ -2399,7 +2399,6 @@ end;
 procedure TMainForm.DisplayGeneratedBuilds(ABuilds: TList<TGearLoadout>);
 var
   I: Integer;
-  j: TItemType;
   LItem: TListViewItem;
   LBuildName, LDetails, LStatText: string;
   LGearPiece: TGearPiece;
@@ -2421,8 +2420,8 @@ begin
     begin
       // Calcul des stats pour l'affichage du détail
       FillChar(LInput, SizeOf(LInput), 0);
-      for j := Low(FGeneratedBuilds[I].GearPieces) to High(FGeneratedBuilds[I].GearPieces) do
-        LInput.EquippedGear[j] := FGeneratedBuilds[I].GearPieces[j];
+      for var k := Low(TItemType) to High(TItemType) do
+        LInput.EquippedGear[k] := FGeneratedBuilds[I].GearPieces[k];
 
       LDynamic := CalcEngine.AggregateAllStats(LInput, DataJsonIterator.AllPieceSetDefinitions);
       try
