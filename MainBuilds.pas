@@ -2323,22 +2323,33 @@ begin
         for var B in LBuilds do
         begin
           var Counts := TDictionary<string, Integer>.Create;
+          var LHasNinjaBike := False;
           try
             for var GP in B.GearPieces do
+            begin
+              if SameText(GP.Name, 'NinjaBike Messenger Backpack') then
+                LHasNinjaBike := True;
               if GP.SetName <> '' then
               begin
                 var c: Integer := 0;
                 Counts.TryGetValue(GP.SetName, c);
                 Counts.AddOrSetValue(GP.SetName, c + 1);
               end;
+            end;
 
             var HasBreakpoint := False;
             for var Pair in Counts do
-              if Pair.Value >= 2 then
+            begin
+              var LEffectiveCount := Pair.Value;
+              if LHasNinjaBike and (LEffectiveCount > 0) then
+                Inc(LEffectiveCount);
+
+              if LEffectiveCount >= 2 then
               begin
                 HasBreakpoint := True;
                 Break;
               end;
+            end;
 
             if HasBreakpoint then
               Filtered.Add(B);

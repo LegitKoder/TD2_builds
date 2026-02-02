@@ -84,6 +84,7 @@ type
 function NewPool: TDamagePools; // helper
 function ComputeDamage(const P: TDamagePools): TDamageResult;
 function CanonicalSetName(const Raw: string): string;
+function GetEffectiveSetCounts(const AGearPieces: array of TGearPiece): TDictionary<string, Integer>;
 
 // convenience wrappers � sums the dictionaries into one number
 function Sum(const List: TBreakList): Double;
@@ -148,6 +149,45 @@ begin
     LCloseParen - LOpenParen - 1));
   if LBrandName <> '' then
     Exit(LBrandName);
+end;
+
+function GetEffectiveSetCounts(const AGearPieces: array of TGearPiece): TDictionary<string, Integer>;
+var
+  LHasNinjaBike: Boolean;
+  LGearPiece: TGearPiece;
+  LCount: Integer;
+  LKeys: TArray<string>;
+begin
+  Result := TDictionary<string, Integer>.Create;
+  LHasNinjaBike := False;
+
+  // 1. Initial count
+  for var i := 0 to High(AGearPieces) do
+  begin
+    LGearPiece := AGearPieces[i];
+    if SameText(LGearPiece.Name, 'NinjaBike Messenger Backpack') then
+      LHasNinjaBike := True;
+
+    if LGearPiece.SetName <> '' then
+    begin
+      var Key := CanonicalSetName(LGearPiece.SetName);
+      if not Result.TryGetValue(Key, LCount) then
+        LCount := 0;
+      Result.AddOrSetValue(Key, LCount + 1);
+    end;
+  end;
+
+  // 2. NinjaBike Bonus (+1 to all active sets)
+  if LHasNinjaBike then
+  begin
+    LKeys := Result.Keys.ToArray;
+    for var LKey in LKeys do
+    begin
+      LCount := Result[LKey];
+      if LCount > 0 then
+        Result[LKey] := LCount + 1;
+    end;
+  end;
 end;
 
 // Forward declaration if ApplyGearPieceBonuses is used by a function declared before it in the interface
@@ -451,32 +491,19 @@ procedure ApplySetBonuses(const AEquippedGear: array of TGearPiece;
   var APools: TDamagePools; var ADisplayStats: TLoadoutAggregatedStats_Display);
 var
   EquippedSetCounts: TDictionary<string, Integer>;
-  LGearPiece: TGearPiece;
   LSetName: string;
   LCount: Integer;
   LPieceSet: TPieceSet;
   LSetBonus: TSetBonus;
   LValueFraction: Double;
   LSourcePrefix: string;
-  I, J, K: Integer;
+  I, J: Integer;
   EquippedSetCountsKeys: TArray<string>;
   AAllPieceSetDefinitionsValues: TArray<TPieceSet>;
   PS: TPieceSet;
 begin
-  EquippedSetCounts := TDictionary<string, Integer>.Create;
+  EquippedSetCounts := GetEffectiveSetCounts(AEquippedGear);
   try
-    // 1. Count equipped pieces for each set
-    for I := 0 to High(AEquippedGear) do
-    begin
-      LGearPiece := AEquippedGear[I];
-      if LGearPiece.SetName <> '' then // Ensure the gear piece belongs to a set
-      begin
-        var Key := CanonicalSetName(LGearPiece.SetName);
-        EquippedSetCounts.TryGetValue(Key, LCount);
-        EquippedSetCounts.AddOrSetValue(Key, LCount + 1);
-      end;
-    end;
-
     // 2. Iterate through all known set definitions and apply bonuses if criteria met
     {for LSetName in AAllPieceSetDefinitions.Keys do}
     EquippedSetCountsKeys := EquippedSetCounts.Keys.ToArray;
@@ -1406,8 +1433,9 @@ var
   EquippedSetCounts: TDictionary<string, Integer>;
   LCount: Integer;
   LSetBonus: TSetBonus;
-  I, J, K: Integer;
+  I, J: Integer;
   LPairKeys: TArray<string>;
+  LGearArray: TArray<TGearPiece>;
 begin
   FillChar(Result, SizeOf(Result), 0);
 
@@ -1415,6 +1443,7 @@ begin
   for I := Ord(Low(APlayerLoadout.EquippedGear)) to Ord(High(APlayerLoadout.EquippedGear)) do
   begin
     LGearPiece := APlayerLoadout.EquippedGear[TItemType(I)];
+
     for J := 0 to High(LGearPiece.MinorAttributes) do
     begin
       LMinorAttr := LGearPiece.MinorAttributes[J];
@@ -1466,18 +1495,12 @@ begin
   end;
 
   // 2. From Set Bonuses
-  EquippedSetCounts := TDictionary<string, Integer>.Create;
-  try
-    for I := Ord(Low(APlayerLoadout.EquippedGear)) to Ord(High(APlayerLoadout.EquippedGear)) do
-    begin
-      LGearPiece := APlayerLoadout.EquippedGear[TItemType(I)];
-      if LGearPiece.SetName <> '' then
-      begin
-        EquippedSetCounts.TryGetValue(LGearPiece.SetName, LCount);
-        EquippedSetCounts.AddOrSetValue(LGearPiece.SetName, LCount + 1);
-      end;
-    end;
+  SetLength(LGearArray, Ord(itKneepads) + 1);
+  for var k := Low(TItemType) to itKneepads do
+    LGearArray[Ord(k)] := APlayerLoadout.EquippedGear[k];
 
+  EquippedSetCounts := GetEffectiveSetCounts(LGearArray);
+  try
     LPairKeys := AAllPieceSetDefinitions.Keys.ToArray;
     for I := 0 to High(LPairKeys) do
     begin
@@ -1499,6 +1522,15 @@ begin
                 LSetBonus.Value
             else if SameText(LSetBonus.AttributeID, 'explosive_damage') then
               Result.TotalExplosiveDamage := Result.TotalExplosiveDamage +
+                LSetBonus.Value
+            else if SameText(LSetBonus.AttributeID, 'repair_skills') then
+              Result.TotalRepairSkills := Result.TotalRepairSkills +
+                LSetBonus.Value
+            else if SameText(LSetBonus.AttributeID, 'skill_duration') then
+              Result.TotalSkillDuration := Result.TotalSkillDuration +
+                LSetBonus.Value
+            else if SameText(LSetBonus.AttributeID, 'skill_health') then
+              Result.TotalSkillHealth := Result.TotalSkillHealth +
                 LSetBonus.Value;
           end;
         end;
