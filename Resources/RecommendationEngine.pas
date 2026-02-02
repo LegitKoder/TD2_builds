@@ -717,7 +717,6 @@ var
       // piece count check
       // Try 1, 2, 3 (or 4 for GearSets) pieces of this set
       var LMax := GetMaxPieceCount(LSet.SetType);
-      if LNewNinja then Dec(LMax); // Only need N-1 pieces for same bonus
 
       for LCount := 1 to Min(ARemainingSlots, LMax) do
       begin
@@ -726,7 +725,7 @@ var
         for var j := 1 to LCount do ACurrentComposition.Add(LSet);
         FindCompositionsRecursive(i + 1, ARemainingSlots - LCount, ACurrentComposition,
           AExoticCount + IfThen(LSet.SetType = stExoticSet, 1, 0), LNewNinja);
-        for var j := 1 to LCount do ACurrentComposition.RemoveAt(ACurrentComposition.Count - 1);
+        for var j := 1 to LCount do ACurrentComposition.Delete(ACurrentComposition.Count - 1);
       end;
     end;
   end;
@@ -782,9 +781,16 @@ begin
 
         if FindBestAttributesForPiece(LGearPiece, AArchetype) then
         begin
-          // For now, just keep one "best" piece per set/slot
-          if not LGroup.Pieces.ContainsKey(LGearPiece.ItemType) then
-             LGroup.Pieces.Add(LGearPiece.ItemType, LGearPiece);
+          // Prioritize Named/Exotic pieces for the same slot
+          var Existing: TGearPiece;
+          var ShouldReplace := not LGroup.Pieces.TryGetValue(LGearPiece.ItemType, Existing);
+          if not ShouldReplace then
+            // Replace standard brand with named/exotic if found
+            ShouldReplace := (LGearPiece.SetType in [stNamedSet, stExoticSet]) and
+                           (Existing.SetType = stBrandSet);
+
+          if ShouldReplace then
+             LGroup.Pieces.AddOrSetValue(LGearPiece.ItemType, LGearPiece);
         end;
       end;
     end;
@@ -825,15 +831,21 @@ procedure TRecommendationEngine.AssignPiecesRecursive(var ACurrentBuild: TGearLo
   ACurrentSlot: TItemType; const AComposition: TList<TSetGroup>;
   const AArchetype: TBuildArchetype; var ABuildsFound: Integer;
   const AMaxBuilds: Integer; AHasNinjaBike: Boolean);
+type
+  TSetOccurence = record
+    Grp: TSetGroup;
+    Count: Integer;
+  end;
 var
-  i: Integer;
-  LGroup: TSetGroup;
-  LUsedIndices: TList<Integer>;
+  LOccurrences: TList<TSetOccurence>;
+  LSetCounts: TDictionary<string, Integer>;
+  LGrp: TSetGroup;
+  LOcc: TSetOccurence;
 
-  procedure AssignRecursiveInternal(Slot: TItemType; UsedMask: Integer);
+  procedure AssignRecursiveInternal(Slot: TItemType);
   var
     idx: Integer;
-    Grp: TSetGroup;
+    Occ: TSetOccurence;
   begin
     if ABuildsFound >= AMaxBuilds then Exit;
 
@@ -847,22 +859,57 @@ var
       Exit;
     end;
 
-    for idx := 0 to AComposition.Count - 1 do
+    for idx := 0 to LOccurrences.Count - 1 do
     begin
-      if (UsedMask and (1 shl idx)) <> 0 then Continue;
-
-      Grp := AComposition[idx];
-      if Grp.Pieces.ContainsKey(Slot) then
+      Occ := LOccurrences[idx];
+      if (Occ.Count > 0) and Occ.Grp.Pieces.ContainsKey(Slot) then
       begin
-        ACurrentBuild.GearPieces[Slot] := Grp.Pieces[Slot];
-        AssignRecursiveInternal(Succ(Slot), UsedMask or (1 shl idx));
+        ACurrentBuild.GearPieces[Slot] := Occ.Grp.Pieces[Slot];
+
+        // Use local copy to avoid modifying original during recursion
+        Occ.Count := Occ.Count - 1;
+        LOccurrences[idx] := Occ;
+
+        AssignRecursiveInternal(Succ(Slot));
+
+        // Backtrack
+        Occ.Count := Occ.Count + 1;
+        LOccurrences[idx] := Occ;
+
         if ABuildsFound >= AMaxBuilds then Exit;
       end;
     end;
   end;
 
 begin
-  AssignRecursiveInternal(itMask, 0);
+  LOccurrences := TList<TSetOccurence>.Create;
+  LSetCounts := TDictionary<string, Integer>.Create;
+  try
+    for LGrp in AComposition do
+    begin
+       if LSetCounts.ContainsKey(LGrp.SetName) then
+         LSetCounts[LGrp.SetName] := LSetCounts[LGrp.SetName] + 1
+       else
+         LSetCounts.Add(LGrp.SetName, 1);
+    end;
+
+    for LGrp in AComposition do
+    begin
+       var Found := False;
+       for LOcc in LOccurrences do if LOcc.Grp = LGrp then begin Found := True; Break; end;
+       if not Found then
+       begin
+         LOcc.Grp := LGrp;
+         LOcc.Count := LSetCounts[LGrp.SetName];
+         LOccurrences.Add(LOcc);
+       end;
+    end;
+
+    AssignRecursiveInternal(itMask);
+  finally
+    LSetCounts.Free;
+    LOccurrences.Free;
+  end;
 end;
 
 procedure TRecommendationEngine.GenerateBuildsRecursive(
