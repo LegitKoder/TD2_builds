@@ -75,6 +75,8 @@ begin
       Result := Result + AggStats.TotalSkillDamage * Weight
     else if ContainsText(NormAttr, 'statuseffects') then
       Result := Result + AggStats.TotalStatusEffects * Weight
+    else if ContainsText(NormAttr, 'skilltier') then
+      Result := Result + AggStats.TotalSkillTier * Weight
 
     // Crit / HSD
     else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'chance') then

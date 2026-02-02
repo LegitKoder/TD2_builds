@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, System.Generics.Defaults,
-  Game.Types, Game.JsonIterator, System.StrUtils, CalcEngine;
+  Game.Types, Game.JsonIterator, System.StrUtils, CalcEngine, System.Math;
 
 type
   TBuildArchetype = record
@@ -19,6 +19,15 @@ type
     RequiredExotics: TArray<string>;
     AllowedBrandSets: TList<string>;
     AttributeWeights: TDictionary<string, Double>;
+  end;
+
+  TSetGroup = class
+    SetName: string;
+    SetType: TSetType;
+    SetWeight: Double;
+    Pieces: TDictionary<TItemType, TGearPiece>;
+    constructor Create;
+    destructor Destroy; override;
   end;
 
   TRecommendationEngine = class
@@ -39,8 +48,17 @@ type
       const AGearPool: TDictionary<TItemType, TList<TGearPiece>>;
       const ARequiredBrands: TDictionary<string, Integer>;
       const ABrandCounts: TDictionary<string, Integer>;
-      const AMaxBuilds: Integer);
+      const AMaxBuilds: Integer;
+      AHasNinjaBike: Boolean);
     function FindBestAttributesForPiece(var AGearPiece: TGearPiece; const AArchetype: TBuildArchetype): Boolean;
+
+    // Set-Based Combination Engine
+    procedure GenerateBuildsSetBased(const AArchetype: TBuildArchetype;
+      const AWeights: TDictionary<string, Double>; const AMaxBuilds: Integer);
+    procedure AssignPiecesRecursive(var ACurrentBuild: TGearLoadout;
+      ACurrentSlot: TItemType; const AComposition: TList<TSetGroup>;
+      const AArchetype: TBuildArchetype; var ABuildsFound: Integer;
+      const AMaxBuilds: Integer; AHasNinjaBike: Boolean);
   public
     constructor Create(ADataIterator: TDataJsonIterator);
     destructor Destroy; override;
@@ -65,10 +83,11 @@ end;
 
 function BrandRequirementsStillPossible(
   const Counts, Required: TDictionary<string, Integer>;
-  RemainingSlots: Integer): Boolean;
+  RemainingSlots: Integer; AHasNinjaBike: Boolean): Boolean;
 var
   Pair: TPair<string, Integer>;
   Current: Integer;
+  Effective: Integer;
 begin
   if (Required = nil) or (Required.Count = 0) then
     Exit(True);
@@ -77,7 +96,11 @@ begin
   begin
     if not Assigned(Counts) or not Counts.TryGetValue(Pair.Key, Current) then
       Current := 0;
-    if Current + RemainingSlots < Pair.Value then
+
+    Effective := Current;
+    if AHasNinjaBike and (Effective > 0) then Inc(Effective);
+
+    if Effective + RemainingSlots < Pair.Value then
       Exit(False);
   end;
   Result := True;
@@ -106,6 +129,19 @@ begin
   end;
 end;
 
+{ TSetGroup }
+
+constructor TSetGroup.Create;
+begin
+  Pieces := TDictionary<TItemType, TGearPiece>.Create;
+end;
+
+destructor TSetGroup.Destroy;
+begin
+  Pieces.Free;
+  inherited;
+end;
+
 { TRecommendationEngine }
 
 constructor TRecommendationEngine.Create(ADataIterator: TDataJsonIterator);
@@ -131,28 +167,37 @@ var
 begin
   FGeneratedBuilds.Clear;
   FSearchIterations := 0;
-  LInitialBuild := Default(TGearLoadout);
-  LRequiredBrands := CloneBrandRequirements(AArchetype.RequiredBrandSets);
-  // Always create counts dictionary to track max piece limits
-  LBrandCounts := TDictionary<string, Integer>.Create(TIStringComparer.Ordinal);
 
-  PreFilterGear(AArchetype, LGearPool, AWeights);
-  try
-    LMaxBuilds := 25;
-    if Assigned(AWeights) and (AWeights.Count > 0) then
-      LMaxBuilds := 100; // explore more combos when we need to rank by attributes
-    GenerateBuildsRecursive(LInitialBuild, itMask, AArchetype, LGearPool,
-      LRequiredBrands, LBrandCounts, LMaxBuilds);
-    Result := TList<TGearLoadout>.Create;
-    for var Build in FGeneratedBuilds do
-      Result.Add(Build);
-  finally
-    for var LItemType in LGearPool.Keys do
-      LGearPool[LItemType].Free;
-    LGearPool.Free;
-    LBrandCounts.Free;
-    LRequiredBrands.Free;
+  LMaxBuilds := 50;
+  if Assigned(AWeights) and (AWeights.Count > 0) then
+  begin
+    LMaxBuilds := 200;
+    // Use the new Set-Based engine for weighted optimization
+    GenerateBuildsSetBased(AArchetype, AWeights, LMaxBuilds);
   end;
+
+  // If set-based didn't find enough or we want a fallback/general search
+  if FGeneratedBuilds.Count < 10 then
+  begin
+    LInitialBuild := Default(TGearLoadout);
+    LRequiredBrands := CloneBrandRequirements(AArchetype.RequiredBrandSets);
+    LBrandCounts := TDictionary<string, Integer>.Create(TIStringComparer.Ordinal);
+    PreFilterGear(AArchetype, LGearPool, AWeights);
+    try
+      GenerateBuildsRecursive(LInitialBuild, itMask, AArchetype, LGearPool,
+        LRequiredBrands, LBrandCounts, LMaxBuilds, False);
+    finally
+      for var LItemType in LGearPool.Keys do
+        LGearPool[LItemType].Free;
+      LGearPool.Free;
+      LBrandCounts.Free;
+      LRequiredBrands.Free;
+    end;
+  end;
+
+  Result := TList<TGearLoadout>.Create;
+  for var Build in FGeneratedBuilds do
+    Result.Add(Build);
 end;
 
 procedure TRecommendationEngine.PreFilterGear(const AArchetype: TBuildArchetype;
@@ -319,15 +364,29 @@ begin
 
         // Heuristic Beam Search / Optimization:
         // Limit the pool to the top K candidates per slot to prevent combinatorial explosion.
-        // If we have weights, we only care about the best-fitting items.
-        // Keeping top 15 ensures 15^6 = ~11 million combinations max, which is manageable
-        // with the FSearchIterations limit and pruning. Unbounded lists (e.g. 50 items) cause freezes.
-        if AGearPool[LItemType].Count > 15 then
+        // We keep more candidates for slots that typically define a build (Chest/Backpack).
+        var LLimit := 15;
+        if (LItemType = itChest) or (LItemType = itBackpack) then
+          LLimit := 25;
+
+        if AGearPool[LItemType].Count > LLimit then
         begin
-          AGearPool[LItemType].Count := 15; // Truncate the list efficiently
-          // Note: TList.Count setter truncates the list and frees items if OwnsObjects is true.
-          // TDictionary<..., TList<...>> usually owns the list, but the list itself might not own TGearPiece if they are records.
-          // TGearPiece is a record, so no memory leak from truncation.
+          // Ensure we don't truncate Exotics that might be important
+          var LNewList := TList<TGearPiece>.Create;
+          try
+            for var i := 0 to AGearPool[LItemType].Count - 1 do
+            begin
+              var LGear := AGearPool[LItemType][i];
+              if (LNewList.Count < LLimit) or (LGear.SetType = stExoticSet) then
+                LNewList.Add(LGear);
+
+              if LNewList.Count >= 40 then Break; // Absolute cap
+            end;
+            AGearPool[LItemType].Clear;
+            AGearPool[LItemType].AddRange(LNewList);
+          finally
+            LNewList.Free;
+          end;
         end;
       end;
   finally
@@ -342,15 +401,18 @@ var
   LCount: Integer;
   LBrandName: string;
   LExoticCount: Integer;
+  LHasNinjaBike: Boolean;
 begin
   LBrandSetCounts := TDictionary<string, Integer>.Create(TIStringComparer.Ordinal);
   try
+    LHasNinjaBike := False;
     for LGearPiece in ABuild.GearPieces do
     begin
+      if SameText(LGearPiece.Name, 'NinjaBike Messenger Backpack') then
+        LHasNinjaBike := True;
+
       if LGearPiece.SetName <> '' then
       begin
-//        LBrandSetCounts.TryGetValue(LGearPiece.SetName, LCount);
-//        LBrandSetCounts.AddOrSetValue(LGearPiece.SetName, LCount + 1);
         LBrandName := CalcEngine.CanonicalSetName(LGearPiece.SetName);
         if LBrandName <> '' then
         begin
@@ -364,8 +426,14 @@ begin
     if Assigned(AArchetype.RequiredBrandSets) then
       for LBrandName in AArchetype.RequiredBrandSets.Keys do
       begin
-        if not LBrandSetCounts.TryGetValue(LBrandName, LCount)
-           or (LCount < AArchetype.RequiredBrandSets[LBrandName]) then
+        if not LBrandSetCounts.TryGetValue(LBrandName, LCount) then
+          LCount := 0;
+
+        // Account for NinjaBike bonus
+        if LHasNinjaBike and (LCount > 0) then
+          Inc(LCount);
+
+        if (LCount < AArchetype.RequiredBrandSets[LBrandName]) then
         begin
           Result := False;
           Exit;
@@ -582,20 +650,237 @@ begin
   end;
 end;
 
+procedure TRecommendationEngine.GenerateBuildsSetBased(const AArchetype: TBuildArchetype;
+  const AWeights: TDictionary<string, Double>; const AMaxBuilds: Integer);
+var
+  LSets: TObjectDictionary<string, TSetGroup>;
+  LRelevantSets: TList<TSetGroup>;
+  LBrandSet: TPieceSet;
+  LGearPiece: TGearPiece;
+  LSetName: string;
+  LGroup: TSetGroup;
+  LCoreDef: TCoreAttributeDefinition;
+  LFixedDef: TFixedMinorAttributeDefinition;
+  LIdx: Integer;
+  LMaxExotics: Integer;
+
+  function GetSetWeight(const SetName: string; const Bonuses: TArray<TSetBonus>): Double;
+  var
+    SB: TSetBonus;
+    Key: string;
+    Denom: Integer;
+    NormAttr, NormKey: string;
+  begin
+    Result := 0;
+    if (AWeights = nil) or (AWeights.Count = 0) then Exit;
+    for SB in Bonuses do
+    begin
+      if SB.AttributeID = '' then Continue;
+      NormAttr := NormalizeAttrId(SB.AttributeID);
+      for Key in AWeights.Keys do
+      begin
+        NormKey := NormalizeAttrId(Key);
+        if (NormAttr <> '') and ((NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr))) then
+        begin
+          Denom := SB.ItemsRequired;
+          if Denom <= 0 then Denom := 1;
+          Result := Result + (SB.Value / Denom) * AWeights[Key];
+        end;
+      end;
+    end;
+  end;
+
+  procedure FindCompositionsRecursive(AStartIndex: Integer; ARemainingSlots: Integer;
+    ACurrentComposition: TList<TSetGroup>; AExoticCount: Integer; AHasNinja: Boolean);
+  var
+    i, LCount, LNeededSlots: Integer;
+    LSet: TSetGroup;
+    LNewNinja: Boolean;
+  begin
+    if ARemainingSlots = 0 then
+    begin
+      // Valid composition found, now assign to slots
+      var LBuild := Default(TGearLoadout);
+      var LFoundInAssign := 0;
+      AssignPiecesRecursive(LBuild, itMask, ACurrentComposition, AArchetype, LFoundInAssign, AMaxBuilds, AHasNinja);
+      Exit;
+    end;
+
+    if FSearchIterations > 100000 then Exit;
+    Inc(FSearchIterations);
+
+    for i := AStartIndex to LRelevantSets.Count - 1 do
+    begin
+      LSet := LRelevantSets[i];
+      LNewNinja := AHasNinja or SameText(LSet.SetName, 'NinjaBike Messenger Backpack');
+
+      // piece count check
+      // Try 1, 2, 3 (or 4 for GearSets) pieces of this set
+      var LMax := GetMaxPieceCount(LSet.SetType);
+      if LNewNinja then Dec(LMax); // Only need N-1 pieces for same bonus
+
+      for LCount := 1 to Min(ARemainingSlots, LMax) do
+      begin
+        if (LSet.SetType = stExoticSet) and (AExoticCount > 0) then Break;
+
+        for var j := 1 to LCount do ACurrentComposition.Add(LSet);
+        FindCompositionsRecursive(i + 1, ARemainingSlots - LCount, ACurrentComposition,
+          AExoticCount + IfThen(LSet.SetType = stExoticSet, 1, 0), LNewNinja);
+        for var j := 1 to LCount do ACurrentComposition.RemoveAt(ACurrentComposition.Count - 1);
+      end;
+    end;
+  end;
+
+begin
+  LSets := TObjectDictionary<string, TSetGroup>.Create([doOwnsValues]);
+  LRelevantSets := TList<TSetGroup>.Create;
+  try
+    // 1. Group pieces and calculate weights
+    for LBrandSet in FDataIterator.AllPieceSetDefinitions.Values do
+    begin
+      LSetName := CalcEngine.CanonicalSetName(LBrandSet.Name);
+      if not LSets.TryGetValue(LSetName, LGroup) then
+      begin
+        LGroup := TSetGroup.Create;
+        LGroup.SetName := LSetName;
+        LGroup.SetType := LBrandSet.SetType;
+        LGroup.SetWeight := GetSetWeight(LSetName, LBrandSet.Bonuses);
+        LSets.Add(LSetName, LGroup);
+      end;
+
+      for var LPart in LBrandSet.Parts do
+      begin
+        FillChar(LGearPiece, SizeOf(LGearPiece), 0);
+        LGearPiece.SetName := LSetName;
+        LGearPiece.Name := LPart.Name;
+        LGearPiece.ItemType := LPart.GearSlot;
+        LGearPiece.SetType := LBrandSet.SetType;
+        LGearPiece.Talent := LPart.Talent;
+        LGearPiece.Bonuses := Copy(LBrandSet.Bonuses, 0, Length(LBrandSet.Bonuses));
+        LGearPiece.MinorAttributeSlotCount := LPart.MinorAttributeSlotCount;
+
+        if (LPart.CoreAttributeID <> '') and Assigned(FDataIterator.CoreAttributeDefinitions) and
+          FDataIterator.CoreAttributeDefinitions.TryGetValue(LPart.CoreAttributeID, LCoreDef) then
+        begin
+          LGearPiece.CoreAttribute.ID := LCoreDef.ID;
+          LGearPiece.CoreAttribute.TypeName := LCoreDef.TypeName;
+          LGearPiece.CoreAttribute.Value := LCoreDef.Value;
+          LGearPiece.CoreAttribute.AttrType := StrToCoreAttributeType(LCoreDef.ID);
+        end;
+
+        if Length(LPart.FixedMinorAttributeIDs) > 0 then
+        begin
+          SetLength(LGearPiece.FixedMinorAttributes, Length(LPart.FixedMinorAttributeIDs));
+          for LIdx := 0 to High(LPart.FixedMinorAttributeIDs) do
+            if Assigned(FDataIterator.FixedMinorAttributeDefinitions) and
+               FDataIterator.FixedMinorAttributeDefinitions.TryGetValue(LPart.FixedMinorAttributeIDs[LIdx], LFixedDef) then
+              LGearPiece.FixedMinorAttributes[LIdx] := LFixedDef;
+        end;
+
+        if (LBrandSet.SetType = stNamedSet) and (Length(LBrandSet.Bonuses) > 0) and (LBrandSet.Bonuses[0].BonusType = sbtTalent) then
+           LGearPiece.Talent := LBrandSet.Bonuses[0].Description;
+
+        if FindBestAttributesForPiece(LGearPiece, AArchetype) then
+        begin
+          // For now, just keep one "best" piece per set/slot
+          if not LGroup.Pieces.ContainsKey(LGearPiece.ItemType) then
+             LGroup.Pieces.Add(LGearPiece.ItemType, LGearPiece);
+        end;
+      end;
+    end;
+
+    // 2. Filter relevant sets
+    for LGroup in LSets.Values do
+    begin
+      if (LGroup.SetWeight > 0) or (LGroup.SetType = stExoticSet) or
+         SameText(LGroup.SetName, 'NinjaBike Messenger Backpack') then
+        LRelevantSets.Add(LGroup);
+    end;
+
+    // Sort by weight
+    LRelevantSets.Sort(TComparer<TSetGroup>.Construct(
+      function(const L, R: TSetGroup): Integer
+      begin
+        Result := CompareValue(R.SetWeight, L.SetWeight);
+      end));
+
+    // Limit to top 30 sets to keep combinations manageable
+    if LRelevantSets.Count > 30 then LRelevantSets.Count := 30;
+
+    // 3. Find Combinations
+    var LComp := TList<TSetGroup>.Create;
+    try
+      FindCompositionsRecursive(0, 6, LComp, 0, False);
+    finally
+      LComp.Free;
+    end;
+
+  finally
+    LRelevantSets.Free;
+    LSets.Free;
+  end;
+end;
+
+procedure TRecommendationEngine.AssignPiecesRecursive(var ACurrentBuild: TGearLoadout;
+  ACurrentSlot: TItemType; const AComposition: TList<TSetGroup>;
+  const AArchetype: TBuildArchetype; var ABuildsFound: Integer;
+  const AMaxBuilds: Integer; AHasNinjaBike: Boolean);
+var
+  i: Integer;
+  LGroup: TSetGroup;
+  LUsedIndices: TList<Integer>;
+
+  procedure AssignRecursiveInternal(Slot: TItemType; UsedMask: Integer);
+  var
+    idx: Integer;
+    Grp: TSetGroup;
+  begin
+    if ABuildsFound >= AMaxBuilds then Exit;
+
+    if Slot > itKneepads then
+    begin
+      if MeetsBuildRequirements(ACurrentBuild, AArchetype) and IsValidGearSetCombination(ACurrentBuild) then
+      begin
+        FGeneratedBuilds.Add(ACurrentBuild);
+        Inc(ABuildsFound);
+      end;
+      Exit;
+    end;
+
+    for idx := 0 to AComposition.Count - 1 do
+    begin
+      if (UsedMask and (1 shl idx)) <> 0 then Continue;
+
+      Grp := AComposition[idx];
+      if Grp.Pieces.ContainsKey(Slot) then
+      begin
+        ACurrentBuild.GearPieces[Slot] := Grp.Pieces[Slot];
+        AssignRecursiveInternal(Succ(Slot), UsedMask or (1 shl idx));
+        if ABuildsFound >= AMaxBuilds then Exit;
+      end;
+    end;
+  end;
+
+begin
+  AssignRecursiveInternal(itMask, 0);
+end;
+
 procedure TRecommendationEngine.GenerateBuildsRecursive(
   var ACurrentBuild: TGearLoadout; ACurrentSlot: TItemType;
   const AArchetype: TBuildArchetype;
   const AGearPool: TDictionary<TItemType, TList<TGearPiece>>;
   const ARequiredBrands: TDictionary<string, Integer>;
   const ABrandCounts: TDictionary<string, Integer>;
-  const AMaxBuilds: Integer);
+  const AMaxBuilds: Integer;
+  AHasNinjaBike: Boolean);
 var
   LGearPiece: TGearPiece;
   LNextSlot: TItemType;
-  LBrandTracked: Boolean;
   LCount: Integer;
+  LEffectiveCount: Integer;
   LRemainingSlots: Integer;
   LBrandKey: string;
+  LNewNinjaBike: Boolean;
 begin
   if FGeneratedBuilds.Count >= AMaxBuilds then
     Exit;
@@ -617,41 +902,56 @@ begin
     if FGeneratedBuilds.Count >= AMaxBuilds then
       Exit;
 
-    // Check Max Piece Limit
-    // Note: LGearPiece.SetName is already canonicalized in PreFilterGear
     LBrandKey := LGearPiece.SetName;
     if not ABrandCounts.TryGetValue(LBrandKey, LCount) then
       LCount := 0;
 
-    if LCount >= GetMaxPieceCount(LGearPiece.SetType) then
+    // NinjaBike check
+    LNewNinjaBike := AHasNinjaBike or SameText(LGearPiece.Name, 'NinjaBike Messenger Backpack');
+
+    // Piece limit check (Brand=3, GearSet=4)
+    LEffectiveCount := LCount;
+    if LNewNinjaBike and (LEffectiveCount > 0) then Inc(LEffectiveCount);
+
+    if LEffectiveCount >= GetMaxPieceCount(LGearPiece.SetType) then
       Continue;
 
-    // Place la pièce dans le slot courant
-    ACurrentBuild.GearPieces[ACurrentSlot] := LGearPiece;
+    // Exotic check (only one gear exotic)
+    if (LGearPiece.SetType = stExoticSet) then
+    begin
+       var LAlreadyHasExotic := False;
+       for var i := itMask to Pred(ACurrentSlot) do
+         if ACurrentBuild.GearPieces[i].SetType = stExoticSet then
+         begin
+           LAlreadyHasExotic := True;
+           Break;
+         end;
+       if LAlreadyHasExotic then Continue;
+    end;
 
-    // Track du nombre de pièces de ce brand
+    ACurrentBuild.GearPieces[ACurrentSlot] := LGearPiece;
     ABrandCounts.AddOrSetValue(LBrandKey, LCount + 1);
 
-    // Slots restants après celui-ci
     LRemainingSlots := Ord(itKneepads) - Ord(ACurrentSlot);
 
-    if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots) and
-       not PotentialGearSetIssues(ABrandCounts, LRemainingSlots) then
+    // Pruning
+    if BrandRequirementsStillPossible(ABrandCounts, ARequiredBrands, LRemainingSlots, LNewNinjaBike) then
     begin
       if ACurrentSlot < itKneepads then
       begin
         LNextSlot := Succ(ACurrentSlot);
         GenerateBuildsRecursive(ACurrentBuild, LNextSlot, AArchetype,
-          AGearPool, ARequiredBrands, ABrandCounts, AMaxBuilds);
+          AGearPool, ARequiredBrands, ABrandCounts, AMaxBuilds, LNewNinjaBike);
       end
       else
       begin
         if IsValidGearSetCombination(ACurrentBuild) and MeetsBuildRequirements(ACurrentBuild, AArchetype) then
+        begin
           FGeneratedBuilds.Add(ACurrentBuild);
+        end;
       end;
     end;
 
-    // Backtrack Count
     if ABrandCounts.TryGetValue(LBrandKey, LCount) then
     begin
       if LCount <= 1 then
