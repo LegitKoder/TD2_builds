@@ -64,15 +64,16 @@ begin
   for WeightKey in Weights.Keys do
   begin
     Weight := Weights[WeightKey];
-    NormWeightKey := NormalizeAttrKey(WeightKey);
+    NormWeightKey := NormalizeAttrId(WeightKey);
 
     // Recherche de la statistique correspondante (on autorise un match partiel pour plus de flexibilité)
     for StatKey in ADynamicStats.Keys do
     begin
-      NormStatKey := NormalizeAttrKey(StatKey);
-      if (NormStatKey = NormWeightKey) or
-         (NormStatKey.Contains(NormWeightKey)) or
-         (NormWeightKey.Contains(NormStatKey)) then
+      NormStatKey := NormalizeAttrId(StatKey);
+      if (NormStatKey <> '') and
+         ((NormStatKey = NormWeightKey) or
+          (NormStatKey.Contains(NormWeightKey)) or
+          (NormWeightKey.Contains(NormStatKey))) then
       begin
         StatValue := ADynamicStats[StatKey];
         Result := Result + (StatValue * Weight);
