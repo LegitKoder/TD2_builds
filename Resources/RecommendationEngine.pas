@@ -300,7 +300,9 @@ begin
             Continue;
         end;
 
-        // Strict Filter: Reject items that do not match the required core attribute for this slot
+        // Relaxed Filter: Only reject if the piece cannot naturally match AND we are not allow recalibration
+        // For now, let's keep it but ensure we don't block all pieces if the archetype is too strict.
+        // Actually, many builds rely on specific cores. We'll keep the filter but ensure the pools aren't empty.
         if Assigned(AArchetype.RequiredCoreAttribute) and
            AArchetype.RequiredCoreAttribute.ContainsKey(LPart.GearSlot) then
         begin
@@ -696,17 +698,43 @@ var
     i, LCount, LNeededSlots: Integer;
     LSet: TSetGroup;
     LNewNinja: Boolean;
+    LCurrentExoticCount: Integer;
   begin
     if ARemainingSlots = 0 then
     begin
-      // Valid composition found, now assign to slots
+      // 1. Verify Brand Requirements against this composition (Pruning)
+      if Assigned(AArchetype.RequiredBrandSets) and (AArchetype.RequiredBrandSets.Count > 0) then
+      begin
+        var LCompCounts := TDictionary<string, Integer>.Create(TIStringComparer.Ordinal);
+        try
+          for var GRP in ACurrentComposition do
+            LCompCounts.AddOrSetValue(GRP.SetName, LCompCounts.GetValueOrDefault(GRP.SetName) + 1);
+
+          var LReqMet := True;
+          for var Pair in AArchetype.RequiredBrandSets do
+          begin
+            var LCount := LCompCounts.GetValueOrDefault(Pair.Key);
+            if AHasNinja and (LCount > 0) then Inc(LCount);
+            if LCount < Pair.Value then
+            begin
+              LReqMet := False;
+              Break;
+            end;
+          end;
+          if not LReqMet then Exit;
+        finally
+          LCompCounts.Free;
+        end;
+      end;
+
+      // 2. Valid composition found, now assign to slots
       var LBuild := Default(TGearLoadout);
       var LFoundInAssign := 0;
       AssignPiecesRecursive(LBuild, itMask, ACurrentComposition, AArchetype, LFoundInAssign, AMaxBuilds, AHasNinja);
       Exit;
     end;
 
-    if FSearchIterations > 100000 then Exit;
+    if FSearchIterations > 200000 then Exit;
     Inc(FSearchIterations);
 
     for i := AStartIndex to LRelevantSets.Count - 1 do
@@ -714,18 +742,27 @@ var
       LSet := LRelevantSets[i];
       LNewNinja := AHasNinja or SameText(LSet.SetName, 'NinjaBike Messenger Backpack');
 
+      LCurrentExoticCount := AExoticCount;
+      if (LSet.SetType = stExoticSet) then Inc(LCurrentExoticCount);
+
+      if LCurrentExoticCount > 1 then Continue; // Only 1 exotic gear allowed
+
       // piece count check
       // Try 1, 2, 3 (or 4 for GearSets) pieces of this set
       var LMax := GetMaxPieceCount(LSet.SetType);
 
-      for LCount := 1 to Min(ARemainingSlots, LMax) do
-      begin
-        if (LSet.SetType = stExoticSet) and (AExoticCount > 0) then Break;
+      // Heuristic: if we have NinjaBike, we rarely want more than 3 pieces of a brand (which would be 4)
+      // or more than 2 pieces of a GearSet (which would be 3).
+      // But let's stay flexible.
 
+      for LCount := Min(ARemainingSlots, LMax) downto 1 do
+      begin
         for var j := 1 to LCount do ACurrentComposition.Add(LSet);
         FindCompositionsRecursive(i + 1, ARemainingSlots - LCount, ACurrentComposition,
-          AExoticCount + IfThen(LSet.SetType = stExoticSet, 1, 0), LNewNinja);
+          LCurrentExoticCount, LNewNinja);
         for var j := 1 to LCount do ACurrentComposition.Delete(ACurrentComposition.Count - 1);
+
+        if FGeneratedBuilds.Count >= AMaxBuilds then Exit;
       end;
     end;
   end;
@@ -781,13 +818,30 @@ begin
 
         if FindBestAttributesForPiece(LGearPiece, AArchetype) then
         begin
-          // Prioritize Named/Exotic pieces for the same slot
+          // Piece Scoring: how well does this piece match the archetype?
+          var LScore: Double := 0;
+          if Assigned(AWeights) then
+          begin
+            for var K in AWeights.Keys do
+            begin
+              var NK := NormalizeAttrId(K);
+              // Fixed attrs
+              for var FA in LGearPiece.FixedMinorAttributes do
+                if NormalizeAttrId(FA.ID).Contains(NK) then LScore := LScore + FA.Value * AWeights[K];
+              // Core attr
+              if NormalizeAttrId(LGearPiece.CoreAttribute.ID).Contains(NK) then LScore := LScore + LGearPiece.CoreAttribute.Value * AWeights[K];
+            end;
+          end;
+
           var Existing: TGearPiece;
           var ShouldReplace := not LGroup.Pieces.TryGetValue(LGearPiece.ItemType, Existing);
           if not ShouldReplace then
-            // Replace standard brand with named/exotic if found
-            ShouldReplace := (LGearPiece.SetType in [stNamedSet, stExoticSet]) and
-                           (Existing.SetType = stBrandSet);
+          begin
+             // Replace if new piece has better score or is a high-priority type (Exotic/Named)
+             if LScore > 0 then ShouldReplace := True; // Simple heuristic: any score is better than 0
+             if (LGearPiece.SetType in [stNamedSet, stExoticSet]) and (Existing.SetType = stBrandSet) then
+               ShouldReplace := True;
+          end;
 
           if ShouldReplace then
              LGroup.Pieces.AddOrSetValue(LGearPiece.ItemType, LGearPiece);
@@ -795,23 +849,30 @@ begin
       end;
     end;
 
-    // 2. Filter relevant sets
+    // 2. Filter relevant sets - Be less restrictive to avoid "No builds found"
     for LGroup in LSets.Values do
     begin
+      // Include weighted sets, exotics, and a reasonable number of "filler" sets
+      // to ensure we can always reach 6 pieces.
       if (LGroup.SetWeight > 0) or (LGroup.SetType = stExoticSet) or
-         SameText(LGroup.SetName, 'NinjaBike Messenger Backpack') then
+         SameText(LGroup.SetName, 'NinjaBike Messenger Backpack') or
+         (LRelevantSets.Count < 40) then // Allow more sets for variety and completeness
         LRelevantSets.Add(LGroup);
     end;
 
-    // Sort by weight
+    // Sort by weight primarily, but ensure variety
     LRelevantSets.Sort(TComparer<TSetGroup>.Construct(
       function(const L, R: TSetGroup): Integer
       begin
+        // Primary: Weight
         Result := CompareValue(R.SetWeight, L.SetWeight);
+        // Secondary: Prefer Named/Exotics if weights are equal (0)
+        if Result = 0 then
+          Result := Ord(R.SetType) - Ord(L.SetType);
       end));
 
-    // Limit to top 30 sets to keep combinations manageable
-    if LRelevantSets.Count > 30 then LRelevantSets.Count := 30;
+    // Limit to top 50 sets to keep combinations manageable but sufficient
+    if LRelevantSets.Count > 50 then LRelevantSets.Count := 50;
 
     // 3. Find Combinations
     var LComp := TList<TSetGroup>.Create;
