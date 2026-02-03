@@ -846,16 +846,13 @@ var
   var
     idx: Integer;
     Occ: TSetOccurence;
+    NextSlot: TItemType;
   begin
     if ABuildsFound >= AMaxBuilds then Exit;
 
-    if Slot > itKneepads then
+    if Slot = itUnknown then
     begin
-      if MeetsBuildRequirements(ACurrentBuild, AArchetype) and IsValidGearSetCombination(ACurrentBuild) then
-      begin
-        FGeneratedBuilds.Add(ACurrentBuild);
-        Inc(ABuildsFound);
-      end;
+      AssignRecursiveInternal(itMask);
       Exit;
     end;
 
@@ -870,7 +867,20 @@ var
         Occ.Count := Occ.Count - 1;
         LOccurrences[idx] := Occ;
 
-        AssignRecursiveInternal(Succ(Slot));
+        if Slot < itKneepads then
+        begin
+          NextSlot := Succ(Slot);
+          AssignRecursiveInternal(NextSlot);
+        end
+        else
+        begin
+          // Reached the end (itKneepads)
+          if MeetsBuildRequirements(ACurrentBuild, AArchetype) and IsValidGearSetCombination(ACurrentBuild) then
+          begin
+            FGeneratedBuilds.Add(ACurrentBuild);
+            Inc(ABuildsFound);
+          end;
+        end;
 
         // Backtrack
         Occ.Count := Occ.Count + 1;
