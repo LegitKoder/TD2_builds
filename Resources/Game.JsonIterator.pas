@@ -562,11 +562,6 @@ begin
   if FTalentImageIndices.TryGetValue(TalentName, Result) then
     Exit;
 
-//  Result := -1;
-  Result := FindDestIndexByKey(NormalizedKey);
-  if Result >= 0 then
-    Exit;
-
   // 2. Resolve Definition
   if not FGearTalentDefinitions.TryGetValue(TalentName.Trim, Def) then
   begin
@@ -579,6 +574,13 @@ begin
   begin
     // Normalize Key: "Talents/Gears/Braced.png" -> "braced"
     NormalizedKey := TPath.GetFileNameWithoutExtension(Def.IconFilename).Trim.ToLower;
+
+    Result := FindDestIndexByKey(NormalizedKey);
+    if Result >= 0 then
+    begin
+      FTalentImageIndices.Add(TalentName, Result);
+      Exit;
+    end;
 
     // A) Check if already in ImageList (Design-time or previously loaded)
     // TSourceCollection.IndexOf is case-insensitive
@@ -989,6 +991,10 @@ var
   LBonus: TSetBonus;
   LBonusAttrID: string;
   LBonusValue: Variant;
+  LAttrPairs: TList<TPair<string, Variant>>;
+  LTitle: string;
+  LDescription: string;
+  LItemsRequired: Integer;
   LWpnFam: TWeaponFamily;
 begin
   AIterator.Recurse;
@@ -996,36 +1002,63 @@ begin
   begin
     if AIterator.&Type = TJsonToken.StartObject then
     begin
-      LBonus := Default (TSetBonus);
       LBonusAttrID := '';
       LBonusValue := Null;
+      LTitle := '';
+      LDescription := '';
+      LItemsRequired := 0;
+      LAttrPairs := TList<TPair<string, Variant>>.Create;
       AIterator.Recurse;
       while AIterator.Next and (AIterator.&Type <> TJsonToken.EndObject) do
       begin
         if SameText(AIterator.Key, 'itemsRequired') then
-          LBonus.ItemsRequired := AIterator.AsInteger
+          LItemsRequired := AIterator.AsInteger
         else if SameText(AIterator.Key, 'attribute') then
           LBonusAttrID := AIterator.AsString
         else if SameText(AIterator.Key, 'value') then
           LBonusValue := AIterator.AsVariant
-        else if not(SameText(AIterator.Key, 'title') or SameText(AIterator.Key,
-          'description')) then
-        begin
-          LBonusAttrID := AIterator.Key;
-          LBonusValue := AIterator.AsVariant;
-        end;
+        else if SameText(AIterator.Key, 'title') then
+          LTitle := AIterator.AsString
+        else if SameText(AIterator.Key, 'description') then
+          LDescription := AIterator.AsString
+        else
+          LAttrPairs.Add(TPair<string, Variant>.Create(AIterator.Key, AIterator.AsVariant));
       end;
       AIterator.Return;
 
-      LBonus.AttributeID := LBonusAttrID;
-      if VarIsNumeric(LBonusValue) then
-        LBonus.Value := LBonusValue
+      // Support the {attribute,value} pair style
+      if (LBonusAttrID <> '') then
+        LAttrPairs.Add(TPair<string, Variant>.Create(LBonusAttrID, LBonusValue));
+
+      if LAttrPairs.Count = 0 then
+      begin
+        // Title/description-only bonus (set talent)
+        LBonus := Default(TSetBonus);
+        LBonus.ItemsRequired := LItemsRequired;
+        LBonus.Title := LTitle;
+        LBonus.Description := LDescription;
+        LBonus.BonusType := sbtTalent;
+        LBonus.WeaponType := wcUnknown;
+        ASet.Bonuses := ASet.Bonuses + [LBonus];
+      end
       else
-        LBonus.Description := VarToStr(LBonusValue);
-      LBonus.BonusType := DetermineBonusType_Parser_Local(LBonusAttrID,
-        LWpnFam);
-      LBonus.WeaponType := LWpnFam;
-      ASet.Bonuses := ASet.Bonuses + [LBonus];
+      begin
+        for var Pair in LAttrPairs do
+        begin
+          LBonus := Default(TSetBonus);
+          LBonus.AttributeID := Pair.Key;
+          if VarIsNumeric(Pair.Value) then
+            LBonus.Value := Pair.Value
+          else
+            LBonus.Description := VarToStr(Pair.Value);
+          LBonus.ItemsRequired := LItemsRequired;
+          LBonus.Title := LTitle;
+          LBonus.BonusType := DetermineBonusType_Parser_Local(LBonus.AttributeID, LWpnFam);
+          LBonus.WeaponType := LWpnFam;
+          ASet.Bonuses := ASet.Bonuses + [LBonus];
+        end;
+      end;
+      LAttrPairs.Free;
     end;
   end;
   AIterator.Return;
@@ -2187,34 +2220,81 @@ begin
       Reader: TJsonTextReader;
       LIterator: TJSONIterator;
     begin
+      LSR := nil;
+      Reader := nil;
+      LIterator := nil;
       try
         LSR := TStringReader.Create(TFile.ReadAllText(AFileName,
           TEncoding.UTF8));
         Reader := TJsonTextReader.Create(LSR);
         LIterator := TJSONIterator.Create(Reader);
-      except
-        on E: Exception do
-        begin
-          TThread.Queue(nil,
-            procedure
-            begin
-              HandleParsingError(Format('Async load failed: %s', [E.Message]));
-            end);
-          Exit;
-        end;
-      end;
-
-      try
-        if LIterator.Next and (LIterator.&Type = TJsonToken.StartObject) then
-        begin
-          LIterator.Recurse;
-          while LIterator.Next and (LIterator.&Type <> TJsonToken.EndObject) do
+        try
+          if LIterator.Next and (LIterator.&Type = TJsonToken.StartObject) then
           begin
-            if SameText(LIterator.Key, 'coreAttributes') then
+            LIterator.Recurse;
+            while LIterator.Next and (LIterator.&Type <> TJsonToken.EndObject) do
             begin
-              // --- This block now parses AND queues the callback ---
-              if LIterator.&Type = TJsonToken.StartArray then
+              if SameText(LIterator.Key, 'coreAttributes') then
               begin
+                // --- This block now parses AND queues the callback ---
+                if LIterator.&Type = TJsonToken.StartArray then
+                begin
+                  LIterator.Recurse;
+                  while LIterator.Next and
+                    (LIterator.&Type <> TJsonToken.EndArray) do
+                  begin
+                    if LIterator.&Type = TJsonToken.StartObject then
+                    begin
+                      // Parse the object into a record directly on this thread
+                      var
+                      LCoreDef := ParseCoreAttributeObject(LIterator);
+                      // New helper
+                      // Queue the callback with the RECORD, not a JSON object
+                      TThread.Queue(nil,
+                        procedure
+                        begin
+                          ACoreAttrCallback(LCoreDef);
+                        end);
+                    end;
+                  end;
+                  LIterator.Return;
+                end;
+              end
+              else if SameText(LIterator.Key, 'fixedMinorAttributes') then
+              begin
+                if LIterator.&Type = TJsonToken.StartArray then
+                begin
+                  var LFixedDefs: TArray<TFixedMinorAttributeDefinition>;
+                  SetLength(LFixedDefs, 0);
+                  LIterator.Recurse;
+                  while LIterator.Next and
+                    (LIterator.&Type <> TJsonToken.EndArray) do
+                  begin
+                    if LIterator.&Type = TJsonToken.StartObject then
+                    begin
+                      var LFixedDef := ParseFixedMinorAttributeObject(LIterator);
+                      LFixedDefs := LFixedDefs + [LFixedDef];
+                    end;
+                  end;
+                  LIterator.Return;
+
+                  TThread.Queue(nil,
+                    procedure
+                    begin
+                      if Assigned(FFixedMinorAttributeDefinitions) then
+                        for var Def in LFixedDefs do
+                          if not Def.ID.IsEmpty then
+                            FFixedMinorAttributeDefinitions.AddOrSetValue(Def.ID, Def);
+                    end);
+                end
+                else
+                  WriteLog(['Warning: \"fixedMinorAttributes\" must be an array. Ignored.']);
+              end
+              else if LIterator.&Type = TJsonToken.StartArray then
+              begin
+                // --- This block now parses AND queues the callback ---
+                var
+                LCategoryKey := LIterator.Key;
                 LIterator.Recurse;
                 while LIterator.Next and
                   (LIterator.&Type <> TJsonToken.EndArray) do
@@ -2223,57 +2303,35 @@ begin
                   begin
                     // Parse the object into a record directly on this thread
                     var
-                    LCoreDef := ParseCoreAttributeObject(LIterator);
-                    // New helper
+                    LSet := ParseSetObject(LIterator,
+                      StrToSetType_Parser(LCategoryKey));
                     // Queue the callback with the RECORD, not a JSON object
                     TThread.Queue(nil,
                       procedure
                       begin
-                        ACoreAttrCallback(LCoreDef);
+                        APieceSetCallback(LSet);
                       end);
                   end;
                 end;
                 LIterator.Return;
               end;
-            end
-            else if SameText(LIterator.Key, 'fixedMinorAttributes') then
-            begin
-              if LIterator.&Type = TJsonToken.StartArray then
-                ParseFixedMinorAttributes(LIterator)
-              else
-                WriteLog(['Warning: \"fixedMinorAttributes\" must be an array. Ignored.']);
-            end
-            else if LIterator.&Type = TJsonToken.StartArray then
-            begin
-              // --- This block now parses AND queues the callback ---
-              var
-              LCategoryKey := LIterator.Key;
-              LIterator.Recurse;
-              while LIterator.Next and
-                (LIterator.&Type <> TJsonToken.EndArray) do
-              begin
-                if LIterator.&Type = TJsonToken.StartObject then
-                begin
-                  // Parse the object into a record directly on this thread
-                  var
-                  LSet := ParseSetObject(LIterator,
-                    StrToSetType_Parser(LCategoryKey));
-                  // Queue the callback with the RECORD, not a JSON object
-                  TThread.Queue(nil,
-                    procedure
-                    begin
-                      APieceSetCallback(LSet);
-                    end);
-                end;
-              end;
-              LIterator.Return;
             end;
+            LIterator.Return;
           end;
-          LIterator.Return;
+        finally
+          LIterator.Free;
+          Reader.Free;
+          LSR.Free;
         end;
-      finally
-        LIterator.Free;
-        LSR.Free;
+      except
+        on E: Exception do
+        begin
+          TThread.Queue(nil,
+            procedure
+            begin
+              HandleParsingError(Format('Async load failed: %s', [E.Message]));
+            end);
+        end;
       end;
     end).Start;
 end;

@@ -197,7 +197,7 @@ type
     Loadouts: TTabItem;
     Builds: TTabItem;
     Grid_Loadouts_options: TGridLayout;
-    ListView1: TListView;
+    BuildsList: TListView;
     GridPanel_Options: TGridPanelLayout;
     Reset: TSpeedButton;
     ListViewAttributes: TListView;
@@ -209,6 +209,31 @@ type
     Layout_W_Header2: TLayout;
     Label2: TLabel;
     Slot_Modifier: TComboBox;
+    SkLabel1: TSkLabel;
+    Layout_w_mod: TGridPanelLayout;
+    W_mod_11: TSpeedButton;
+    W1_mod_12: TSpeedButton;
+    W1_mod_13: TSpeedButton;
+    W1_mod_14: TSpeedButton;
+    Layout_w_mod_1: TGridPanelLayout;
+    W_mod_21: TSpeedButton;
+    W_mod_22: TSpeedButton;
+    W_mod_23: TSpeedButton;
+    W_mod_24: TSpeedButton;
+    Layout_w_mod_2: TGridPanelLayout;
+    W_mod_31: TSpeedButton;
+    W_mod_32: TSpeedButton;
+    W_mod_33: TSpeedButton;
+    W_mod_34: TSpeedButton;
+    LayoutSKillMod0: TGridPanelLayout;
+    S_mod_11: TSpeedButton;
+    S_mod_12: TSpeedButton;
+    S_mod_13: TSpeedButton;
+    LayoutSkillMod1: TGridPanelLayout;
+    S_mod_21: TSpeedButton;
+    S_mod_22: TSpeedButton;
+    S_mod_23: TSpeedButton;
+    LineGear: TLine;
 
     procedure Slot_gPrimaryWeaponClick(Sender: TObject);
     procedure Slot_gSecondaryWeaponClick(Sender: TObject);
@@ -291,7 +316,7 @@ type
     procedure ApplySerializableLoadout(const ALoadout: TSerializableLoadout);
     procedure GenerateAndApplyPredefinedBuild(AArchetypeProc: TBuildArchetypeProc);
     procedure DisplayGeneratedBuilds(ABuilds: TList<TGearLoadout>);
-    procedure ListView1ItemClick(const Sender: TObject; const AItem: TListViewItem);
+    procedure BuildsListItemClick(const Sender: TObject; const AItem: TListViewItem);
     procedure ApplyBuild(const ABuild: TGearLoadout);
     procedure PopulateAttributesList;
     procedure ShowSidePanel(AContext: TCoreAttributeType);
@@ -2298,6 +2323,99 @@ var
   LArchetype: TBuildArchetype;
   LBuildGenerator: TBuildGenerator;
   LBuilds: TList<TGearLoadout>;
+  LCanonicalSetDefs: TDictionary<string, TPieceSet>;
+
+  function AttrMatchesWeights(const AttrId: string; const Weights: TDictionary<string, Double>): Boolean;
+  var
+    NormAttr, NormKey: string;
+    Key: string;
+  begin
+    Result := False;
+    if (Weights = nil) or (Weights.Count = 0) or (AttrId = '') then
+      Exit;
+    NormAttr := NormalizeAttrId(AttrId);
+    if NormAttr = '' then
+      Exit;
+    for Key in Weights.Keys do
+    begin
+      NormKey := NormalizeAttrId(Key);
+      if (NormKey <> '') and ((NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr))) then
+        Exit(True);
+    end;
+  end;
+
+  function BuildMatchesWeights(const B: TGearLoadout; const Weights: TDictionary<string, Double>): Boolean;
+  var
+    EffectiveCounts: TDictionary<string, Integer>;
+    Pair: TPair<string, Integer>;
+    SetDef: TPieceSet;
+    Bonus: TSetBonus;
+  begin
+    Result := True;
+    if (Weights = nil) or (Weights.Count = 0) then
+      Exit;
+
+    // Fixed minor attributes (exotics/named) can satisfy weights with 1 piece
+    for var GP in B.GearPieces do
+      for var Fixed in GP.FixedMinorAttributes do
+        if AttrMatchesWeights(Fixed.ID, Weights) then
+          Exit(True);
+
+    // Set bonuses: require effective counts >= itemsRequired
+    EffectiveCounts := CalcEngine.GetEffectiveSetCounts(B.GearPieces);
+    try
+      for Pair in EffectiveCounts do
+        if LCanonicalSetDefs.TryGetValue(Pair.Key, SetDef) then
+          for Bonus in SetDef.Bonuses do
+            if AttrMatchesWeights(Bonus.AttributeID, Weights) then
+            begin
+              var Required := Bonus.ItemsRequired;
+              if Required <= 0 then
+                Required := 1;
+              if Pair.Value >= Required then
+                Exit(True);
+            end;
+    finally
+      EffectiveCounts.Free;
+    end;
+
+    Result := False;
+  end;
+
+  function BuildHasAnySetBonus(const B: TGearLoadout): Boolean;
+  var
+    Counts: TDictionary<string, Integer>;
+    LHasNinjaBike: Boolean;
+    Pair: TPair<string, Integer>;
+  begin
+    Result := False;
+    Counts := TDictionary<string, Integer>.Create;
+    LHasNinjaBike := False;
+    try
+      for var GP in B.GearPieces do
+      begin
+        if SameText(GP.Name, 'NinjaBike Messenger Backpack') then
+          LHasNinjaBike := True;
+        if GP.SetName <> '' then
+        begin
+          var c: Integer := 0;
+          Counts.TryGetValue(GP.SetName, c);
+          Counts.AddOrSetValue(GP.SetName, c + 1);
+        end;
+      end;
+
+      for Pair in Counts do
+      begin
+        var LEffectiveCount := Pair.Value;
+        if LHasNinjaBike and (LEffectiveCount > 0) then
+          Inc(LEffectiveCount);
+        if LEffectiveCount >= 2 then
+          Exit(True);
+      end;
+    finally
+      Counts.Free;
+    end;
+  end;
 begin
   LArchetype := Default(TBuildArchetype);
   LArchetype.RequiredBrandSets := TDictionary<string, Integer>.Create;
@@ -2309,42 +2427,38 @@ begin
   LArchetype.RequiredWeapons := TDictionary<TWeaponSlot, string>.Create;
   LBuilds := nil;
   LBuildGenerator := nil;
+  LCanonicalSetDefs := nil;
 
   try
     AArchetypeProc(LArchetype);
     LBuildGenerator := TBuildGenerator.Create(DataJsonIterator);
     LBuilds := LBuildGenerator.GenerateBuilds(LArchetype, LArchetype.AttributeWeights);
 
-    // Heuristic: prefer builds that hit set bonus breakpoints (>=2 pieces of any set)
+    // Prefer builds that actually activate the selected attribute(s)
     if (LBuilds <> nil) and (LBuilds.Count > 0) then
     begin
       var Filtered := TList<TGearLoadout>.Create;
+      var UseWeightFilter := Assigned(LArchetype.AttributeWeights) and (LArchetype.AttributeWeights.Count > 0);
+      if UseWeightFilter then
+      begin
+        LCanonicalSetDefs := TDictionary<string, TPieceSet>.Create(TIStringComparer.Ordinal);
+        for var PS in DataJsonIterator.AllPieceSetDefinitions.Values do
+        begin
+          var Key := CalcEngine.CanonicalSetName(PS.Name);
+          if Key <> '' then
+            LCanonicalSetDefs.AddOrSetValue(Key, PS);
+        end;
+      end;
       try
         for var B in LBuilds do
         begin
-          var Counts := TDictionary<string, Integer>.Create;
-          try
-            for var GP in B.GearPieces do
-              if GP.SetName <> '' then
-              begin
-                var c: Integer := 0;
-                Counts.TryGetValue(GP.SetName, c);
-                Counts.AddOrSetValue(GP.SetName, c + 1);
-              end;
-
-            var HasBreakpoint := False;
-            for var Pair in Counts do
-              if Pair.Value >= 2 then
-              begin
-                HasBreakpoint := True;
-                Break;
-              end;
-
-            if HasBreakpoint then
+          if UseWeightFilter then
+          begin
+            if BuildMatchesWeights(B, LArchetype.AttributeWeights) then
               Filtered.Add(B);
-          finally
-            Counts.Free;
-          end;
+          end
+          else if BuildHasAnySetBonus(B) then
+            Filtered.Add(B);
         end;
 
         if Filtered.Count > 0 then
@@ -2356,6 +2470,8 @@ begin
       finally
         if Assigned(Filtered) then
           Filtered.Free;
+        if Assigned(LCanonicalSetDefs) then
+          LCanonicalSetDefs.Free;
       end;
     end;
 
@@ -2389,32 +2505,65 @@ procedure TMainForm.DisplayGeneratedBuilds(ABuilds: TList<TGearLoadout>);
 var
   I: Integer;
   LItem: TListViewItem;
-  LBuildName, LDetails: string;
+  LBuildName, LDetails, LStatText: string;
   LGearPiece: TGearPiece;
   TitleObj, DetailObj: TListItemText;
+  LDynamic: TDictionary<string, Double>;
+  LInput: TFullLoadoutInput;
+  LAttrID: string;
+  LVal: Double;
 begin
   if Assigned(FGeneratedBuilds) then
     FGeneratedBuilds.Free;
   FGeneratedBuilds := ABuilds;
 
-  ListView1.BeginUpdate;
+  BuildsList.BeginUpdate;
   try
-    ListView1.Items.Clear;
+    BuildsList.Items.Clear;
 
     for I := 0 to FGeneratedBuilds.Count - 1 do
     begin
+      // Calcul des stats pour l'affichage du détail
+      FillChar(LInput, SizeOf(LInput), 0);
+      for var k := Low(TItemType) to High(TItemType) do
+        LInput.EquippedGear[k] := FGeneratedBuilds[I].GearPieces[k];
+
+      LDynamic := CalcEngine.AggregateAllStats(LInput, DataJsonIterator.AllPieceSetDefinitions);
+      try
+        LStatText := '';
+        if Assigned(FSelectedAttributeIDs) then
+          for LAttrID in FSelectedAttributeIDs do
+          begin
+            if LDynamic.TryGetValue(LowerCase(LAttrID), LVal) then
+            begin
+               var DisplayName := LAttrID;
+               for var Entry in GetAttributeCatalog do
+                 if SameText(Entry.ID, LAttrID) then begin DisplayName := Entry.DisplayName; Break; end;
+
+               LStatText := LStatText + Format('%s: %.1f, ', [DisplayName, LVal]);
+            end;
+          end;
+        if LStatText <> '' then SetLength(LStatText, Length(LStatText) - 2);
+      finally
+        LDynamic.Free;
+      end;
+
       // Texte principal (titre)
       LBuildName := Format('Build %d (Score: %.1f)', [I + 1, FGeneratedBuilds[I].Score]);
 
-      // Détail : liste des brands/sets trouvés
+      // Détail : liste des brands/sets trouvés + stats cibles
       LDetails := '';
+      if LStatText <> '' then LDetails := '[' + LStatText + '] ';
+
+      var LSets := '';
       for LGearPiece in FGeneratedBuilds[I].GearPieces do
         if LGearPiece.Name <> '' then
-          LDetails := LDetails + LGearPiece.SetName + ', ';
-      if LDetails <> '' then
-        SetLength(LDetails, Length(LDetails) - 2); // enlever la dernière virgule
+          LSets := LSets + LGearPiece.SetName + ', ';
+      if LSets <> '' then SetLength(LSets, Length(LSets) - 2);
 
-      LItem := ListView1.Items.Add;
+      LDetails := LDetails + LSets;
+
+      LItem := BuildsList.Items.Add;
       LItem.Tag := I;
 
       // 1) on remplit quand même Text / Detail au cas où
@@ -2431,13 +2580,13 @@ begin
         DetailObj.Text := LDetails;
     end;
   finally
-    ListView1.EndUpdate;
+    BuildsList.EndUpdate;
   end;
 
   Tab_Loadouts.ActiveTab := Builds;
 end;
 
-procedure TMainForm.ListView1ItemClick(const Sender: TObject; const AItem: TListViewItem);
+procedure TMainForm.BuildsListItemClick(const Sender: TObject; const AItem: TListViewItem);
 var
   LIndex: Integer;
 begin
@@ -2549,7 +2698,7 @@ begin
   FGeneratedBuilds := nil;
   FAttributeInfos := TList<TAttributeCatalogEntry>.Create;
   FSelectedAttributeIDs := TList<string>.Create;
-  ListView1.OnItemClick := ListView1ItemClick;
+  BuildsList.OnItemClick := BuildsListItemClick;
 
   // Wire up LoadoutList custom drawing/updating
   LoadoutList.OnUpdateObjects := LoadoutListUpdateObjects;

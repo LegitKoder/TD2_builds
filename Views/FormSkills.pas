@@ -93,9 +93,7 @@ end;
 
 function LoadBitmap(const APath: string): TBitmap;
 begin
-  Result := TBitmap.Create;
-  Result.LoadFromFile(TPath.Combine(TUtils.AssetsPath, APath));
-  // or wherever you store the icons
+  Result := TUtils.BitmapFromPath(APath);
 end;
 
 function CategoryToString(C: TSkillCategory): string;
@@ -195,8 +193,9 @@ begin
       // <─ your style that owns “glyphstyle”
       Item.Height := 40;
       { ----- put the bitmap into the TGlyph called glyphstyle ----- }
-      Item.StylesData['iconstyle.Bitmap'] :=
-        TValue.From<TBitmap>(LoadBitmap(PairValue.ImagePath));
+      var LBitmap := LoadBitmap(PairValue.ImagePath);
+      if Assigned(LBitmap) then
+        Item.StylesData['iconstyle.Bitmap'] := TValue.From<TBitmap>(LBitmap);
 
       // if you used a TGlyph hooked to an ImageList:
       // Item.StylesData['glyphstyle.ImageIndex'] := YourImageIndex;

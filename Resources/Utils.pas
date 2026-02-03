@@ -1,4 +1,4 @@
-unit Utils;
+﻿unit Utils;
 
 interface
 
@@ -45,24 +45,54 @@ function CoreAttrIDToEnum(const ID: string): TCoreAttributeType;
 implementation
 
 class function TUtils.GetAssetsPath: string;
+  function WithTrailingSep(const P: string): string;
+  begin
+    Result := P;
+    if (Result <> '') and not Result.EndsWith(PathDelim) then
+      Result := Result + PathDelim;
+  end;
+
+  function IsValidAssetsPath(const P: string): Boolean;
+  begin
+    Result := DirectoryExists(P) and FileExists(TPath.Combine(P, 'Brands.json'));
+  end;
+
+  function TryCandidate(const P: string; out Found: string): Boolean;
+  var
+    Full: string;
+  begin
+    Full := TPath.GetFullPath(P);
+    if IsValidAssetsPath(Full) then
+    begin
+      Found := WithTrailingSep(Full);
+      Exit(True);
+    end;
+    Result := False;
+  end;
+var
+  LExeDir: string;
+  LFound: string;
 begin
 {$IFDEF MSWINDOWS}
-{$IFDEF DEBUG}
-  Result := TPath.GetFullPath('..\..\Assets\');
-{$ELSE}
-  // Get the directory where the EXE is running, then combine with "Assets"
-  Result := TPath.Combine(ExtractFilePath(ParamStr(0)), 'Assets\');
-{$ENDIF}
+  LExeDir := ExtractFilePath(ParamStr(0));
+  // 1) Relative to EXE (release-style)
+  if TryCandidate(TPath.Combine(LExeDir, 'Assets'), LFound) then
+    Exit(LFound);
+  // 2) Relative to EXE (debug-style: ..\..\Assets from Win64\Debug)
+  if TryCandidate(TPath.Combine(LExeDir, '..\..\Assets'), LFound) then
+    Exit(LFound);
+  // 3) Relative to working directory (fallback)
+  if TryCandidate('..\..\Assets', LFound) then
+    Exit(LFound);
+  Result := WithTrailingSep(TPath.GetFullPath(TPath.Combine(ExtractFilePath(ParamStr(0)), 'Assets')));
 {$ELSEIF DEFINED(IOS) or DEFINED(ANDROID)}
-  Result := TPath.GetDocumentsPath;
+  Result := WithTrailingSep(TPath.GetDocumentsPath);
 {$ELSEIF defined(MACOS)}
-  Result := TPath.Combine(ExtractFilePath(ParamStr(0)), '..', 'Resources',
-    'Assets');
+  Result := WithTrailingSep(TPath.Combine(ExtractFilePath(ParamStr(0)), '..', 'Resources',
+    'Assets'));
 {$ELSE}
-  Result := TPath.Combine(ExtractFilePath(ParamStr(0)), 'Assets');
+  Result := WithTrailingSep(TPath.Combine(ExtractFilePath(ParamStr(0)), 'Assets'));
 {$ENDIF}
-  // if (Result <> '') and not Result.EndsWith(PathDelim) then
-  // Result := Result + PathDelim;
 end;
 
 class function TUtils.GetOutputPath: string;

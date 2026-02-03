@@ -273,7 +273,10 @@ var
 begin
   Result := TSerializableLoadout.Create;
   Result.Name := Name;
-  Result.SpecializationName := FSelectedSpecialization.Name;
+  if Assigned(FSelectedSpecialization) then
+    Result.SpecializationName := FSelectedSpecialization.Name
+  else
+    Result.SpecializationName := '';
   Result.ActivatedSpecBonuses := Copy(FActivatedSpecBonuses);
 
   // Skills

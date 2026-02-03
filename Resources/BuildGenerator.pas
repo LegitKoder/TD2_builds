@@ -9,6 +9,12 @@ uses
 
 
 type
+  TScoreContext = record
+    DynamicStats: TDictionary<string, Double>;
+    AggStats: TPlayerAggregatedStats;
+    DispStats: TLoadoutAggregatedStats_Display;
+  end;
+
   TBuildGenerator = class
   private
     FDataIterator: TDataJsonIterator;
@@ -50,80 +56,43 @@ begin
 end;
 
 /// <summary>
-/// Calcule un score pour un build en fonction des statistiques agrégées et des attributs ciblés.
-/// Les poids sont ajustables selon l’importance de chaque attribut.
+/// Calcule un score pour un build en fonction des statistiques dynamiques.
+/// Le système est complètement dynamique : on multiplie chaque statistique agrégée par son poids.
 /// </summary>
-function ScoreBuild(const AggStats: TPlayerAggregatedStats; const DispStats: TLoadoutAggregatedStats_Display; Weights: TDictionary<string, Double>): Double;
+function ScoreBuild(const Ctx: TScoreContext; Weights: TDictionary<string, Double>): Double;
 var
-  Attr, NormAttr: string;
-  Weight: Double;
+  WeightKey, StatKey, NormWeightKey, NormStatKey: string;
+  Weight, StatValue: Double;
 begin
   Result := 0;
-  if (Weights = nil) or (Weights.Count = 0) then Exit;
+  if (Weights = nil) or (Weights.Count = 0) or (Ctx.DynamicStats = nil) then Exit;
 
-  for Attr in Weights.Keys do
+  for WeightKey in Weights.Keys do
   begin
-    Weight   := Weights[Attr];
-    NormAttr := NormalizeAttrKey(Attr);
+    Weight := Weights[WeightKey];
+    NormWeightKey := NormalizeAttrId(WeightKey);
 
-    // Skills
-    if ContainsText(NormAttr, 'repairskills') then
-      Result := Result + AggStats.TotalRepairSkills * Weight
-    else if ContainsText(NormAttr, 'skillhaste') then
-      Result := Result + AggStats.TotalSkillHaste * Weight
-    else if ContainsText(NormAttr, 'skilldamage') then
-      Result := Result + AggStats.TotalSkillDamage * Weight
-    else if ContainsText(NormAttr, 'statuseffects') then
-      Result := Result + AggStats.TotalStatusEffects * Weight
-
-    // Crit / HSD
-    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'chance') then
-      Result := Result + DispStats.FinalCHC_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'crit') and ContainsText(NormAttr, 'damage') then
-      Result := Result + DispStats.FinalCHD_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'headshot') then
-      Result := Result + DispStats.FinalHSD_Pct_Display * Weight
-
-    // Armor / tank
-    else if ContainsText(NormAttr, 'armorregen') then
-      Result := Result + DispStats.TotalArmorRegenPct * Weight
-    else if ContainsText(NormAttr, 'armoronkill') or
-            ContainsText(NormAttr, 'healthonkill') then
-      Result := Result + DispStats.TotalArmorOnKillPct * Weight
-    else if ContainsText(NormAttr, 'totalarmor') or
-            (ContainsText(NormAttr, 'armor') and not ContainsText(NormAttr, 'regen')) then
-      Result := Result + DispStats.TotalArmor_Display * Weight
-    else if ContainsText(NormAttr, 'health') then
-      Result := Result + DispStats.TotalHealth_Display * Weight
-    else if ContainsText(NormAttr, 'incomingrepair') then
-      Result := Result + DispStats.TotalIncomingRepairsPct * Weight
-
-    // Weapon damage / handling
-    else if ContainsText(NormAttr, 'weapondamage') then
-      Result := Result + DispStats.TotalWeaponDamage_AWD_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'accuracy') then
-      Result := Result + DispStats.TotalHandling_Accuracy_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'stability') then
-      Result := Result + DispStats.TotalHandling_Stability_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'reload') then
-      Result := Result + DispStats.TotalHandling_ReloadSpeed_Pct_Display * Weight
-    else if ContainsText(NormAttr, 'weaponhandling') then
-      Result := Result + (DispStats.TotalHandling_Accuracy_Pct_Display +
-                          DispStats.TotalHandling_Stability_Pct_Display +
-                          DispStats.TotalHandling_ReloadSpeed_Pct_Display) * Weight
-
-    // Résistances génériques
-    else if ContainsText(NormAttr, 'explosiveresistance') then
-      Result := Result + DispStats.TotalExplosiveResistancePct * Weight
-    else if ContainsText(NormAttr, 'hazardprotection') then
-      Result := Result + DispStats.TotalHazardProtectionPct * Weight
-    else if ContainsText(NormAttr, 'resistance') then
-      Result := Result + 1.0 * Weight; // fallback générique
+    // Recherche de la statistique correspondante (on autorise un match partiel pour plus de flexibilité)
+    for StatKey in Ctx.DynamicStats.Keys do
+    begin
+      NormStatKey := NormalizeAttrId(StatKey);
+      if (NormStatKey <> '') and
+         ((NormStatKey = NormWeightKey) or
+          (NormStatKey.Contains(NormWeightKey)) or
+          (NormWeightKey.Contains(NormStatKey))) then
+      begin
+        StatValue := Ctx.DynamicStats[StatKey];
+        Result := Result + (StatValue * Weight);
+        // On ne break pas pour permettre de cumuler si plusieurs clés matchent (ex: skill_damage et skillDamage)
+      end;
+    end;
   end;
 end;
 
 function TBuildGenerator.GenerateBuilds(const AArchetype: TBuildArchetype;
   const Weights: TDictionary<string, Double> = nil): TList<TGearLoadout>;
+const
+  SCORE_EPS = 1e-6;
 var
   Candidates : TList<TGearLoadout>;
 begin
@@ -137,24 +106,23 @@ begin
     begin
       var LBuild := Candidates[i];
       var Input: TFullLoadoutInput;
-      var TmpResult: TFullDamageCalcResult;
-      var AggDisp: TLoadoutAggregatedStats_Display;
-      var Stats: TPlayerAggregatedStats;
+      var LDynamicStats: TDictionary<string, Double>;
+      var Ctx: TScoreContext;
 
       FillChar(Input, SizeOf(Input), 0);
       for var j := Low(LBuild.GearPieces) to High(LBuild.GearPieces) do
         if LBuild.GearPieces[j].Name <> '' then
           Input.EquippedGear[TItemType(j)] := LBuild.GearPieces[j];
 
-      CalcEngine.CalculateCompleteLoadoutPerformance(
-        Input,
-        FDataIterator.AllPieceSetDefinitions, FDataIterator.WeaponStats,
-        FDataIterator.Mods, FDataIterator.Talents, TmpResult, AggDisp);
-
-      Stats := CalcEngine.AggregatePlayerStats(Input, FDataIterator.AllPieceSetDefinitions);
-
-      LBuild.Score := ScoreBuild(Stats, AggDisp, Weights);
-      Candidates[i] := LBuild; // Update record in list
+      LDynamicStats := CalcEngine.AggregateAllStats(Input, FDataIterator.AllPieceSetDefinitions);
+      try
+        FillChar(Ctx, SizeOf(Ctx), 0);
+        Ctx.DynamicStats := LDynamicStats;
+        LBuild.Score := ScoreBuild(Ctx, Weights);
+        Candidates[i] := LBuild; // Update record in list
+      finally
+        LDynamicStats.Free;
+      end;
     end;
 
     // Trier les builds selon le score pré-calculé (décroissant)
@@ -169,9 +137,19 @@ begin
           else
             Result := 0;
         end));
+
+    // Keep only the best-scoring builds (ties included)
+    if Candidates.Count > 0 then
+    begin
+      var MaxScore := Candidates[0].Score;
+      for var idx := Candidates.Count - 1 downto 1 do
+        if Abs(Candidates[idx].Score - MaxScore) > SCORE_EPS then
+          Candidates.Delete(idx);
+    end;
   end;
 
   Result := Candidates;
 end;
 
 end.
+
