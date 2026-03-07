@@ -266,6 +266,7 @@ type
     FController: TMainController;
     FSpecializations: TDictionary<string, TSpecialization>;
     FSpecializationImageIndices: TDictionary<string, Integer>;
+    FPrimaryColor, FSecondaryColor: TAlphaColor;
     FWeaponSelectedTalentIDs: array [TWeaponSlot] of Integer; // Kept for UI selection memory
     FExoticWeaponSelected: Boolean;
     FExoticWeaponSlot: Game.Types.TWeaponSlot;
@@ -1802,9 +1803,9 @@ begin
   end
   else
   begin
-    if Assigned(Title) then Title.TextColor := TAlphaColorRec.White;
-    if Assigned(Details) then Details.TextColor := TAlphaColorRec.Lightgray;
-    if Assigned(Nb) then Nb.TextColor := TAlphaColorRec.White;
+    if Assigned(Title) then Title.TextColor := FPrimaryColor;
+    if Assigned(Details) then Details.TextColor := FSecondaryColor;
+    if Assigned(Nb) then Nb.TextColor := FPrimaryColor;
   end;
 
   // Title Text
@@ -2511,18 +2512,34 @@ const
   DARK_SECONDARY = TAlphaColor($B3FFFFFF);
   LIGHT_PRIMARY  = TAlphaColor($FF1A1A1A);
   LIGHT_SECONDARY= TAlphaColor($99000000);
-var
-  Primary, Secondary: TAlphaColor;
 
-  procedure ApplyTextSettings(Obj: TFmxObject; const AColor: TAlphaColor);
+  procedure ApplyTextSettings(Obj: TFmxObject; const APrimary, ASecondary: TAlphaColor);
   var
     TS: ITextSettings;
   begin
+    if Obj is TListView then
+    begin
+      var LV := TListView(Obj);
+      LV.ItemAppearanceObjects.HeaderObjects.Text.TextColor := APrimary;
+      LV.ItemAppearanceObjects.ItemObjects.Text.TextColor := APrimary;
+      if Assigned(LV.ItemAppearanceObjects.ItemObjects.Detail) then
+        LV.ItemAppearanceObjects.ItemObjects.Detail.TextColor := ASecondary;
+      Exit;
+    end;
+
+    if Obj is TListBoxGroupHeader then
+    begin
+      TS := ITextSettings(Obj);
+      TS.StyledSettings := TS.StyledSettings - [TStyledSetting.FontColor];
+      TS.TextSettings.FontColor := ASecondary;
+      Exit;
+    end;
+
     // Handles TLabel, TButton, TEdit, TCheckBox, many others
     if Supports(Obj, ITextSettings, TS) then
     begin
       TS.StyledSettings := TS.StyledSettings - [TStyledSetting.FontColor];
-      TS.TextSettings.FontColor := AColor;
+      TS.TextSettings.FontColor := APrimary;
       Exit;
     end;
 
@@ -2530,7 +2547,7 @@ var
     if Obj is TSkLabel then
     begin
       TSkLabel(Obj).StyledSettings := TSkLabel(Obj).StyledSettings - [TStyledSetting.FontColor];
-      TSkLabel(Obj).TextSettings.FontColor := AColor;
+      TSkLabel(Obj).TextSettings.FontColor := APrimary;
       Exit;
     end;
   end;
@@ -2540,7 +2557,7 @@ var
     if Obj is TStyledControl then
       TStyledControl(Obj).ApplyStyleLookup; // prevent late style override
 
-    ApplyTextSettings(Obj, Primary);
+    ApplyTextSettings(Obj, FPrimaryColor, FSecondaryColor);
 
     for var i := 0 to Obj.ChildrenCount - 1 do
       Walk(Obj.Children[i]);
@@ -2549,13 +2566,13 @@ var
 begin
   if Dark then
   begin
-    Primary := DARK_PRIMARY;
-    Secondary := DARK_SECONDARY;
+    FPrimaryColor := DARK_PRIMARY;
+    FSecondaryColor := DARK_SECONDARY;
   end
   else
   begin
-    Primary := LIGHT_PRIMARY;
-    Secondary := LIGHT_SECONDARY;
+    FPrimaryColor := LIGHT_PRIMARY;
+    FSecondaryColor := LIGHT_SECONDARY;
   end;
 
   Walk(Self);
@@ -2563,6 +2580,8 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  FPrimaryColor := TAlphaColorRec.White;
+  FSecondaryColor := TAlphaColorRec.Lightgray;
 
   if DataJsonIterator = nil then // première Form seulement
   begin
