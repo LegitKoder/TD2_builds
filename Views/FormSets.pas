@@ -332,7 +332,7 @@ var
     SetLength(FixedDefs, Len + 1);
     FixedDefs[Len] := ADef;
 
-    DisplayItem := TListBoxItem.Create(ListBoxMinorAttributes);
+    DisplayItem := TListBoxItem.Create(ListBoxFixedMinorAttributes);
     DisplayItem.Text := FormatFixedMinorAttribute(ADef) + ' (Fixed)';
     DisplayItem.Tag := -99; // Mark as Fixed Attribute
 
@@ -371,8 +371,9 @@ var
 
     // Insert at the top (index 1 to be under the header if we add one, or 0)
     // We'll add them after the "FIXED ATTRIBUTES" header which we will add at 0.
-    ListBoxMinorAttributes.InsertObject(Len, DisplayItem);
+    ListBoxFIxedMinorAttributes.InsertObject(Len, DisplayItem);
   end;
+
 begin
   // 1. Reset the list to standard available attributes
   PopulateMinorAttributes;
@@ -412,7 +413,7 @@ begin
     if Length(FixedDefs) > 0 then
     begin
       FixedHeader := TListBoxGroupHeader.Create(ListBoxMinorAttributes);
-      FixedHeader.Text := 'FIXED ATTRIBUTES';
+      FixedHeader.Text := 'Fixed attribute';
       FixedHeader.Selectable := False;
       ListBoxMinorAttributes.InsertObject(0, FixedHeader);
     end;
@@ -1338,11 +1339,6 @@ begin
       // Store the selected gear piece
       FSelectedGearPiece := GearPiece;
 
-      // Retrieve and assign talents if available
-//      if Assigned(ListBoxTalents.Selected) then
-//        FSelectedGearPiece.Talent := ListBoxTalents.Selected.Text
-//      else
-//        FSelectedGearPiece.Talent := '';
       // CRITICAL FIX: Refresh the talents list based on the new selection
       if Assigned(DataJsonIterator) then
         PopulateTalents(DataJsonIterator);
@@ -1369,12 +1365,9 @@ begin
 
       // Clear any previously selected mod for this gear piece
       FSelectedGearPiece.ModAttribute := Default (TModAttribute);
+
       // Reset to empty/default
       FSelectedModAttributeImageIndex := -1; // Reset image index
-
-//      Talents.Visible := (FGearSlot in [itBackpack, itChest]);
-//      if not Talents.Visible then
-//        ListBoxTalents.ClearSelection;
 
       // Update Mod Availability (which might also call PopulateMods or enable/disable ListBoxModAttributes)
       UpdateModAvailability;

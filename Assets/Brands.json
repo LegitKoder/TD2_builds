@@ -45,7 +45,7 @@
         },
         {
             "id": "armorRegen_0",
-            "type": "Armor Regeneration",
+            "type": "Armor Regen",
             "value": 1.0
         },
         {
@@ -145,7 +145,7 @@
         },
         {
             "id": "armorRegen_1",
-            "type": "Armor Regen Hp/S",
+            "type": "Armor Regen",
             "value": 4925.0
         },
         {
@@ -192,6 +192,40 @@
             "id": "repairSkills",
             "type": "Repair Skills",
             "value": 20.0
+        }
+    ],
+    "HasModSlots": true,
+    "improvisedSets": [
+        {
+            "name": "Improvised",
+            "imageIndex": [89, 90, 91, 92, 93, 94],
+            "parts": {
+                "Mask": {
+                    "name": "Improvised Mask",
+                    "coreAttribute": "armor"
+                },
+                "Vest": {
+                    "name": "Improvised Vest",
+                    "coreAttribute": "armor"
+                },
+                "Holster": {
+                    "name": "Improvised Holster",
+                    "coreAttribute": "armor"
+                },
+                "Backpack": {
+                    "name": "Improvised Backpack",
+                    "coreAttribute": "armor"
+                },
+                "Glove": {
+                    "name": "Improvised Glove",
+                    "coreAttribute": "armor"
+                },
+                "Kneepad": {
+                    "name": "Improvised Kneepad",
+                    "coreAttribute": "armor"
+                }
+            },
+            "bonuses": []
         }
     ],
     "brandSets": [
@@ -3467,6 +3501,10 @@
                 "Mask": {
                     "name": "Tinkerer",
                     "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
                     "talent": "Abridged"
                 }
             }
@@ -3478,6 +3516,10 @@
                 "Mask": {
                     "name": "The Catalyst",
                     "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "statusEffects_1",
+                        "hazardProtection"
+                    ],
                     "talent": "Chemical Agent"
                 }
             }
@@ -3489,6 +3531,10 @@
                 "Mask": {
                     "name": "Coyote's Mask",
                     "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "criticalHitChance",
+                        "criticalHitDamage"
+                    ],
                     "talent": "Pack Instincts"
                 }
             }
@@ -3500,6 +3546,10 @@
                 "Mask": {
                     "name": "Vile",
                     "coreAttribute": "skillTier",
+                    "fixedMinorAttributes": [
+                        "statusEffects_1",
+                        "hazardProtection"
+                    ],
                     "talent": "Toxic Delivery"
                 }
             }
@@ -3511,6 +3561,10 @@
                 "Mask": {
                     "name": "Catharsis",
                     "coreAttribute": "armor",
+                    "fixedMinorAttributes": [
+                        "incomingRepairs",
+                        "armorRegen_1"
+                    ],
                     "talent": "Vicious Cycle"
                 }
             }
@@ -3822,6 +3876,7 @@
                 "Kneepads": {
                     "name": "Acosta's Kneepads",
                     "coreAttribute": "armor",
+                    "fixedMinorAttributes": [],
                     "talent": "Escape Plan"
                 }
             }

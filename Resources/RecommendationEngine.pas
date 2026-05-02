@@ -4,7 +4,8 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, System.Generics.Defaults,
-  Game.Types, Game.JsonIterator, System.StrUtils, CalcEngine, System.Math;
+  Game.Types, Game.JsonIterator, System.StrUtils, CalcEngine, System.Math,
+  Game.AttributeMapper;
 
 type
   TBuildArchetype = record
@@ -40,6 +41,7 @@ type
     FCanonicalRequiredBrands: TDictionary<string, Integer>;
     FCanonicalAllowedBrands: TDictionary<string, Boolean>;
     FCanonicalSetTypes: TDictionary<string, TSetType>;
+    FSetBonusRequirements: TDictionary<string, Integer>;
     procedure PreFilterGear(const AArchetype: TBuildArchetype;
       out AGearPool: TDictionary<TItemType, TList<TGearPiece>>;
       const AWeights: TDictionary<string, Double> = nil);
@@ -60,6 +62,7 @@ type
     procedure ClearCanonicalBrandData;
     function IsRequiredSet(const SetName: string): Boolean;
     function IsAllowedSet(const SetName: string): Boolean;
+    function MeetsExactBonusRequirements(const ABrandCounts: TDictionary<string, Integer>): Boolean;
 
     // Set-Based Combination Engine
     procedure GenerateBuildsSetBased(const AArchetype: TBuildArchetype;
@@ -162,6 +165,7 @@ begin
   FCanonicalRequiredBrands := nil;
   FCanonicalAllowedBrands := nil;
   FCanonicalSetTypes := nil;
+  FSetBonusRequirements := nil;
 end;
 
 destructor TRecommendationEngine.Destroy;
@@ -186,7 +190,7 @@ begin
 
   LMaxBuilds := 50;
   if Assigned(AWeights) and (AWeights.Count > 0) then
-    LMaxBuilds := 200;
+    LMaxBuilds := 500;
 
   // Use the recursive generator for reliability with weighted attributes
   LInitialBuild := Default(TGearLoadout);
@@ -223,27 +227,155 @@ var
   LFixedDef: TFixedMinorAttributeDefinition;
   LIdx: Integer;
   SetWeightCache: TDictionary<string, Double>;
+  HasWeightedSets: Boolean;
+  LNewList : TList<TGearPiece>;
+  LCanonicalSetName: string;
+  LHighestRelevantBonus: Integer;
 
   function AttrMatchesWeight(const AttrId, WeightKey: string): Boolean;
   var
+    AttrEnum, WeightEnum: TAttributeID;
     NormAttr, NormKey: string;
   begin
     Result := False;
-    if AttrId = '' then
+    if (AttrId = '') or (WeightKey = '') then
       Exit;
+
+    if TAttributeMapper.TryParse(AttrId, AttrEnum) and
+       TAttributeMapper.TryParse(WeightKey, WeightEnum) then
+      Exit(AttrEnum = WeightEnum);
 
     NormAttr := NormalizeAttrId(AttrId);
     NormKey := NormalizeAttrId(WeightKey);
+    if (NormAttr = '') or (NormKey = '') then
+      Exit(False);
 
-    Result := (NormAttr <> '') and
-              ((NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr)));
+    Result := (NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr));
   end;
 
-  function GetSetWeight(const SetName: string; const Bonuses: TArray<TSetBonus>): Double;
+  function SetHasTargetBonus(const SetDef: TPieceSet): Boolean;
+  var
+    Bonus: TSetBonus;
+    Key: string;
+    Part: TPart;
+    FixedAttrID: string;
+  begin
+    Result := False;
+
+    if (AWeights = nil) or (AWeights.Count = 0) then
+      Exit(True);
+
+    for Bonus in SetDef.Bonuses do
+    begin
+      if Bonus.AttributeID = '' then
+        Continue;
+      for Key in AWeights.Keys do
+        if AttrMatchesWeight(Bonus.AttributeID, Key) then
+          Exit(True);
+    end;
+
+    for Part in SetDef.Parts do
+      for FixedAttrID in Part.FixedMinorAttributeIDs do
+        for Key in AWeights.Keys do
+          if AttrMatchesWeight(FixedAttrID, Key) then
+            Exit(True);
+  end;
+
+  function GetHighestRelevantBonusRequirement(const SetDef: TPieceSet): Integer;
+  var
+    Bonus: TSetBonus;
+    Key: string;
+  begin
+    Result := 0;
+    if (AWeights = nil) or (AWeights.Count = 0) then
+      Exit;
+
+    for Bonus in SetDef.Bonuses do
+    begin
+      if Bonus.AttributeID = '' then
+        Continue;
+      for Key in AWeights.Keys do
+        if AttrMatchesWeight(Bonus.AttributeID, Key) then
+        begin
+          var Required := Bonus.ItemsRequired;
+          if Required <= 0 then
+            Required := 1;
+          if Required > Result then
+            Result := Required;
+          Break;
+        end;
+    end;
+  end;
+
+  function CanPieceRollAttribute(const APiece: TGearPiece; const AAttrID: string): Boolean;
+  var
+    NormAttr: string;
+    Category: TMinorAttributeCat;
+    Fixed: TFixedMinorAttributeDefinition;
+    CoreType: TCoreAttributeType;
+  begin
+    Result := False;
+    NormAttr := NormalizeAttrId(AAttrID);
+    if NormAttr = '' then
+      Exit;
+
+    for Fixed in APiece.FixedMinorAttributes do
+    begin
+      var NormFixed := NormalizeAttrId(Fixed.ID);
+      if (NormFixed = NormAttr) or NormFixed.Contains(NormAttr) or NormAttr.Contains(NormFixed) then
+        Exit(True);
+    end;
+
+    if APiece.SetType = stExoticSet then
+      Exit(False);
+
+    if ContainsText(NormAttr, 'crit') or
+       ContainsText(NormAttr, 'headshot') or
+       ContainsText(NormAttr, 'weaponhandling') or
+       ContainsText(NormAttr, 'handling') then
+      Category := matOffensive
+    else if ContainsText(NormAttr, 'skill') or
+            ContainsText(NormAttr, 'status') or
+            ContainsText(NormAttr, 'repair') or
+            ContainsText(NormAttr, 'haste') or
+            ContainsText(NormAttr, 'duration') then
+      Category := matUtility
+    else
+      Category := matDefensive;
+
+    if Assigned(AArchetype.RequiredCoreAttribute) and
+       AArchetype.RequiredCoreAttribute.TryGetValue(APiece.ItemType, CoreType) then
+    begin
+      // use required core if specified
+    end
+    else
+      CoreType := APiece.CoreAttribute.AttrType;
+
+    case CoreType of
+      catWeaponDamage: Result := (Category = matOffensive);
+      catArmor:        Result := (Category = matDefensive);
+      catSkillTier:    Result := (Category = matUtility);
+    end;
+  end;
+
+  function CoreTypeToId(const CoreType: TCoreAttributeType): string;
+  begin
+    case CoreType of
+      catWeaponDamage: Result := 'weaponDamage';
+      catArmor:        Result := 'armor';
+      catSkillTier:    Result := 'skillTier';
+    else
+      Result := '';
+    end;
+  end;
+
+  function GetSetWeight(const SetName: string; const Bonuses: TArray<TSetBonus>;
+    const APiece: TGearPiece): Double;
   var
     SB: TSetBonus;
     Key: string;
     Denom: Integer;
+    BonusWeight: Double;
   begin
     Result := 0;
     if (AWeights = nil) or (AWeights.Count = 0) then
@@ -263,12 +395,35 @@ var
           Denom := SB.ItemsRequired;
           if Denom <= 0 then
             Denom := 1;
-          Result := Result + (SB.Value / Denom) * AWeights[Key];
+          BonusWeight := (SB.Value / Denom) * AWeights[Key];
+          if Denom >= 3 then
+            BonusWeight := BonusWeight * 0.3
+          else if Denom >= 2 then
+            BonusWeight := BonusWeight * 0.6;
+          Result := Result + BonusWeight;
           Break;
         end;
       end;
     end;
+    // Add bonus weight if piece can roll the requested attribute
+    var RollableBonus: Double := 0;
+    for Key in AWeights.Keys do
+      if CanPieceRollAttribute(APiece, Key) then
+        RollableBonus := RollableBonus + (AWeights[Key] * 0.25);
+    Result := Result + RollableBonus;
+    if Result > 0 then
+      HasWeightedSets := True;
     SetWeightCache.AddOrSetValue(SetName, Result);
+  end;
+
+  function HasPiece(const APiece: TGearPiece): Boolean;
+  begin
+    if not Assigned(LNewList) then
+      Exit(False);
+    for var Existing in LNewList do
+      if (SameText(Existing.Name, APiece.Name)) and (Existing.ItemType = APiece.ItemType) then
+        Exit(True);
+    Result := False;
   end;
 begin
   AGearPool := TDictionary<TItemType, TList<TGearPiece>>.Create;
@@ -276,11 +431,23 @@ begin
     AGearPool.Add(LItemType, TList<TGearPiece>.Create);
 
   SetWeightCache := TDictionary<string, Double>.Create(TIStringComparer.Ordinal);
+  HasWeightedSets := False;
+
+  if Assigned(FSetBonusRequirements) then
+    FreeAndNil(FSetBonusRequirements);
+  FSetBonusRequirements := TDictionary<string, Integer>.Create(TIStringComparer.Ordinal);
   try
     for LBrandSet in FDataIterator.AllPieceSetDefinitions.Values do
     begin
-      // Pre-compute the weight of this set once for later sorting
-      GetSetWeight(CalcEngine.CanonicalSetName(LBrandSet.Name), LBrandSet.Bonuses);
+      // CRITICAL FIX: If user selected specific attributes, ONLY keep sets that offer those bonuses
+      // This prevents generating builds with useless pieces
+      if not SetHasTargetBonus(LBrandSet) then
+        Continue;
+
+      LCanonicalSetName := CalcEngine.CanonicalSetName(LBrandSet.Name);
+      LHighestRelevantBonus := GetHighestRelevantBonusRequirement(LBrandSet);
+      if (LHighestRelevantBonus > 0) and (LCanonicalSetName <> '') then
+        FSetBonusRequirements.AddOrSetValue(LCanonicalSetName, LHighestRelevantBonus);
 
       for var LPart in LBrandSet.Parts do
       begin
@@ -308,13 +475,47 @@ begin
         if not IsAllowedSet(LGearPiece.SetName) then
           Continue;
 
-        // Strict Filter: Reject items that do not match the required core attribute for this slot
+        // Flexible Filter + Automatic Recalibration Tracking
+        // Exotics: Core locked -> must match required core.
+        // Brand/Gear sets: Core recalibratable -> track recalibration and use target core.
         if Assigned(AArchetype.RequiredCoreAttribute) and
            AArchetype.RequiredCoreAttribute.ContainsKey(LPart.GearSlot) then
         begin
-          if LGearPiece.CoreAttribute.AttrType <>
-             AArchetype.RequiredCoreAttribute[LPart.GearSlot] then
-            Continue;
+          var RequiredCore := AArchetype.RequiredCoreAttribute[LPart.GearSlot];
+          var OriginalCore := LGearPiece.CoreAttribute.AttrType;
+
+          if LGearPiece.SetType = stExoticSet then
+          begin
+            if OriginalCore <> RequiredCore then
+              Continue;
+            LGearPiece.RequiresRecalibration := False;
+            LGearPiece.OriginalCoreType := OriginalCore;
+            LGearPiece.RecalibratedCoreType := OriginalCore;
+          end
+          else
+          begin
+            LGearPiece.OriginalCoreType := OriginalCore;
+            LGearPiece.RecalibratedCoreType := RequiredCore;
+            LGearPiece.RequiresRecalibration := (OriginalCore <> RequiredCore);
+
+            var RequiredId := CoreTypeToId(RequiredCore);
+            if (RequiredId <> '') and Assigned(FDataIterator.CoreAttributeDefinitions) and
+               FDataIterator.CoreAttributeDefinitions.TryGetValue(RequiredId, LCoreDef) then
+            begin
+              LGearPiece.CoreAttribute.ID := LCoreDef.ID;
+              LGearPiece.CoreAttribute.TypeName := LCoreDef.TypeName;
+              LGearPiece.CoreAttribute.Value := LCoreDef.Value;
+              LGearPiece.CoreAttribute.AttrType := RequiredCore;
+            end
+            else
+              LGearPiece.CoreAttribute.AttrType := RequiredCore;
+          end;
+        end
+        else
+        begin
+          LGearPiece.RequiresRecalibration := False;
+          LGearPiece.OriginalCoreType := LGearPiece.CoreAttribute.AttrType;
+          LGearPiece.RecalibratedCoreType := LGearPiece.CoreAttribute.AttrType;
         end;
 
         if Length(LPart.FixedMinorAttributeIDs) > 0 then
@@ -327,6 +528,9 @@ begin
               (LPart.FixedMinorAttributeIDs[LIdx], LFixedDef) then
               LGearPiece.FixedMinorAttributes[LIdx] := LFixedDef;
         end;
+
+        // Compute set weight with piece info (considers set bonuses + rollable attributes)
+        GetSetWeight(LGearPiece.SetName, LBrandSet.Bonuses, LGearPiece);
 
         if LBrandSet.SetType = stNamedSet then
         begin
@@ -352,23 +556,60 @@ begin
     if Assigned(AWeights) and (AWeights.Count > 0) then
       for LItemType := Low(TItemType) to itKneepads do
       begin
-        AGearPool[LItemType].Sort(
-          TComparer<TGearPiece>.Construct(
-            function(const L, R: TGearPiece): Integer
-            var
-              WL, WR: Double;
-            begin
-              if not SetWeightCache.TryGetValue(L.SetName, WL) then
-                WL := 0;
-              if not SetWeightCache.TryGetValue(R.SetName, WR) then
-                WR := 0;
-              if WL > WR then
-                Result := -1
-              else if WL < WR then
-                Result := 1
-              else
-                Result := 0;
-            end));
+        if HasWeightedSets then
+        begin
+          AGearPool[LItemType].Sort(
+            TComparer<TGearPiece>.Construct(
+              function(const L, R: TGearPiece): Integer
+              var
+                WL, WR: Double;
+              begin
+                if not SetWeightCache.TryGetValue(L.SetName, WL) then
+                  WL := 0;
+                if not SetWeightCache.TryGetValue(R.SetName, WR) then
+                  WR := 0;
+                if WL > WR then
+                  Result := -1
+                else if WL < WR then
+                  Result := 1
+                else
+                  Result := 0;
+              end));
+        end
+        else
+        begin
+          // No set bonus matches the weights (e.g., rollable minors).
+          // Prefer brand sets over gear sets so we don't prune out valid mixes.
+          AGearPool[LItemType].Sort(
+            TComparer<TGearPiece>.Construct(
+              function(const L, R: TGearPiece): Integer
+              var
+                LKey, RKey: Integer;
+              begin
+                case L.SetType of
+                  stBrandSet, stNamedSet: LKey := 0;
+                  stGearSet: LKey := 1;
+                  stExoticSet: LKey := 2;
+                else
+                  LKey := 3;
+                end;
+
+                case R.SetType of
+                  stBrandSet, stNamedSet: RKey := 0;
+                  stGearSet: RKey := 1;
+                  stExoticSet: RKey := 2;
+                else
+                  RKey := 3;
+                end;
+
+                if LKey < RKey then
+                  Result := -1
+                else if LKey > RKey then
+                  Result := 1
+                else
+                  Result := 0;
+              end));
+        end;
 
         // Heuristic Beam Search / Optimization:
         // Limit the pool to the top K candidates per slot to prevent combinatorial explosion.
@@ -376,24 +617,37 @@ begin
         var LLimit := 15;
         if (LItemType = itChest) or (LItemType = itBackpack) then
           LLimit := 25;
+        if Assigned(AWeights) and (AWeights.Count <= 3) then
+          Inc(LLimit, 20); // allow more variety for attribute lookup
 
         if AGearPool[LItemType].Count > LLimit then
         begin
-          // Ensure we don't truncate Exotics that might be important
-          var LNewList := TList<TGearPiece>.Create;
           try
+            LNewList := TList<TGearPiece>.Create;
+            // 1) Keep all pieces from sets that actually match the weights
             for var i := 0 to AGearPool[LItemType].Count - 1 do
             begin
               var LGear := AGearPool[LItemType][i];
-              if (LNewList.Count < LLimit) or (LGear.SetType = stExoticSet) then
+              var W: Double := 0;
+              if SetWeightCache.TryGetValue(LGear.SetName, W) and (W > 0) and not HasPiece(LGear) then
+                LNewList.Add(LGear);
+            end;
+
+            // 2) Fill up to limit (or include Exotics)
+            for var i := 0 to AGearPool[LItemType].Count - 1 do
+            begin
+              var LGear := AGearPool[LItemType][i];
+              if ((LNewList.Count < LLimit) or (LGear.SetType = stExoticSet)) and not HasPiece(LGear) then
                 LNewList.Add(LGear);
 
-              if LNewList.Count >= 40 then Break; // Absolute cap
+              if LNewList.Count >= 80 then Break; // Absolute cap
             end;
+
             AGearPool[LItemType].Clear;
             AGearPool[LItemType].AddRange(LNewList);
           finally
             LNewList.Free;
+            LNewList := nil;
           end;
         end;
       end;
@@ -489,11 +743,14 @@ begin
       begin
         if (LItemType > itKneepads) then
           Continue;
-        if ABuild.GearPieces[LItemType].CoreAttribute.AttrType <>
-           AArchetype.RequiredCoreAttribute[LItemType] then
+        if ABuild.GearPieces[LItemType].SetType = stExoticSet then
         begin
-          Result := False;
-          Exit;
+          if ABuild.GearPieces[LItemType].CoreAttribute.AttrType <>
+             AArchetype.RequiredCoreAttribute[LItemType] then
+          begin
+            Result := False;
+            Exit;
+          end;
         end;
       end;
 
@@ -677,15 +934,21 @@ var
 
   function AttrMatchesWeight(const AttrId, WeightKey: string): Boolean;
   var
+    AttrEnum, WeightEnum: TAttributeID;
     NormAttr, NormKey: string;
   begin
     Result := False;
-    if AttrId = '' then
+    if (AttrId = '') or (WeightKey = '') then
       Exit;
+    if TAttributeMapper.TryParse(AttrId, AttrEnum) and
+       TAttributeMapper.TryParse(WeightKey, WeightEnum) then
+      Exit(AttrEnum = WeightEnum);
+
     NormAttr := NormalizeAttrId(AttrId);
     NormKey := NormalizeAttrId(WeightKey);
-    Result := (NormAttr <> '') and
-              ((NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr)));
+    if (NormAttr = '') or (NormKey = '') then
+      Exit(False);
+    Result := (NormAttr.Contains(NormKey)) or (NormKey.Contains(NormAttr));
   end;
 
   function GetSetWeight(const SetName: string; const Bonuses: TArray<TSetBonus>): Double;
@@ -1081,7 +1344,9 @@ begin
       end
       else
       begin
-        if IsValidGearSetCombination(ACurrentBuild) and MeetsBuildRequirements(ACurrentBuild, AArchetype) then
+        if IsValidGearSetCombination(ACurrentBuild) and
+           MeetsBuildRequirements(ACurrentBuild, AArchetype) and
+           MeetsExactBonusRequirements(ABrandCounts) then
         begin
           FGeneratedBuilds.Add(ACurrentBuild);
         end;
@@ -1141,6 +1406,8 @@ begin
     FreeAndNil(FCanonicalAllowedBrands);
   if Assigned(FCanonicalSetTypes) then
     FreeAndNil(FCanonicalSetTypes);
+  if Assigned(FSetBonusRequirements) then
+    FreeAndNil(FSetBonusRequirements);
 end;
 
 function TRecommendationEngine.IsRequiredSet(const SetName: string): Boolean;
@@ -1168,6 +1435,28 @@ begin
   if Key = '' then
     Exit(False);
   Result := FCanonicalAllowedBrands.ContainsKey(Key);
+end;
+
+function TRecommendationEngine.MeetsExactBonusRequirements(
+  const ABrandCounts: TDictionary<string, Integer>): Boolean;
+var
+  SetName: string;
+  ActualCount: Integer;
+  RequiredCount: Integer;
+begin
+  Result := True;
+  if not Assigned(FSetBonusRequirements) or (FSetBonusRequirements.Count = 0) then
+    Exit;
+
+  for SetName in ABrandCounts.Keys do
+  begin
+    ActualCount := ABrandCounts[SetName];
+    if FSetBonusRequirements.TryGetValue(SetName, RequiredCount) then
+    begin
+      if ActualCount <> RequiredCount then
+        Exit(False);
+    end;
+  end;
 end;
 
 end.

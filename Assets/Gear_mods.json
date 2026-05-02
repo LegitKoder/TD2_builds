@@ -1,58 +1,149 @@
 [
   {
     "ID": 1,
-    "Name": "+6% Critical Hit Chance Mod",
+    "Name": "Critical Hit Chance",
     "ModType": "gsmtOffensive",
     "AttributeType": "gmetCriticalHitChance",
     "AttributeValue": 6.0
   },
   {
     "ID": 2,
-    "Name": "+12% Critical Hit Damage Mod",
+    "Name": "Critical Hit Damage",
     "ModType": "gsmtOffensive",
     "AttributeType": "gmetCriticalHitDamage",
     "AttributeValue": 12.0
   },
   {
     "ID": 3,
-    "Name": "+10% Headshot Damage Mod",
+    "Name": "Headshot Damage",
     "ModType": "gsmtOffensive",
     "AttributeType": "gmetHeadshotDamage",
     "AttributeValue": 10.0
   },
   {
     "ID": 4,
-    "Name": "+13% Protection from Elites Mod",
+    "Name": "Protection from Elites",
     "ModType": "gsmtDefensive",
     "AttributeType": "gmetProtectionFromElites",
     "AttributeValue": 13.0
   },
   {
     "ID": 5,
-    "Name": "+18935 Armor on Kill Mod",
+    "Name": "Armor on Kill",
     "ModType": "gsmtDefensive",
     "AttributeType": "gmetArmorOnKillFlat",
     "AttributeValue": 18935
   },
   {
     "ID": 6,
-    "Name": "+12% Skill Haste Mod",
+    "Name": "Skill Haste",
     "ModType": "gsmtUtility",
     "AttributeType": "gmetSkillHaste",
     "AttributeValue": 12.0
   },
   {
     "ID": 7,
-    "Name": "+10% Skill Duration Mod",
+    "Name": "Skill Duration",
     "ModType": "gsmtUtility",
     "AttributeType": "gmetSkillDuration",
     "AttributeValue": 10.0
   },
   {
     "ID": 8,
-    "Name": "+20% Repair Skills Mod",
+    "Name": "Repair Skills",
     "ModType": "gsmtUtility",
     "AttributeType": "gmetRepairSkills",
     "AttributeValue": 20.0
+  },
+  {
+    "ID": 9,
+    "Name": "Skill Damage",
+    "ModType": "gsmtUtility",
+    "AttributeType": "gmetSkillDamage",
+    "AttributeValue": 12.0
+  },
+  {
+    "ID": 10,
+    "Name": "Skill Health",
+    "ModType": "gsmtUtility",
+    "AttributeType": "gmetSkillHealth",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 11,
+    "Name": "Incoming Repairs",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetIncomingRepairs",
+    "AttributeValue": 20.0
+  },
+  {
+    "ID": 12,
+    "Name": "Explosive Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetExplosiveResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 13,
+    "Name": "Pulse Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetPulseResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 14,
+    "Name": "Burn Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetBurnResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 15,
+    "Name": "Disrupt Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetDisruptResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 16,
+    "Name": "Bleed Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetBleedResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 17,
+    "Name": "Blind/Deaf Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetBlindDeafResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 18,
+    "Name": "Disorient Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetDisorientResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 19,
+    "Name": "Ensnare Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetEnsnareResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 20,
+    "Name": "Poison Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetPoisonResistance",
+    "AttributeValue": 10.0
+  },
+  {
+    "ID": 21,
+    "Name": "Shock Resistance",
+    "ModType": "gsmtDefensive",
+    "AttributeType": "gmetShockResistance",
+    "AttributeValue": 10.0
   }
 ]

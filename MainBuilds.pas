@@ -6,7 +6,7 @@ uses
   {Delphi}
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   System.Generics.Collections, System.Generics.Defaults, System.TypInfo, System.Rtti,
-  System.Bindings.Outputs, System.Actions, {System.ImageList,} System.StrUtils,
+  System.Bindings.Outputs, System.Actions, System.StrUtils,
   System.JSON.Builders, System.JSON.Readers, System.JSON.Types, Math,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Controls.Presentation,
   FMX.Layouts, FMX.ListView, FMX.ListView.Types, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
@@ -18,10 +18,9 @@ uses
   {Skia}
   Skia, FMX.Skia,
   {Forms}
-  Utils, {Acrylic,} FormSets, FormWeapons, FormSkills, BuildGenerator, RecommendationEngine, BuildArchetypes,
-  {SubjectStand,} LoadoutManager, FormRecPrefs,
-  Game.Types, Game.JsonIterator, CalcEngine, MainController, WindowEffects,
-  FMX.Ani, System.ImageList;
+  Utils, FormSets, FormWeapons, FormSkills, BuildGenerator, RecommendationEngine,
+  BuildArchetypes, LoadoutManager, FormRecPrefs, Game.Types, Game.JsonIterator,
+  CalcEngine, MainController, WindowEffects, FMX.Ani, System.ImageList;
 
 const
   MAX_SPEC_BONUS = 3;
@@ -138,7 +137,6 @@ type
     Image_Holster: TImage;
     Image_Kneepad: TImage;
     StatusBar1: TStatusBar;
-    BindingsList1: TBindingsList;
     SkLabel_BurstDPS: TSkLabel;
     SkLabel_SustainDPS: TSkLabel;
     Layout_P_Stats: TLayout;
@@ -158,7 +156,7 @@ type
     Total_chd: TSkLabel;
     SkLabel_Skill1_Damage: TSkLabel;
     SkLabel_Skill1_Cooldown: TSkLabel;
-    TabControl1: TTabControl;
+    TabControlWeapons: TTabControl;
     Primary: TTabItem;
     Secondary: TTabItem;
     SecondaryStatsHeaderLayout: TLayout;
@@ -234,6 +232,8 @@ type
     S_mod_22: TSpeedButton;
     S_mod_23: TSpeedButton;
     LineGear: TLine;
+    LayoutStatsBreakdown: TLayout;
+    ListViewStats: TListView;
 
     procedure Slot_gPrimaryWeaponClick(Sender: TObject);
     procedure Slot_gSecondaryWeaponClick(Sender: TObject);
@@ -276,6 +276,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure LoadoutListUpdateObjects(const Sender: TObject;
       const AItem: TListViewItem);
+    procedure TabControlWeaponsChange(Sender: TObject);
   private
     { Private declarations }
     FGenerationContext: TCoreAttributeType;
@@ -286,14 +287,21 @@ type
     FGearSlotPlaceholders: array[TItemType] of TBitmap;
     FAttributeInfos: TList<TAttributeCatalogEntry>;
     FSelectedAttributeIDs: TList<string>;
-    { for Skills.json }
 
     FController: TMainController;
+
     FSpecializations: TDictionary<string, TSpecialization>;
     FSpecializationImageIndices: TDictionary<string, Integer>;
+    FWeaponExpertiseLevels: array [TWeaponSlot] of Integer;
     FWeaponSelectedTalentIDs: array [TWeaponSlot] of Integer; // Kept for UI selection memory
     FExoticWeaponSelected: Boolean;
     FExoticWeaponSlot: Game.Types.TWeaponSlot;
+
+    FLastDamageResults: array[TWeaponSlot] of TFullDamageCalcResult;
+    FLastSlotStats:     array[TWeaponSlot] of TLoadoutAggregatedStats_Display;
+    FLastPlayerStats:   CalcEngine.TPlayerAggregatedStats;
+    FLastCalcValid:     Boolean;
+    FLastActiveWeaponTypes: array[TWeaponSlot] of TWeaponFamily;
 
     function IsExoticGearEquipped: Boolean;
     function CanEquipGearPiece(const AGearPiece: TGearPiece): Boolean;
@@ -314,9 +322,11 @@ type
       const APlayerStats: CalcEngine.TPlayerAggregatedStats;
       const ATotalSkillTiers: Integer);
     procedure ApplySerializableLoadout(const ALoadout: TSerializableLoadout);
-    procedure GenerateAndApplyPredefinedBuild(AArchetypeProc: TBuildArchetypeProc);
+    procedure GenerateAndApplyPredefinedBuild(AArchetypeProc: TBuildArchetypeProc;
+      RelaxCoreOnEmpty: Boolean = False);
     procedure DisplayGeneratedBuilds(ABuilds: TList<TGearLoadout>);
     procedure BuildsListItemClick(const Sender: TObject; const AItem: TListViewItem);
+    procedure ShowBuildDetailsWithRecalibration(ABuildIndex: Integer);
     procedure ApplyBuild(const ABuild: TGearLoadout);
     procedure PopulateAttributesList;
     procedure ShowSidePanel(AContext: TCoreAttributeType);
@@ -331,6 +341,7 @@ type
     function MapSelectedAttributesToMinorTypes: TArray<TMinorAttributeType>;
     procedure ApplyAcrylicTextTheme(const Dark: Boolean);
     procedure WndProc(var Message: TMessage);
+    procedure RefreshStatsListView;
   protected
     { protected fields }
     FCurrentEffect: TWindowEffect;
@@ -590,6 +601,11 @@ begin
   RefreshAllStats;
 end;
 
+procedure TMainForm.TabControlWeaponsChange(Sender: TObject);
+begin
+  RefreshStatsListView;
+end;
+
 procedure TMainForm.UpdateSpecWeaponChkAvailability;
 var
   WF: TWeaponFamily;
@@ -633,6 +649,148 @@ var
   TargetComboBox: TComboBox;
   ImagePath: string;
   Bmp: TBitmap;
+  LTalentName: string;
+  LTalentID: Integer;
+  LTalent: TWeaponTalent;
+
+  { Look up weapon talent index in ImageList_WTalents by name.
+    Destination layer names use PascalCase with spaces removed. }
+  function FindWTalentImageIndex(const ATalentName: string): Integer;
+  var
+    LNoSpaces: string;
+    LDest: TCustomDestinationItem;
+  begin
+    Result := -1;
+    if (ATalentName = '') or not Assigned(DataJsonIterator) or
+       not Assigned(DataJsonIterator.ImageList_WTalents) then Exit;
+
+    LNoSpaces := ATalentName.Replace(' ', '', [rfReplaceAll]);
+
+    for var i := 0 to DataJsonIterator.ImageList_WTalents.Destination.Count - 1 do
+    begin
+      LDest := DataJsonIterator.ImageList_WTalents.Destination[i];
+      if (LDest.Layers.Count > 0) and SameText(LDest.Layers[0].Name, LNoSpaces) then
+        Exit(i);
+    end;
+  end;
+
+  { Set or clear weapon talent icon in the style resource }
+  procedure SetWeaponTalent(const ATalentName: string);
+  var
+    LFmxObj: TFmxObject;
+    LImgIdx: Integer;
+    LBmp: TBitmap;
+    LImgList: TCustomImageList;
+  begin
+    // Search for 'talent' resource (TGlyph in ExoticSlot/HighEndSlot styles)
+    LFmxObj := TargetComboBox.FindStyleResource('Glyph_talent');
+    if not Assigned(LFmxObj) then
+      LFmxObj := TargetComboBox.FindStyleResource('talent');
+    if not Assigned(LFmxObj) then Exit;
+
+    if (ATalentName = '') or not Assigned(DataJsonIterator) then
+    begin
+      if LFmxObj is TGlyph then
+      begin
+        TGlyph(LFmxObj).ImageIndex := -1;
+        TGlyph(LFmxObj).Visible := False;
+      end
+      else if LFmxObj is TImage then
+        TImage(LFmxObj).Visible := False;
+      Exit;
+    end;
+
+    LImgList := DataJsonIterator.ImageList_WTalents;
+    LImgIdx := FindWTalentImageIndex(ATalentName);
+
+    if LFmxObj is TGlyph then
+    begin
+      TGlyph(LFmxObj).Images := LImgList;
+      TGlyph(LFmxObj).ImageIndex := LImgIdx;
+      TGlyph(LFmxObj).Visible := (LImgIdx >= 0);
+    end
+    else if LFmxObj is TImage then
+    begin
+      if (LImgIdx >= 0) and Assigned(LImgList) then
+      begin
+        LBmp := LImgList.Bitmap(
+          TSizeF.Create(TImage(LFmxObj).Width, TImage(LFmxObj).Height), LImgIdx);
+        if Assigned(LBmp) then
+          TImage(LFmxObj).Bitmap.Assign(LBmp);
+        TImage(LFmxObj).Visible := True;
+      end
+      else
+        TImage(LFmxObj).Visible := False;
+    end;
+  end;
+
+  { Set or clear expertise badge/number in the style resource }
+  procedure SetWeaponExpertise(Level: Integer);
+  var
+    LFmxObj, LTextObj: TFmxObject;
+    LImgIdx: Integer;
+    LBmp: TBitmap;
+    LVisible, LShowBadge: Boolean;
+    LText: string;
+    LPropInfo: PPropInfo;
+  begin
+    LVisible := (Level > 0);
+    if LVisible then LText := IntToStr(Level) else LText := '';
+    LImgIdx := -1;
+    if Assigned(DataJsonIterator) then
+      LImgIdx := DataJsonIterator.GetTalentImageIndex('ui_expertise');
+    LShowBadge := LVisible and (LImgIdx >= 0);
+
+    LFmxObj := TargetComboBox.FindStyleResource('expertise');
+    if Assigned(LFmxObj) then
+    begin
+      if LFmxObj is TGlyph then
+      begin
+        if Assigned(DataJsonIterator) then
+          TGlyph(LFmxObj).Images := DataJsonIterator.ImageList_GTalents
+        else
+          TGlyph(LFmxObj).Images := nil;
+        if LShowBadge then
+          TGlyph(LFmxObj).ImageIndex := LImgIdx
+        else
+          TGlyph(LFmxObj).ImageIndex := -1;
+        TGlyph(LFmxObj).Visible := LShowBadge;
+      end
+      else if LFmxObj is TImage then
+      begin
+        if LShowBadge and Assigned(DataJsonIterator) and
+           Assigned(DataJsonIterator.ImageList_GTalents) then
+        begin
+          LBmp := DataJsonIterator.ImageList_GTalents.Bitmap(
+            TSizeF.Create(TImage(LFmxObj).Width, TImage(LFmxObj).Height), LImgIdx);
+          if Assigned(LBmp) then
+            TImage(LFmxObj).Bitmap.Assign(LBmp);
+          TImage(LFmxObj).Visible := True;
+        end
+        else
+          TImage(LFmxObj).Visible := False;
+      end
+      else
+      begin
+        if LFmxObj is TControl then
+          TControl(LFmxObj).Visible := LShowBadge;
+        LPropInfo := GetPropInfo(LFmxObj.ClassInfo, 'Text');
+        if Assigned(LPropInfo) then
+          SetStrProp(LFmxObj, LPropInfo, LText);
+      end;
+    end;
+
+    LTextObj := TargetComboBox.FindStyleResource('expertiseNb');
+    if Assigned(LTextObj) then
+    begin
+      if LTextObj is TControl then
+        TControl(LTextObj).Visible := LVisible;
+      LPropInfo := GetPropInfo(LTextObj.ClassInfo, 'Text');
+      if Assigned(LPropInfo) then
+        SetStrProp(LTextObj, LPropInfo, LText);
+    end;
+  end;
+
 begin
   TargetImageControl := nil;
   TargetComboBox := nil;
@@ -661,7 +819,7 @@ begin
   begin
     if W.ID <> 0 then
     begin
-      ImagePath := System.IOUtils.TPath.Combine(TUtils.AssetsPath, W.ImagePath);
+      ImagePath := TPath.Combine(TUtils.AssetsPath, W.ImagePath);
       if TFile.Exists(ImagePath) then
       begin
         Bmp := TBitmap.Create;
@@ -676,14 +834,14 @@ begin
       end
       else
       begin
-        TargetImageControl.Bitmap := nil;
+        TargetImageControl.Bitmap.SetSize(0, 0);
         TargetImageControl.Visible := False;
         ShowMessage('Image file not found: ' + ImagePath);
       end;
     end
     else
     begin
-      TargetImageControl.Bitmap := nil;
+      TargetImageControl.Bitmap.SetSize(0, 0);
       TargetImageControl.Visible := False;
     end;
   end;
@@ -694,18 +852,38 @@ begin
     begin
       case W.Rarity of
         wrExotic:
-          TargetComboBox.StyleLookup := 'Exotic_Style';
+          TargetComboBox.StyleLookup := 'ExoticSlot';
         wrNamed:
-          TargetComboBox.StyleLookup := 'Brandset_Style';
+          TargetComboBox.StyleLookup := 'HighEndSlot';
         wrHighEnd:
-          TargetComboBox.StyleLookup := 'Brandset_Style';
+          TargetComboBox.StyleLookup := 'HighEndSlot';
       else
         TargetComboBox.StyleLookup := '';
       end;
+
+      // Instantiate style so FindStyleResource can locate talent/expertise resources
+      TargetComboBox.ApplyStyleLookup;
+
+      // Resolve weapon talent name from stored ID
+      LTalentName := '';
+      LTalentID := FWeaponSelectedTalentIDs[ASlot];
+      if (LTalentID <> 0) and Assigned(DataJsonIterator) and
+         Assigned(DataJsonIterator.Talents) and
+         DataJsonIterator.Talents.TryGetValue(LTalentID, LTalent) then
+        LTalentName := LTalent.Name;
+
+      SetWeaponTalent(LTalentName);
+      SetWeaponExpertise(FWeaponExpertiseLevels[ASlot]);
     end
     else
     begin
-      TargetComboBox.StyleLookup := '';
+      TargetComboBox.Clear;
+      TargetComboBox.StyleLookup := 'Slot_style';
+      TargetComboBox.ApplyStyleLookup;
+
+      // Clear talent and expertise from empty slot
+      SetWeaponTalent('');
+      SetWeaponExpertise(0);
     end;
   end;
 end;
@@ -1465,6 +1643,326 @@ for LSkillSlot := ssPrimary to ssSecondary do
   end;
 end;
 
+procedure TMainForm.RefreshStatsListView;
+
+  { ── formatting helpers ── }
+
+  function FmtPct(Value: Double): string;
+  begin
+    Result := Format('%.1f%%', [Value]);
+  end;
+
+  function FmtPctFrac(Fraction: Double): string;
+  begin
+    Result := Format('%.1f%%', [Fraction * 100.0]);
+  end;
+
+  function FmtVal(Value: Double): string;
+  begin
+    Result := TUtils.FormatDamageValue(Value);
+  end;
+
+  function FmtSec(Seconds: Double): string;
+  begin
+    Result := Format('%.1fs', [Seconds]);
+  end;
+
+  function FmtInt(Value: Double): string;
+  begin
+    Result := IntToStr(Round(Value));
+  end;
+
+  { ── add a section header ── }
+  procedure AddHeader(const ATitle: string);
+  var
+    H: TListViewItem;
+  begin
+    H := ListViewStats.Items.Add;
+    H.Purpose := TListItemPurpose.Header;
+    H.Text := ATitle;
+  end;
+
+  { ── add a stat row (name on left, value on right) ── }
+  procedure AddStat(const AName, AValue: string);
+  var
+    It: TListViewItem;
+  begin
+    It := ListViewStats.Items.Add;
+    It.Text   := AName;
+    It.Detail := AValue;
+  end;
+
+  { ── add a stat row only when the value is non-zero ── }
+  procedure AddStatNZ(const AName: string; Value: Double;
+    const AFmt: string = 'pct');
+  begin
+    if Abs(Value) < 0.001 then Exit;
+    if AFmt = 'pct' then
+      AddStat(AName, FmtPct(Value))
+    else if AFmt = 'pctfrac' then
+      AddStat(AName, FmtPctFrac(Value))
+    else if AFmt = 'val' then
+      AddStat(AName, FmtVal(Value))
+    else if AFmt = 'sec' then
+      AddStat(AName, FmtSec(Value))
+    else if AFmt = 'int' then
+      AddStat(AName, FmtInt(Value));
+  end;
+
+var
+  ActiveSlot: TWeaponSlot;
+  SkillSlot:  TSkillSlot;
+  DR:  TFullDamageCalcResult;
+  DS:  TLoadoutAggregatedStats_Display;
+  WF:  TWeaponFamily;
+  Eq:  TEquippedSkill;
+  SkillStats: TDictionary<string, Double>;
+  SkillKeys:  TArray<string>;
+  Key: string;
+  V:   Double;
+  DmgPerShot: Double;
+  PvPDamage: Double;
+begin
+  ListViewStats.Items.Clear;
+  ListViewStats.BeginUpdate;
+  try
+    // ── determine active weapon slot from tab ──
+    if TabControlWeapons.ActiveTab = Secondary then
+      ActiveSlot := Game.Types.wsSecondary
+    else if TabControlWeapons.ActiveTab = Sidearm then
+      ActiveSlot := Game.Types.wsSideArm
+    else
+      ActiveSlot := Game.Types.wsPrimary;
+
+    // ── determine which skill to show ──
+    //    Primary/Sidearm → skill 1, Secondary → skill 2
+    if TabControlWeapons.ActiveTab = Secondary then
+      SkillSlot := ssSecondary
+    else
+      SkillSlot := ssPrimary;
+
+    if not FLastCalcValid then
+    begin
+      AddHeader('Offensive Stats');
+      AddStat('(no loadout)', '–');
+      Exit;
+    end;
+
+    DR := FLastDamageResults[ActiveSlot];
+    DS := FLastSlotStats[ActiveSlot];
+    WF := FLastActiveWeaponTypes[ActiveSlot];
+
+    // ═════════════════════════════════════════════════════
+    //  SECTION 1 — OFFENSIVE STATS
+    // ═════════════════════════════════════════════════════
+    AddHeader('Offensive Stats');
+
+    // Weapon Damage (= TWD: base × (1+AWD+SWD))
+    if DR.TotalWeaponDamage > 0 then
+      AddStat('Weapon Damage', FmtVal(DR.TotalWeaponDamage))
+    else
+      AddStat('Weapon Damage', '–');
+
+    // PvP Weapon Damage
+    if DR.TotalWeaponDamage > 0 then
+    begin
+      PvPDamage := DR.TotalWeaponDamage * PvPWeaponModifier[WF];
+      AddStat('PvP Weapon Damage', FmtVal(PvPDamage));
+    end;
+
+    // CHC (fraction → %)
+    AddStat('Critical Hit Chance', FmtPctFrac(DS.FinalCHC_Pct_Display));
+
+    // CHD (fraction, includes base 0.25 → display as total %)
+    AddStat('Critical Hit Damage', FmtPctFrac(DS.FinalCHD_Pct_Display + BASE_CHD));
+
+    // HSD (fraction → %)
+    AddStat('Headshot Damage', FmtPctFrac(DS.FinalHSD_Pct_Display));
+
+    // DTA / DTH
+    AddStat('Damage to Armor',  FmtPctFrac(DS.TotalDamageToArmor_Pct_Display));
+    AddStat('Health Damage',    FmtPctFrac(DS.TotalDamageToHealth_Pct_Display));
+
+    // Dmg Out of Cover — only when non-zero
+    AddStatNZ('Dmg Out of Cover',
+      DS.TotalDamageToTargetOutOfCover_OOC_Pct_Display * 100, 'pct');
+
+    // RPM / Magazine / Reload
+    AddStat('RPM',         FmtInt(DR.FinalRPM));
+    AddStat('Magazine',    FmtInt(DR.FinalMagazine));
+    AddStat('Reload Time', FmtSec(DR.FinalReloadSec));
+
+    // Handling stats — only show when meaningful
+    AddStatNZ('Reload Speed',
+      DS.TotalHandling_ReloadSpeed_Pct_Display * 100, 'pct');
+
+    if DR.FinalOptimalRange > 0 then
+      AddStat('Optimal Range', FmtInt(DR.FinalOptimalRange));
+    if DR.FinalAccuracy > 0 then
+      AddStat('Accuracy', FmtPct(DR.FinalAccuracy));
+    if DR.FinalStability > 0 then
+      AddStat('Stability', FmtPct(DR.FinalStability));
+
+    AddStatNZ('Swap Speed',
+      DS.TotalHandling_SwapSpeed_Pct_Display * 100, 'pct');
+    AddStatNZ('Ammo Capacity', DS.TotalAmmoCapacityPct, 'pct');
+
+    // DPS summary
+    if DR.FinalRPM > 0 then
+    begin
+      DmgPerShot := DR.BurstDPS / (DR.FinalRPM / 60.0);
+      AddStat('Avg Damage/Shot', FmtVal(DmgPerShot));
+    end;
+    if DR.BurstDPS > 0 then
+      AddStat('Burst DPS',   FmtVal(DR.BurstDPS));
+    if DR.SustainDPS > 0 then
+      AddStat('Sustain DPS', FmtVal(DR.SustainDPS));
+
+
+    // ═════════════════════════════════════════════════════
+    //  SECTION 2 — DEFENSIVE STATS
+    // ═════════════════════════════════════════════════════
+    AddHeader('Defensive Stats');
+
+    if DS.TotalArmor_Display > 0 then
+      AddStat('Total Armor', FmtVal(DS.TotalArmor_Display));
+    AddStatNZ('Armor on Kill',       DS.TotalArmorOnKillPct,          'pct');
+    AddStatNZ('Armor Regeneration',  DS.TotalArmorRegenPct,           'pct');
+
+    if DS.TotalHealth_Display > 0 then
+      AddStat('Max Health', FmtVal(DS.TotalHealth_Display));
+
+    AddStatNZ('Incoming Repairs',      DS.TotalIncomingRepairsPct,      'pct');
+    AddStatNZ('Protection from Elites', DS.TotalProtectionFromElitesPct, 'pct');
+    AddStatNZ('Hazard Protection',     DS.TotalHazardProtectionPct,     'pct');
+    AddStatNZ('Explosive Resistance',  DS.TotalExplosiveResistancePct,  'pct');
+    AddStatNZ('Shield Health',         DS.TotalShieldHealthPct,         'pct');
+
+
+    // ═════════════════════════════════════════════════════
+    //  SECTION 3 — UTILITY STATS
+    // ═════════════════════════════════════════════════════
+
+    // ── Which skill to show? ──
+    Eq := FController.GetEquippedSkill(SkillSlot);
+
+    if Eq.SkillID <> '' then
+      AddHeader('Utility Stats: ' + Eq.Variant.VariantName)
+    else
+      AddHeader('Utility Stats');
+
+    // ── Global utility bonuses (always displayed, loadout-wide) ──
+    // Use FLastPlayerStats.TotalSkillTier (loadout-wide, properly aggregated)
+    // instead of DS.TotalSkillTiers_Display (per-weapon, may be garbage).
+    AddStat('Skill Tiers', IntToStr(Max(0, FLastPlayerStats.TotalSkillTier)));
+    AddStatNZ('Skill Haste',      DS.TotalSkillHastePct,     'pct');
+    AddStatNZ('Skill Damage',     DS.TotalSkillDamagePct,    'pct');
+    AddStatNZ('Skill Duration',   DS.TotalSkillDurationPct,  'pct');
+    AddStatNZ('Status Effects',   DS.TotalStatusEffectsPct,  'pct');
+    AddStatNZ('Repair Skills',    DS.TotalRepairSkillsPct,   'pct');
+    AddStatNZ('Skill Health',     DS.TotalSkillHealthPct,    'pct');
+    AddStatNZ('Explosive Damage', DS.TotalExplosiveDamagePct, 'pct');
+
+    // ── Skill-specific computed properties (from CalculateSkillPerformance) ──
+    if Eq.SkillID <> '' then
+    begin
+      SkillStats := CalcEngine.CalculateSkillPerformance(
+        Eq.Variant,
+        FLastPlayerStats,
+        Max(0, FLastPlayerStats.TotalSkillTier),
+        False,  // IsOvercharged
+        False   // IsPvP
+      );
+      try
+        SkillKeys := SkillStats.Keys.ToArray;
+
+        // Sort keys alphabetically for stable display, but we'll
+        // do a priority-ordered pass first for the most important ones.
+
+        // ── Priority properties in game-like order ──
+        if SkillStats.TryGetValue('cooldown', V) then
+          AddStat('Cooldown', FmtSec(V));
+        if SkillStats.TryGetValue('health', V) then
+          AddStat('Health', FmtVal(V));
+        if SkillStats.TryGetValue('duration', V) then
+          AddStat('Duration', FmtSec(V));
+        if SkillStats.TryGetValue('damage', V) then
+          AddStat('Damage', FmtVal(V));
+        if SkillStats.TryGetValue('explosionDamage', V) then
+          AddStat('Explosion Damage', FmtVal(V));
+        if SkillStats.TryGetValue('burnDamage', V) then
+          AddStat('Burn Damage', FmtVal(V));
+        if SkillStats.TryGetValue('repair', V) then
+          AddStat('Repair', FmtVal(V));
+        if SkillStats.TryGetValue('healing', V) then
+          AddStat('Healing', FmtVal(V));
+        if SkillStats.TryGetValue('burnDuration', V) then
+          AddStat('Burn Duration', FmtSec(V));
+        if SkillStats.TryGetValue('damageReduction', V) then
+          AddStat('Damage Reduction', FmtPct(V));
+        if SkillStats.TryGetValue('pvpDamageReduction', V) then
+          AddStat('PvP Damage Reduction', FmtPct(V));
+        if SkillStats.TryGetValue('charges', V) then
+          AddStat('Charges', FmtInt(V));
+        if SkillStats.TryGetValue('radius', V) then
+          AddStat('Radius', Format('%.1fm', [V]));
+        if SkillStats.TryGetValue('ammo', V) then
+          AddStat('Ammo', FmtInt(V));
+        if SkillStats.TryGetValue('bleedDamage', V) then
+          AddStat('Bleed Damage', FmtVal(V));
+        if SkillStats.TryGetValue('bleedDuration', V) then
+          AddStat('Bleed Duration', FmtSec(V));
+        if SkillStats.TryGetValue('shockDuration', V) then
+          AddStat('Shock Duration', FmtSec(V));
+
+        // ── Catch-all for ANY remaining keys from JSON tier data ──
+        //    (future-proofs against new skill properties Massive might add)
+        for Key in SkillKeys do
+        begin
+          if SameText(Key, 'cooldown') or SameText(Key, 'health') or
+             SameText(Key, 'duration') or SameText(Key, 'damage') or
+             SameText(Key, 'explosionDamage') or SameText(Key, 'burnDamage') or
+             SameText(Key, 'repair') or SameText(Key, 'healing') or
+             SameText(Key, 'burnDuration') or SameText(Key, 'damageReduction') or
+             SameText(Key, 'pvpDamageReduction') or SameText(Key, 'charges') or
+             SameText(Key, 'radius') or SameText(Key, 'ammo') or
+             SameText(Key, 'bleedDamage') or SameText(Key, 'bleedDuration') or
+             SameText(Key, 'shockDuration') then
+            Continue; // already displayed above
+
+          V := SkillStats[Key];
+          if Abs(V) < 0.001 then
+            Continue;
+
+          // Smart format based on property name pattern
+          if ContainsText(Key, 'duration') or ContainsText(Key, 'cooldown') then
+            AddStat(Key, FmtSec(V))
+          else if ContainsText(Key, 'damage') or ContainsText(Key, 'health') or
+                  ContainsText(Key, 'repair') or ContainsText(Key, 'healing') then
+            AddStat(Key, FmtVal(V))
+          else if ContainsText(Key, 'reduction') or ContainsText(Key, 'chance') or
+                  ContainsText(Key, 'resistance') or ContainsText(Key, 'haste') or
+                  ContainsText(Key, 'bonus') then
+            AddStat(Key, FmtPct(V))
+          else if ContainsText(Key, 'radius') or ContainsText(Key, 'range') then
+            AddStat(Key, Format('%.1fm', [V]))
+          else if (V = Trunc(V)) and (V >= 1) and (V <= 100) then
+            AddStat(Key, FmtInt(V))    // looks like a count or small integer
+          else
+            AddStat(Key, FmtVal(V));   // fallback: damage-style formatting
+        end;
+
+      finally
+        SkillStats.Free;
+      end;
+    end;
+
+  finally
+    ListViewStats.EndUpdate;
+  end;
+
+end;
+
 {$ENDREGION}
 
 procedure TMainForm.RefreshAllStats;
@@ -1627,7 +2125,20 @@ begin
     end;
 
     RefreshSkillStatsUI(LPlayerAggregatedStats, LPlayerAggregatedStats.TotalSkillTier);
-  end;
+
+    FLastCalcValid := True;
+    for var ws := Game.Types.wsPrimary to Game.Types.wsSideArm do
+    begin
+      FLastDamageResults[ws] := DamageResults[ws];
+      FLastSlotStats[ws]     := SlotStats[ws];
+      FLastActiveWeaponTypes[ws] := FController.GetSelectedWeapon(ws).WeaponType;
+    end;
+    FLastPlayerStats := LPlayerAggregatedStats;
+  end
+  else
+    FLastCalcValid := False;
+
+  RefreshStatsListView;
 end;
 
 {$REGION ' -LOADOUTS'}
@@ -2180,12 +2691,20 @@ begin
 end;
 
 procedure TMainForm.BuildFromSelectedAttributes;
+var
+  AttrEnum: TMinorAttributeType;
+//  AttrStr: string;
 begin
   if FSelectedAttributeIDs.Count = 0 then
     Exit;
 
   GenerateAndApplyPredefinedBuild(
     procedure(var AArchetype: TBuildArchetype)
+    var
+      ItemType: TItemType;
+      AttrList: TList<TMinorAttributeType>;
+      RequiredCore: TCoreAttributeType;
+      AttrStr: string;
     begin
       // Point de départ : archetype de base suivant le contexte
       case FGenerationContext of
@@ -2196,13 +2715,43 @@ begin
         GetDpsBuildArchetype(AArchetype);
       end;
 
-      // On ne touche pas RequiredCoreAttribute / RequiredBrandSets :
-      // l’archetype garde son profil (DPS / Tank / Skill).
-      // On booste simplement les attributs sélectionnés.
+      // Convert selected attributes to BOTH RequiredAttributes AND AttributeWeights
+      AArchetype.RequiredAttributes.Clear;
       AArchetype.AttributeWeights.Clear;
-      for var AttrID in FSelectedAttributeIDs do
-        AArchetype.AttributeWeights.AddOrSetValue(AttrID, 50.0);
-    end
+
+      for ItemType := Low(TItemType) to itKneepads do
+      begin
+        AttrList := TList<TMinorAttributeType>.Create;
+        try
+          if not AArchetype.RequiredCoreAttribute.TryGetValue(ItemType, RequiredCore) then
+            RequiredCore := catWeaponDamage;
+
+          for AttrStr in FSelectedAttributeIDs do
+          begin
+            if TryStrToMinorAttributeType(AttrStr, AttrEnum) then
+            begin
+              var CanRoll := False;
+              var AttrCategory := MinorAttributeCategory(AttrEnum);
+              case RequiredCore of
+                catWeaponDamage: CanRoll := (AttrCategory = matOffensive);
+                catArmor:        CanRoll := (AttrCategory = matDefensive);
+                catSkillTier:    CanRoll := (AttrCategory = matUtility);
+              end;
+              if CanRoll and not AttrList.Contains(AttrEnum) then
+                AttrList.Add(AttrEnum);
+            end;
+
+            AArchetype.AttributeWeights.AddOrSetValue(AttrStr, 50.0);
+          end;
+
+          if AttrList.Count > 0 then
+            AArchetype.RequiredAttributes.Add(ItemType, AttrList.ToArray);
+        finally
+          AttrList.Free;
+        end;
+      end;
+    end,
+    True
   );
 end;
 
@@ -2318,12 +2867,14 @@ begin
   //
 end;
 
-procedure TMainForm.GenerateAndApplyPredefinedBuild(AArchetypeProc: TBuildArchetypeProc);
+procedure TMainForm.GenerateAndApplyPredefinedBuild(AArchetypeProc: TBuildArchetypeProc;
+  RelaxCoreOnEmpty: Boolean);
 var
   LArchetype: TBuildArchetype;
   LBuildGenerator: TBuildGenerator;
   LBuilds: TList<TGearLoadout>;
   LCanonicalSetDefs: TDictionary<string, TPieceSet>;
+  LSelectedMinorTypes: TArray<TMinorAttributeType>;
 
   function AttrMatchesWeights(const AttrId: string; const Weights: TDictionary<string, Double>): Boolean;
   var
@@ -2350,36 +2901,84 @@ var
     Pair: TPair<string, Integer>;
     SetDef: TPieceSet;
     Bonus: TSetBonus;
+    HasDirectMatch: Boolean;
+    HasActiveSetBonus: Boolean;
+    HasAnySetTarget: Boolean;
   begin
-    Result := True;
     if (Weights = nil) or (Weights.Count = 0) then
-      Exit;
+      Exit(True); // No weights = accept all
+
+    HasDirectMatch := False;
+    HasActiveSetBonus := False;
+    HasAnySetTarget := False;
 
     // Fixed minor attributes (exotics/named) can satisfy weights with 1 piece
     for var GP in B.GearPieces do
       for var Fixed in GP.FixedMinorAttributes do
         if AttrMatchesWeights(Fixed.ID, Weights) then
-          Exit(True);
+          HasDirectMatch := True;
 
     // Set bonuses: require effective counts >= itemsRequired
     EffectiveCounts := CalcEngine.GetEffectiveSetCounts(B.GearPieces);
     try
       for Pair in EffectiveCounts do
-        if LCanonicalSetDefs.TryGetValue(Pair.Key, SetDef) then
-          for Bonus in SetDef.Bonuses do
-            if AttrMatchesWeights(Bonus.AttributeID, Weights) then
-            begin
-              var Required := Bonus.ItemsRequired;
-              if Required <= 0 then
-                Required := 1;
-              if Pair.Value >= Required then
-                Exit(True);
-            end;
+      begin
+        if not Assigned(LCanonicalSetDefs) or not LCanonicalSetDefs.TryGetValue(Pair.Key, SetDef) then
+        begin
+          // Unknown set -> treat as non-contributing when weights are present
+          Exit(False);
+        end;
+
+        var SetHasMatching := False;
+        var SetHasActive := False;
+        for Bonus in SetDef.Bonuses do
+          if AttrMatchesWeights(Bonus.AttributeID, Weights) then
+          begin
+            SetHasMatching := True;
+            var Required := Bonus.ItemsRequired;
+            if Required <= 0 then
+              Required := 1;
+            if Pair.Value = Required then
+              SetHasActive := True;
+          end;
+
+        if SetHasMatching then
+        begin
+          HasAnySetTarget := True;
+          if not SetHasActive then
+            Exit(False); // set has target bonus but not enough pieces
+          HasActiveSetBonus := True;
+          Continue;
+        end;
+
+        // No target bonus on this set: allow only if fixed minor matches weights (exotics/named)
+        var SetHasFixedTarget := False;
+        for var GP in B.GearPieces do
+          if SameText(CalcEngine.CanonicalSetName(GP.SetName), Pair.Key) then
+            for var Fixed in GP.FixedMinorAttributes do
+              if AttrMatchesWeights(Fixed.ID, Weights) then
+              begin
+                SetHasFixedTarget := True;
+                Break;
+              end;
+        if SetHasFixedTarget then
+        begin
+          HasAnySetTarget := True;
+          Continue;
+        end;
+
+        // Strict: discard any set that doesn't contribute to target bonuses
+        Exit(False);
+      end;
     finally
       EffectiveCounts.Free;
     end;
 
-    Result := False;
+    // If no set contributes to target bonuses, fall back to direct matches only.
+    if not HasAnySetTarget then
+      Exit(HasDirectMatch);
+
+    Result := HasActiveSetBonus or HasDirectMatch;
   end;
 
   function BuildHasAnySetBonus(const B: TGearLoadout): Boolean;
@@ -2434,6 +3033,52 @@ begin
     LBuildGenerator := TBuildGenerator.Create(DataJsonIterator);
     LBuilds := LBuildGenerator.GenerateBuilds(LArchetype, LArchetype.AttributeWeights);
 
+    if RelaxCoreOnEmpty and ((LBuilds = nil) or (LBuilds.Count = 0)) then
+    begin
+      if Assigned(LBuilds) then
+        LBuilds.Free;
+      // First fallback: relax strict requirements but keep core attribute and weights.
+      if Assigned(LArchetype.RequiredAttributes) then
+        LArchetype.RequiredAttributes.Clear;
+      if Assigned(LArchetype.RequiredBrandSets) then
+        LArchetype.RequiredBrandSets.Clear;
+      if Assigned(LArchetype.RequiredTalents) then
+        LArchetype.RequiredTalents.Clear;
+      LBuilds := LBuildGenerator.GenerateBuilds(LArchetype, LArchetype.AttributeWeights);
+    end;
+
+    if RelaxCoreOnEmpty and ((LBuilds = nil) or (LBuilds.Count = 0)) then
+    begin
+      if Assigned(LBuilds) then
+        LBuilds.Free;
+      if Assigned(LArchetype.RequiredCoreAttribute) then
+        LArchetype.RequiredCoreAttribute.Clear;
+      if Assigned(LArchetype.RequiredTalents) then
+        LArchetype.RequiredTalents.Clear;
+      if Assigned(LArchetype.RequiredAttributes) then
+        LArchetype.RequiredAttributes.Clear;
+      if Assigned(LArchetype.RequiredWeapons) then
+        LArchetype.RequiredWeapons.Clear;
+      if Assigned(LArchetype.RequiredBrandSets) then
+        LArchetype.RequiredBrandSets.Clear;
+      if Assigned(LArchetype.AllowedBrandSets) then
+        LArchetype.AllowedBrandSets.Clear;
+      SetLength(LArchetype.RequiredSkills, 0);
+      SetLength(LArchetype.RequiredWeaponTalents, 0);
+      SetLength(LArchetype.RequiredExotics, 0);
+      LArchetype.RequiredSpecialization := '';
+      LBuilds := LBuildGenerator.GenerateBuilds(LArchetype, LArchetype.AttributeWeights);
+    end;
+
+    if RelaxCoreOnEmpty and ((LBuilds = nil) or (LBuilds.Count = 0)) then
+    begin
+      if Assigned(LBuilds) then
+        LBuilds.Free;
+      // Last-resort: only drop weights when no attribute weights are selected.
+      if not (Assigned(LArchetype.AttributeWeights) and (LArchetype.AttributeWeights.Count > 0)) then
+        LBuilds := LBuildGenerator.GenerateBuilds(LArchetype, nil);
+    end;
+
     // Prefer builds that actually activate the selected attribute(s)
     if (LBuilds <> nil) and (LBuilds.Count > 0) then
     begin
@@ -2441,6 +3086,7 @@ begin
       var UseWeightFilter := Assigned(LArchetype.AttributeWeights) and (LArchetype.AttributeWeights.Count > 0);
       if UseWeightFilter then
       begin
+        LSelectedMinorTypes := MapSelectedAttributesToMinorTypes;
         LCanonicalSetDefs := TDictionary<string, TPieceSet>.Create(TIStringComparer.Ordinal);
         for var PS in DataJsonIterator.AllPieceSetDefinitions.Values do
         begin
@@ -2501,6 +3147,56 @@ begin
   end;
 end;
 
+function GetItemTypeShortName(AType: TItemType): string;
+begin
+  case AType of
+    itMask:     Result := 'Mask';
+    itBackpack: Result := 'BP';
+    itChest:    Result := 'Vest';
+    itGloves:   Result := 'Glove';
+    itHolster:  Result := 'Holst';
+    itKneepads: Result := 'Knee';
+  else
+    Result := '?';
+  end;
+end;
+
+function GetItemTypeName(AType: TItemType): string;
+begin
+  case AType of
+    itMask:     Result := 'Mask';
+    itBackpack: Result := 'Backpack';
+    itChest:    Result := 'Chest';
+    itGloves:   Result := 'Gloves';
+    itHolster:  Result := 'Holster';
+    itKneepads: Result := 'Kneepads';
+  else
+    Result := 'Unknown';
+  end;
+end;
+
+function GetCoreShortName(AType: TCoreAttributeType): string;
+begin
+  case AType of
+    catWeaponDamage: Result := 'R';
+    catArmor:        Result := 'B';
+    catSkillTier:    Result := 'Y';
+  else
+    Result := '?';
+  end;
+end;
+
+function GetCoreLongName(AType: TCoreAttributeType): string;
+begin
+  case AType of
+    catWeaponDamage: Result := 'Weapon Damage';
+    catArmor:        Result := 'Armor';
+    catSkillTier:    Result := 'Skill Tier';
+  else
+    Result := 'Unknown';
+  end;
+end;
+
 procedure TMainForm.DisplayGeneratedBuilds(ABuilds: TList<TGearLoadout>);
 var
   I: Integer;
@@ -2508,10 +3204,6 @@ var
   LBuildName, LDetails, LStatText: string;
   LGearPiece: TGearPiece;
   TitleObj, DetailObj: TListItemText;
-  LDynamic: TDictionary<string, Double>;
-  LInput: TFullLoadoutInput;
-  LAttrID: string;
-  LVal: Double;
 begin
   if Assigned(FGeneratedBuilds) then
     FGeneratedBuilds.Free;
@@ -2523,37 +3215,50 @@ begin
 
     for I := 0 to FGeneratedBuilds.Count - 1 do
     begin
-      // Calcul des stats pour l'affichage du détail
-      FillChar(LInput, SizeOf(LInput), 0);
-      for var k := Low(TItemType) to High(TItemType) do
-        LInput.EquippedGear[k] := FGeneratedBuilds[I].GearPieces[k];
+      LStatText := FGeneratedBuilds[I].StatSummary;
 
-      LDynamic := CalcEngine.AggregateAllStats(LInput, DataJsonIterator.AllPieceSetDefinitions);
+      // Recalibration info
+      var RecalCount := 0;
+      var RecalText := '';
+      var RecalInfo := TStringBuilder.Create;
       try
-        LStatText := '';
-        if Assigned(FSelectedAttributeIDs) then
-          for LAttrID in FSelectedAttributeIDs do
+        for LGearPiece in FGeneratedBuilds[I].GearPieces do
+          if LGearPiece.RequiresRecalibration then
           begin
-            if LDynamic.TryGetValue(LowerCase(LAttrID), LVal) then
-            begin
-               var DisplayName := LAttrID;
-               for var Entry in GetAttributeCatalog do
-                 if SameText(Entry.ID, LAttrID) then begin DisplayName := Entry.DisplayName; Break; end;
-
-               LStatText := LStatText + Format('%s: %.1f, ', [DisplayName, LVal]);
-            end;
+            Inc(RecalCount);
+            if RecalInfo.Length > 0 then
+              RecalInfo.Append(', ');
+            RecalInfo.Append(Format('%s(%s->%s)', [
+              GetItemTypeShortName(LGearPiece.ItemType),
+              GetCoreShortName(LGearPiece.OriginalCoreType),
+              GetCoreShortName(LGearPiece.RecalibratedCoreType)
+            ]));
           end;
-        if LStatText <> '' then SetLength(LStatText, Length(LStatText) - 2);
+
+        if RecalCount > 0 then
+          RecalText := Format('[Recal: %s] ', [RecalInfo.ToString]);
       finally
-        LDynamic.Free;
+        RecalInfo.Free;
       end;
 
       // Texte principal (titre)
-      LBuildName := Format('Build %d (Score: %.1f)', [I + 1, FGeneratedBuilds[I].Score]);
+      if RecalCount > 0 then
+      begin
+        var Suffix := '';
+        if RecalCount > 1 then
+          Suffix := 's';
+        LBuildName := Format('Build %d (Score: %.1f, %d recal%s)',
+          [I + 1, FGeneratedBuilds[I].Score, RecalCount, Suffix]);
+      end
+      else
+        LBuildName := Format('Build %d (Score: %.1f)', [I + 1, FGeneratedBuilds[I].Score]);
 
       // Détail : liste des brands/sets trouvés + stats cibles
       LDetails := '';
-      if LStatText <> '' then LDetails := '[' + LStatText + '] ';
+      if RecalText <> '' then
+        LDetails := LDetails + RecalText;
+      if LStatText <> '' then
+        LDetails := LDetails + '[' + LStatText + '] ';
 
       var LSets := '';
       for LGearPiece in FGeneratedBuilds[I].GearPieces do
@@ -2594,6 +3299,69 @@ begin
   if (Assigned(FGeneratedBuilds)) and (LIndex >= 0) and (LIndex < FGeneratedBuilds.Count) then
   begin
     ApplyBuild(FGeneratedBuilds[LIndex]);
+  end;
+end;
+
+procedure TMainForm.ShowBuildDetailsWithRecalibration(ABuildIndex: Integer);
+var
+  Build: TGearLoadout;
+  Details: TStringBuilder;
+  GP: TGearPiece;
+  HasRecals: Boolean;
+begin
+  if (ABuildIndex < 0) or (not Assigned(FGeneratedBuilds)) or
+     (ABuildIndex >= FGeneratedBuilds.Count) then
+    Exit;
+
+  Build := FGeneratedBuilds[ABuildIndex];
+  Details := TStringBuilder.Create;
+  try
+    Details.AppendLine('=== BUILD DETAILS ===');
+    Details.AppendLine('');
+
+    Details.AppendLine('GEAR PIECES:');
+    for GP in Build.GearPieces do
+    begin
+      if GP.Name = '' then
+        Continue;
+      Details.Append(Format('  %s: %s', [
+        GetItemTypeName(GP.ItemType),
+        GP.Name
+      ]));
+
+      if GP.RequiresRecalibration then
+      begin
+        Details.Append(Format(' [RECAL: %s -> %s]', [
+          GetCoreLongName(GP.OriginalCoreType),
+          GetCoreLongName(GP.RecalibratedCoreType)
+        ]));
+      end
+      else if GP.SetType = stExoticSet then
+        Details.Append(' [Exotic - Core Locked]');
+
+      Details.AppendLine('');
+    end;
+
+    Details.AppendLine('');
+    Details.AppendLine('RECALIBRATION CHECKLIST:');
+    HasRecals := False;
+    for GP in Build.GearPieces do
+      if GP.RequiresRecalibration then
+      begin
+        HasRecals := True;
+        Details.AppendLine(Format('  [ ] %s: Change core from %s to %s', [
+          GP.Name,
+          GetCoreLongName(GP.OriginalCoreType),
+          GetCoreLongName(GP.RecalibratedCoreType)
+        ]));
+      end;
+
+    if not HasRecals then
+      Details.AppendLine('  [OK] No recalibration needed - all cores match.');
+
+    ShowMessage(Details.ToString);
+  finally
+    Details.Free;
   end;
 end;
 
@@ -2698,6 +3466,12 @@ begin
   FGeneratedBuilds := nil;
   FAttributeInfos := TList<TAttributeCatalogEntry>.Create;
   FSelectedAttributeIDs := TList<string>.Create;
+  FLastCalcValid := False;
+  FillChar(FLastDamageResults, SizeOf(FLastDamageResults), 0);
+  FillChar(FLastSlotStats, SizeOf(FLastSlotStats), 0);
+  FillChar(FLastPlayerStats, SizeOf(FLastPlayerStats), 0);
+  FillChar(FLastActiveWeaponTypes, SizeOf(FLastActiveWeaponTypes), 0);
+
   BuildsList.OnItemClick := BuildsListItemClick;
 
   // Wire up LoadoutList custom drawing/updating

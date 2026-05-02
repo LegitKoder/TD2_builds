@@ -8,7 +8,7 @@ uses
   System.Generics.Collections, System.Generics.Defaults, System.TypInfo, System.Variants,
   FMX.DialogService, FMX.Dialogs, Winapi.Windows, FMX.Graphics, FMX.MultiResBitmap,
   {units}
-  Game.Player, Game.Types, Utils, System.ImageList, FMX.ImgList;
+  Game.Types, Utils, System.ImageList, FMX.ImgList;
 
 type
   // Callback for asynchronous processing.
@@ -19,6 +19,7 @@ type
   TDataJsonIterator = class(TDataModule)
   published
     ImageList_GTalents: TImageList;
+    ImageList_WTalents: TImageList;
   private
     { Private declarations }
     FWeapons: TDictionary<Integer, TWeapon>;
@@ -35,7 +36,6 @@ type
     FFixedMinorAttributeDefinitions: TDictionary<string, TFixedMinorAttributeDefinition>;
     FSkills: TDictionary<string, TSkillData>;
     FSpecializations: TDictionary<string, TSpecialization>;
-    FPlayer: TPlayer; // Instance du joueur
 
     { low-level helpers }
     function StrToWeaponType(const S: string): TWeaponFamily;
@@ -62,9 +62,6 @@ type
     // procedure LoadGearPieceSetFromJson(const FileName: string);
 
     procedure LoadSkillsFromJson(const FileName: string);
-
-    procedure LoadPlayerFromJson(const FileName: string);
-    // Ajout pour le joueur
 
     procedure HandleParsingError(const ErrorMessage: string);
 
@@ -122,7 +119,6 @@ type
     property Skills: TDictionary<string, TSkillData> read FSkills;
     property Specializations: TDictionary<string, TSpecialization>
       read FSpecializations;
-    property Player: TPlayer read FPlayer;
     function FindGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
     function FindFullGearPiece(const PieceName: string; out Piece: TGearPiece): Boolean;
     function CoreAttrIDToEnum(const ID: string): TCoreAttributeType;
@@ -707,7 +703,6 @@ begin
     FSkills := TDictionary<string, TSkillData>.Create;
 
   FSpecializations := TDictionary<string, TSpecialization>.Create;
-  FPlayer := TPlayer.Create; // Créer l'instance du joueur
 
   // chargement + validation
   Init(TUtils.AssetsPath);
@@ -752,7 +747,6 @@ begin
       Spec.Free;
     FSpecializations.Free;
   end;
-  FPlayer.Free;
   inherited;
 end;
 
@@ -1148,7 +1142,6 @@ begin
   LoadSkillsFromJson(TPath.Combine(TUtils.AssetsPath, 'Skills.json'));
   LoadSpecializationsFromJson(TPath.Combine(TUtils.AssetsPath,
     'Specializations.json'));
-  LoadPlayerFromJson(TPath.Combine(TUtils.AssetsPath, 'Player.json'));
 end;
 
 { ─────────── 1/8  – Specializations.json ─────────── }
@@ -2488,6 +2481,8 @@ begin
                   VarRec.V_ImagePath := It.AsString
                 else if It.Key = 'baseCooldownSeconds' then
                   VarRec.BaseCooldownSeconds := It.AsDouble
+                else if It.Key = 'baseDurationSeconds' then
+                  VarRec.BaseDurationSeconds := It.AsDouble
 
                   // categories[]
                 else if (It.Key = 'categories') and
@@ -2578,24 +2573,6 @@ begin
   end;
 end;
 
-{ ─────────── 8/8  – Player.json ─────────── }
-procedure TDataJsonIterator.LoadPlayerFromJson(const FileName: string);
-begin
-  if not FileExists(FileName) then
-  begin
-    HandleParsingError('Player JSON file not found: ' + FileName);
-    Exit;
-  end;
-
-  try
-    FPlayer.LoadFromJSON(FileName);
-  except
-    on E: Exception do
-    begin
-      HandleParsingError('Exception in LoadPlayerFromJson: ' + E.Message);
-    end;
-  end;
-end;
 
 { 🔸🔸🔸  Validation croisée  🔸🔸🔸 }
 

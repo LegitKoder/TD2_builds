@@ -15,7 +15,10 @@
       "Rifle": 15.0,
       "Pistol": 15.0
     },
-    "general_bonuses": {}
+    "specific_bonuses": {
+      "armorOnKill": 10,
+      "rateOfFire": 5
+    }
   },
   {
     "name": "Sharpshooter",
@@ -33,7 +36,10 @@
       "Rifle": 15.0,
       "Pistol": 15.0
     },
-    "general_bonuses": {}
+    "specific_bonuses": {
+      "headshotDamage": 30,
+      "stability": 30
+    }
   },
   {
     "name": "Firewall",
@@ -51,7 +57,10 @@
       "Rifle": 15.0,
       "Pistol": 15.0
     },
-    "general_bonuses": {}
+    "specific_bonuses": {
+      "burnDamage": 20,
+      "burnResistance": 20
+    }
   },
   {
     "name": "Technician",
@@ -69,7 +78,11 @@
       "Rifle": 15.0,
       "Pistol": 15.0
     },
-    "general_bonuses": {}
+    "specific_bonuses": {
+      "skillTier": 1,
+      "skillDamage": 10,
+      "repairSkills": 20
+    }
   },
   {
     "name": "Demolitionist",
@@ -87,7 +100,9 @@
       "Rifle": 15.0,
       "Pistol": 15.0
     },
-    "general_bonuses": {}
+    "specific_bonuses": {
+      "explosiveDamage": 25
+    }
   },
   {
     "name": "Survivalist",
@@ -105,6 +120,8 @@
       "Rifle": 15.0,
       "Pistol": 15.0
     },
-    "general_bonuses": {}
+    "specific_bonuses": {
+      "incomingRepairs": 20
+    }
   }
 ]

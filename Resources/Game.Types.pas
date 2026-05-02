@@ -17,6 +17,49 @@ type
 
   TBonusType = (btAdditive, btMultiplicative, btAmplified);
 
+  TAttributeID = (
+    atNone,
+    atCriticalHitChance,
+    atCriticalHitDamage,
+    atHeadshotDamage,
+    atWeaponDamage,
+    atAssaultRifleDamage,
+    atSMGDamage,
+    atLMGDamage,
+    atShotgunDamage,
+    atRifleDamage,
+    atMMRDamage,
+    atPistolDamage,
+    atDamageToArmor,
+    atHealthDamage,
+    atDamageOutOfCover,
+    atHealth,
+    atArmor,
+    atArmorRegen,
+    atArmorOnKill,
+    atHealthOnKill,
+    atHazardProtection,
+    atExplosiveResistance,
+    atIncomingRepairs,
+    atSkillTier,
+    atSkillDamage,
+    atSkillHaste,
+    atSkillDuration,
+    atRepairSkills,
+    atStatusEffects,
+    atSkillHealth,
+    atExplosiveDamage,
+    atAccuracy,
+    atStability,
+    atReloadSpeed,
+    atOptimalRange,
+    atWeaponHandling,
+    atSwapSpeed,
+    atMagazineSize,
+    atAmmoCapacity,
+    atRateOfFire
+  );
+
   /// Specialization families used by TD-2
   TSpecialization = class
   private
@@ -151,7 +194,9 @@ type
     gmetCriticalHitChance, gmetCriticalHitDamage, gmetHeadshotDamage,
     // Defensive
     gmetProtectionFromElites, gmetArmorOnKillFlat, gmetStatusEffectResistance,
-    gmetPulseResistance, gmetIncomingRepairs, gmetExplosiveResistance,
+    gmetPulseResistance, gmetIncomingRepairs, gmetExplosiveResistance, gmetBurnResistance, gmetDisruptResistance,
+    gmetBleedResistance, gmetBlindDeafResistance, gmetDisorientResistance, gmetEnsnareResistance, gmetPoisonResistance,
+    gmetShockResistance,
     // Skill
     gmetSkillHaste, gmetSkillDuration, gmetRepairSkills,
     gmetSkillDamage, gmetSkillHealth
@@ -188,7 +233,7 @@ type
     // Ensure all fields from TGearModAttributeType have a corresponding accumulator field here
   end;
 
-   TGearTalentDefinition = record
+  TGearTalentDefinition = record
     Name: string;
     Description: string;
     IconFilename: string;
@@ -316,6 +361,9 @@ type
     SelectedMinorIconIndices: TArray<Integer>;
     SelectedModIconIndex: Integer;
     MinorAttributeSlotCount: Integer;
+    RequiresRecalibration: Boolean;           // True if core needs to be recalibrated
+    OriginalCoreType: TCoreAttributeType;     // Original core from data (Red/Blue/Yellow)
+    RecalibratedCoreType: TCoreAttributeType; // Target core after recalibration
   end;
 
   TGearLoadout = record
@@ -323,6 +371,7 @@ type
     Weapons: array[TWeaponSlot] of TWeapon;
     // Primary, Secondary, Sidearm; wsNone slot remains unused
     Score: Double;
+    StatSummary: string; // Precomputed summary for selected attributes (optional)
   end;
 
   TFullLoadoutInput = record
@@ -358,6 +407,7 @@ type
     TotalHandling_Accuracy_Pct_Display: Double;
     TotalHandling_Stability_Pct_Display: Double;
     TotalHandling_ReloadSpeed_Pct_Display: Double;
+    TotalHandling_SwapSpeed_Pct_Display: Double;
     TotalOptimalRangePct_Display: Double;
     // Add more fields as needed for UI display, e.g., specific resistances, skill haste, etc.
     TotalSkillDamagePct: Double;
@@ -410,6 +460,8 @@ type
     Categories: TArray<TSkillCategory>;
     EffectsByTier: TArray<TSkillEffectTier>;
     BaseCooldownSeconds: Double;
+    BaseDurationSeconds: Double;
+
     // Other variant-specific properties like base charges, etc.
   end;
 
@@ -602,6 +654,46 @@ const
     (ID: 'pulse_resistance'; DisplayName: 'Pulse Resistance'; Category: matDefensive),
     (ID: 'shock_resistance'; DisplayName: 'Shock Resistance'; Category: matDefensive));
 
+const
+  { PvP weapon-damage modifiers by family.
+    PvP Damage = PvE Damage × PvPWeaponModifier[family].
+    Values from TU22+.  Update these when Massive patches PvP. }
+  PvPWeaponModifier: array [TWeaponFamily] of Double = (
+    0.40,   // wcUnknown   (fallback)
+    0.40,   // wcAR
+    0.40,   // wcSMG
+    0.40,   // wcLMG
+    0.34,   // wcSTG  (shotguns are lower)
+    0.26,   // wcMMR  (marksman rifles are heavily penalized)
+    0.40,   // wcRIFLE
+    0.40    // wcPISTOL
+  );
+
+  { PvP skill-damage modifier (applies to all skill damage). }
+  PvPSkillModifier = 0.25;
+
+const
+  { Base armor per gear slot at Level 40 (god-roll / max values).
+    Source: TD2 資料庫 spreadsheet — matches in-game values exactly.
+    Total base armor = 660,014 HP when all 6 slots are equipped. }
+  BaseArmorPerSlot: array [TItemType] of Double = (
+    0,        // itUnknown  — no armor
+    80297,    // itMask
+    130844,   // itBackpack
+    157961,   // itChest     (highest base armor)
+    80297,    // itGloves
+    111889,   // itHolster
+    98726     // itKneepads
+  );
+
+  { Sum of all 6 slots for convenience }
+  TotalBaseArmor = 660014;
+
+const
+  { Base health at Level 40.  All agents have this as a baseline.
+    Source: TD2 資料庫 spreadsheet. }
+  BaseHealth = 363000;
+
 implementation
 
 { TSpecialization }
@@ -655,7 +747,7 @@ begin
   Result := '';
   L := LowerCase(S);
   for C in L do
-    if C in ['a'..'z'] then
+    if CharInSet(C, ['a'..'z']) then
       Result := Result + C;
 end;
 

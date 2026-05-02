@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, System.TypInfo, System.Generics.Collections, System.StrUtils,
-  Game.Types, Math, Game.JsonIterator, Utils;
+  Game.Types, Math, Game.JsonIterator, Utils, Game.AttributeMapper;
 
 const
   BASE_CHD  = 0.25; // 25%
@@ -127,6 +127,14 @@ procedure ApplyModOrTalentEffect(const SourceName: string;
 
 implementation
 
+function GetEffectiveCoreType(const APiece: TGearPiece): TCoreAttributeType;
+begin
+  if APiece.RequiresRecalibration then
+    Result := APiece.RecalibratedCoreType
+  else
+    Result := APiece.CoreAttribute.AttrType;
+end;
+
 
 function CanonicalSetName(const Raw: string): string;
 var
@@ -216,7 +224,8 @@ begin
     LValueFraction := AGearPiece.CoreAttribute.Value / 100.0;
     // Assuming core weapon damage is %
 
-    case AGearPiece.CoreAttribute.AttrType of
+    var LCoreType := GetEffectiveCoreType(AGearPiece);
+    case LCoreType of
       catWeaponDamage: // Typically +15% Weapon Damage
         begin
           AddPct(APools.B_AWD, LSourcePrefix +
@@ -275,23 +284,19 @@ begin
             ADisplayStats.FinalHSD_Pct_Display + LValueFraction;
         end;
       madWeaponHandling:
-      // Weapon Handling can be Accuracy, Stability, Reload Speed, Swap Speed. Assume it's split or applied generally.
         begin
-          // For simplicity, let's assume it gives a small bonus to accuracy, stability, and reload speed for display.
-          // The actual game mechanics might be more complex or specific.
-          // This part needs careful mapping if "Weapon Handling" gives specific percentages to underlying stats.
-          // For now, let's add to display stats directly.
           ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
             ADisplayStats.TotalHandling_Accuracy_Pct_Display +
-            (LValueFraction / 3); // Example: split effect
+            (LValueFraction / 4);
           ADisplayStats.TotalHandling_Stability_Pct_Display :=
             ADisplayStats.TotalHandling_Stability_Pct_Display +
-            (LValueFraction / 3);
+            (LValueFraction / 4);
           ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display :=
             ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display +
-            (LValueFraction / 3);
-          // Note: TDamagePools does not have direct fields for Acc/Stab. These are handled by CalculateWeaponPerformance.
-          // If gear directly affects these for the *overall* loadout, TDamagePools might need expansion or this logic needs to feed into weapon calcs.
+            (LValueFraction / 4);
+          ADisplayStats.TotalHandling_SwapSpeed_Pct_Display :=
+            ADisplayStats.TotalHandling_SwapSpeed_Pct_Display +
+            (LValueFraction / 4);
         end;
 
       // Defensive Minors (mostly for display or EHP, not direct DPS pools)
@@ -314,11 +319,14 @@ begin
       madRepairSkills:
         ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LMinorAttr.Value;
       madSkillDamage:
-        ;
+        ADisplayStats.TotalSkillDamagePct :=
+          ADisplayStats.TotalSkillDamagePct + LMinorAttr.Value;
       madSkillHaste:
-        ;
+        ADisplayStats.TotalSkillHastePct :=
+          ADisplayStats.TotalSkillHastePct + LMinorAttr.Value;
       madStatusEffects:
-        ;
+        ADisplayStats.TotalStatusEffectsPct :=
+          ADisplayStats.TotalStatusEffectsPct + LMinorAttr.Value;
     else
       // Handle unknown or other minor attributes if necessary
     end;
@@ -371,12 +379,13 @@ begin
     else if SameText(LNormalizedID, 'weaponHandling') then
     begin
       ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
-        ADisplayStats.TotalHandling_Accuracy_Pct_Display + (LValueFraction / 3);
+        ADisplayStats.TotalHandling_Accuracy_Pct_Display + (LValueFraction / 4);
       ADisplayStats.TotalHandling_Stability_Pct_Display :=
-        ADisplayStats.TotalHandling_Stability_Pct_Display + (LValueFraction / 3);
+        ADisplayStats.TotalHandling_Stability_Pct_Display + (LValueFraction / 4);
       ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display :=
-        ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display +
-        (LValueFraction / 3);
+        ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display + (LValueFraction / 4);
+      ADisplayStats.TotalHandling_SwapSpeed_Pct_Display :=
+        ADisplayStats.TotalHandling_SwapSpeed_Pct_Display + (LValueFraction / 4);
     end
     else if SameText(LNormalizedID, 'accuracy') then
     begin
@@ -506,6 +515,8 @@ var
   AAllPieceSetDefinitionsValues: TArray<TPieceSet>;
   PS: TPieceSet;
   NormID: string;
+  AttrID: TAttributeID;
+  HasAttrID: Boolean;
 begin
   EquippedSetCounts := GetEffectiveSetCounts(AEquippedGear);
   try
@@ -547,6 +558,8 @@ begin
         begin
           LValueFraction := LSetBonus.Value / 100.0;
           // Most set bonuses are percentages
+          HasAttrID := TAttributeMapper.TryParse(LSetBonus.AttributeID, AttrID);
+          NormID := NormalizeAttrId(LSetBonus.AttributeID);
 
           case LSetBonus.BonusType of
             sbtWeaponDamage: // Generic weapon damage
@@ -577,15 +590,37 @@ begin
               begin
                 // Examples: "+1 Skill Tier", "+15% Weapon Damage (as a core-like bonus)"
                 // This needs careful mapping based on LSetBonus.AttributeID
-                if SameText(LSetBonus.AttributeID, 'skillTier') then
-                // Example ID
+                if HasAttrID then
+                begin
+                  case AttrID of
+                    atSkillTier:
+                      begin
+                        ADisplayStats.TotalSkillTiers_Display :=
+                          ADisplayStats.TotalSkillTiers_Display +
+                          Round(LSetBonus.Value); // Skill Tiers are whole numbers
+                      end;
+                    atWeaponDamage:
+                      begin
+                        AddPct(APools.B_AWD, LSourcePrefix + LSetBonus.AttributeID,
+                          LValueFraction);
+                        ADisplayStats.TotalWeaponDamage_AWD_Pct_Display :=
+                          ADisplayStats.TotalWeaponDamage_AWD_Pct_Display +
+                          LValueFraction;
+                      end;
+                    atArmor:
+                      begin
+                        ADisplayStats.TotalArmor_Display :=
+                          ADisplayStats.TotalArmor_Display + LSetBonus.Value;
+                      end;
+                  end;
+                end
+                else if NormID = 'skilltier' then
                 begin
                   ADisplayStats.TotalSkillTiers_Display :=
                     ADisplayStats.TotalSkillTiers_Display +
-                    Round(LSetBonus.Value); // Skill Tiers are whole numbers
+                    Round(LSetBonus.Value);
                 end
-                else if SameText(LSetBonus.AttributeID, 'weaponDamage') then
-                // Example if a set gives WD as a "core attribute" type bonus
+                else if NormID = 'weapondamage' then
                 begin
                   AddPct(APools.B_AWD, LSourcePrefix + LSetBonus.AttributeID,
                     LValueFraction);
@@ -593,8 +628,7 @@ begin
                     ADisplayStats.TotalWeaponDamage_AWD_Pct_Display +
                     LValueFraction;
                 end
-                else if SameText(LSetBonus.AttributeID, 'armor') then
-                // Example for flat armor
+                else if NormID = 'armor' then
                 begin
                   ADisplayStats.TotalArmor_Display :=
                     ADisplayStats.TotalArmor_Display + LSetBonus.Value;
@@ -602,127 +636,180 @@ begin
               end;
             sbtAttribute: // General attributes like CHC, CHD, HSD, etc.
               begin
-                NormID := NormalizeAttrId(LSetBonus.AttributeID);
-                if NormID = 'criticalhitchance' then
+                if HasAttrID then
                 begin
-                  APools.CHC := APools.CHC + LValueFraction;
-                  ADisplayStats.FinalCHC_Pct_Display :=
-                    ADisplayStats.FinalCHC_Pct_Display + LValueFraction;
+                  case AttrID of
+                    atCriticalHitChance:
+                      begin
+                        APools.CHC := APools.CHC + LValueFraction;
+                        ADisplayStats.FinalCHC_Pct_Display :=
+                          ADisplayStats.FinalCHC_Pct_Display + LValueFraction;
+                      end;
+                    atCriticalHitDamage:
+                      begin
+                        AddPct(APools.B_CritHead,
+                          LSourcePrefix + LSetBonus.AttributeID, LValueFraction);
+                        ADisplayStats.FinalCHD_Pct_Display :=
+                          ADisplayStats.FinalCHD_Pct_Display + LValueFraction;
+                      end;
+                    atHeadshotDamage:
+                      begin
+                        APools.HeadDmg := APools.HeadDmg + LValueFraction;
+                        ADisplayStats.FinalHSD_Pct_Display :=
+                          ADisplayStats.FinalHSD_Pct_Display + LValueFraction;
+                      end;
+                    atDamageToArmor:
+                      begin
+                        AddPct(APools.B_AH, LSourcePrefix + LSetBonus.AttributeID,
+                          LValueFraction);
+                        ADisplayStats.TotalDamageToArmor_Pct_Display :=
+                          ADisplayStats.TotalDamageToArmor_Pct_Display +
+                          LValueFraction;
+                      end;
+                    atHealthDamage:
+                      begin
+                        AddPct(APools.B_AH, LSourcePrefix + LSetBonus.AttributeID,
+                          LValueFraction);
+                        ADisplayStats.TotalDamageToHealth_Pct_Display :=
+                          ADisplayStats.TotalDamageToHealth_Pct_Display +
+                          LValueFraction;
+                      end;
+                    atDamageOutOfCover:
+                      begin
+                        AddPct(APools.B_OOC, LSourcePrefix + LSetBonus.AttributeID,
+                          LValueFraction);
+                        ADisplayStats.TotalDamageToTargetOutOfCover_OOC_Pct_Display
+                          := ADisplayStats.
+                          TotalDamageToTargetOutOfCover_OOC_Pct_Display +
+                          LValueFraction;
+                      end;
+                     atWeaponHandling:
+                      begin
+                        ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
+                          ADisplayStats.TotalHandling_Accuracy_Pct_Display +
+                          (LValueFraction / 4);
+                        ADisplayStats.TotalHandling_Stability_Pct_Display :=
+                          ADisplayStats.TotalHandling_Stability_Pct_Display +
+                          (LValueFraction / 4);
+                        ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display :=
+                          ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display +
+                          (LValueFraction / 4);
+                        ADisplayStats.TotalHandling_SwapSpeed_Pct_Display :=
+                          ADisplayStats.TotalHandling_SwapSpeed_Pct_Display +
+                          (LValueFraction / 4);
+                      end;
+                    atAccuracy:
+                      ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
+                        ADisplayStats.TotalHandling_Accuracy_Pct_Display +
+                        LValueFraction;
+                    atStability:
+                      ADisplayStats.TotalHandling_Stability_Pct_Display :=
+                        ADisplayStats.TotalHandling_Stability_Pct_Display +
+                        LValueFraction;
+                    atReloadSpeed:
+                      ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display :=
+                        ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display +
+                        LValueFraction;
+                    atAmmoCapacity:
+                      ADisplayStats.TotalAmmoCapacityPct :=
+                        ADisplayStats.TotalAmmoCapacityPct + LSetBonus.Value;
+                    atMagazineSize:
+                      APools.Magazine := APools.Magazine * (1 + LValueFraction);
+                    atRateOfFire:
+                      APools.RPM := APools.RPM * (1 + LValueFraction);
+                    atSwapSpeed:
+                      ADisplayStats.TotalHandling_SwapSpeed_Pct_Display :=
+                        ADisplayStats.TotalHandling_SwapSpeed_Pct_Display +
+                        LValueFraction;
+                    atOptimalRange:
+                      ADisplayStats.TotalOptimalRangePct_Display :=
+                        ADisplayStats.TotalOptimalRangePct_Display +
+                        LValueFraction;
+                    atWeaponDamage:
+                      begin
+                        AddPct(APools.B_AWD, LSourcePrefix + LSetBonus.AttributeID,
+                          LValueFraction);
+                        ADisplayStats.TotalWeaponDamage_AWD_Pct_Display :=
+                          ADisplayStats.TotalWeaponDamage_AWD_Pct_Display +
+                          LValueFraction;
+                      end;
+                  end;
                 end
-                else if NormID = 'criticalhitdamage' then
+                else
                 begin
-                  AddPct(APools.B_CritHead,
-                    LSourcePrefix + LSetBonus.AttributeID, LValueFraction);
-                  ADisplayStats.FinalCHD_Pct_Display :=
-                    ADisplayStats.FinalCHD_Pct_Display + LValueFraction;
-                end
-                else if NormID = 'headshotdamage' then
-                begin
-                  APools.HeadDmg := APools.HeadDmg + LValueFraction;
-                  ADisplayStats.FinalHSD_Pct_Display :=
-                    ADisplayStats.FinalHSD_Pct_Display + LValueFraction;
-                end
-                else if NormID = 'damagetoarmor' then
-                begin
-                  AddPct(APools.B_AH, LSourcePrefix + LSetBonus.AttributeID,
-                    LValueFraction);
-                  ADisplayStats.TotalDamageToArmor_Pct_Display :=
-                    ADisplayStats.TotalDamageToArmor_Pct_Display +
-                    LValueFraction;
-                end
-                else if NormID = 'damagetohealth' then
-                // Assuming B_AH covers both DTA and DTH
-                begin
-                  AddPct(APools.B_AH, LSourcePrefix + LSetBonus.AttributeID,
-                    LValueFraction);
-                  ADisplayStats.TotalDamageToHealth_Pct_Display :=
-                    ADisplayStats.TotalDamageToHealth_Pct_Display +
-                    LValueFraction;
-                end
-                else if NormID = 'damagetotargetoutofcover' then
-                begin
-                  AddPct(APools.B_OOC, LSourcePrefix + LSetBonus.AttributeID,
-                    LValueFraction);
-                  ADisplayStats.TotalDamageToTargetOutOfCover_OOC_Pct_Display
-                    := ADisplayStats.
-                    TotalDamageToTargetOutOfCover_OOC_Pct_Display +
-                    LValueFraction;
-                end
-                else if NormID = 'weaponhandling' then
-                begin
-                  ADisplayStats.TotalHandling_Accuracy_Pct_Display :=
-                    ADisplayStats.TotalHandling_Accuracy_Pct_Display +
-                    (LValueFraction / 3);
-                  ADisplayStats.TotalHandling_Stability_Pct_Display :=
-                    ADisplayStats.TotalHandling_Stability_Pct_Display +
-                    (LValueFraction / 3);
-                  ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display :=
-                    ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display +
-                    (LValueFraction / 3);
-                end
-                else if NormID = 'accuracy' then
-                   ADisplayStats.TotalHandling_Accuracy_Pct_Display := ADisplayStats.TotalHandling_Accuracy_Pct_Display + LValueFraction
-                else if NormID = 'stability' then
-                   ADisplayStats.TotalHandling_Stability_Pct_Display := ADisplayStats.TotalHandling_Stability_Pct_Display + LValueFraction
-                else if (NormID = 'reloadspeed') or (NormID = 'reloadtime') then
-                   ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display := ADisplayStats.TotalHandling_ReloadSpeed_Pct_Display + LValueFraction
-                else if NormID = 'ammocapacity' then
-                   ADisplayStats.TotalAmmoCapacityPct := ADisplayStats.TotalAmmoCapacityPct + LSetBonus.Value
-                else if NormID = 'magazinesize' then
-                   begin
-                     APools.Magazine := APools.Magazine * (1 + LValueFraction);
-                   end
-                else if NormID = 'rateoffire' then
-                   APools.RPM := APools.RPM * (1 + LValueFraction)
-                else if NormID = 'swapspeed' then
-                   begin end // No display stat for swap speed currently
-                else if NormID = 'optimalrange' then
-                   ADisplayStats.TotalOptimalRangePct_Display := ADisplayStats.TotalOptimalRangePct_Display + LValueFraction
-                else if NormID = 'increasedthreat' then
-                   begin end // No display stat
-                else if NormID = 'reducedthreat' then
-                   ADisplayStats.TotalReducedThreatPct := ADisplayStats.TotalReducedThreatPct + LSetBonus.Value;
+                  if NormID = 'increasedthreat' then
+                    begin end // No display stat
+                  else if NormID = 'reducedthreat' then
+                    ADisplayStats.TotalReducedThreatPct :=
+                      ADisplayStats.TotalReducedThreatPct + LSetBonus.Value;
+                end;
               end;
             sbtSkillAttribute:
               begin
-                NormID := NormalizeAttrId(LSetBonus.AttributeID);
-                if NormID = 'skillhaste' then
-                   ADisplayStats.TotalSkillHastePct := ADisplayStats.TotalSkillHastePct + LSetBonus.Value
-                else if NormID = 'skilldamage' then
-                   ADisplayStats.TotalSkillDamagePct := ADisplayStats.TotalSkillDamagePct + LSetBonus.Value
-                else if NormID = 'repairskills' then
-                   ADisplayStats.TotalRepairSkillsPct := ADisplayStats.TotalRepairSkillsPct + LSetBonus.Value
-                else if NormID = 'statuseffects' then
-                   ADisplayStats.TotalStatusEffectsPct := ADisplayStats.TotalStatusEffectsPct + LSetBonus.Value
-                else if NormID = 'skillduration' then
-                   ADisplayStats.TotalSkillDurationPct := ADisplayStats.TotalSkillDurationPct + LSetBonus.Value
-                else if NormID = 'skillhealth' then
-                   ADisplayStats.TotalSkillHealthPct := ADisplayStats.TotalSkillHealthPct + LSetBonus.Value
-                else if NormID = 'explosivedamage' then
-                   ADisplayStats.TotalExplosiveDamagePct := ADisplayStats.TotalExplosiveDamagePct + LSetBonus.Value
-                else if NormID = 'burndamage' then
-                   begin end // Specific status damage, maybe add to status effects or track separately?
-                else if NormID = 'burnduration' then
-                   begin end; // Specific status duration
+                if HasAttrID then
+                begin
+                  case AttrID of
+                    atSkillHaste:
+                      ADisplayStats.TotalSkillHastePct :=
+                        ADisplayStats.TotalSkillHastePct + LSetBonus.Value;
+                    atSkillDamage:
+                      ADisplayStats.TotalSkillDamagePct :=
+                        ADisplayStats.TotalSkillDamagePct + LSetBonus.Value;
+                    atRepairSkills:
+                      ADisplayStats.TotalRepairSkillsPct :=
+                        ADisplayStats.TotalRepairSkillsPct + LSetBonus.Value;
+                    atStatusEffects:
+                      ADisplayStats.TotalStatusEffectsPct :=
+                        ADisplayStats.TotalStatusEffectsPct + LSetBonus.Value;
+                    atSkillDuration:
+                      ADisplayStats.TotalSkillDurationPct :=
+                        ADisplayStats.TotalSkillDurationPct + LSetBonus.Value;
+                    atSkillHealth:
+                      ADisplayStats.TotalSkillHealthPct :=
+                        ADisplayStats.TotalSkillHealthPct + LSetBonus.Value;
+                    atExplosiveDamage:
+                      ADisplayStats.TotalExplosiveDamagePct :=
+                        ADisplayStats.TotalExplosiveDamagePct + LSetBonus.Value;
+                  end;
+                end
+                else
+                begin
+                  if NormID = 'burndamage' then
+                    begin end // Specific status damage, maybe add to status effects or track separately?
+                  else if NormID = 'burnduration' then
+                    begin end; // Specific status duration
+                end;
               end;
             sbtDefenseAttribute:
               begin
-                NormID := NormalizeAttrId(LSetBonus.AttributeID);
-                if NormID = 'armorregen' then
-                   ADisplayStats.TotalArmorRegenPct := ADisplayStats.TotalArmorRegenPct + LSetBonus.Value
-                else if NormID = 'armoronkill' then
-                   ADisplayStats.TotalArmorOnKillPct := ADisplayStats.TotalArmorOnKillPct + LSetBonus.Value
-                else if NormID = 'hazardprotection' then
-                   ADisplayStats.TotalHazardProtectionPct := ADisplayStats.TotalHazardProtectionPct + LSetBonus.Value
-                else if NormID = 'health' then
-                   ADisplayStats.TotalHealth_Display := ADisplayStats.TotalHealth_Display + ((ADisplayStats.TotalArmor_Display + ADisplayStats.TotalHealth_Display) * (LSetBonus.Value / 100.0)) // Approximation if % Health
-                else if NormID = 'incomingrepairs' then
-                   ADisplayStats.TotalIncomingRepairsPct := ADisplayStats.TotalIncomingRepairsPct + LSetBonus.Value;
+                if HasAttrID then
+                begin
+                  case AttrID of
+                    atArmorRegen:
+                      ADisplayStats.TotalArmorRegenPct :=
+                        ADisplayStats.TotalArmorRegenPct + LSetBonus.Value;
+                    atArmorOnKill:
+                      ADisplayStats.TotalArmorOnKillPct :=
+                        ADisplayStats.TotalArmorOnKillPct + LSetBonus.Value;
+                    atHazardProtection:
+                      ADisplayStats.TotalHazardProtectionPct :=
+                        ADisplayStats.TotalHazardProtectionPct + LSetBonus.Value;
+                    atHealth:
+                      ADisplayStats.TotalHealth_Display :=
+                        ADisplayStats.TotalHealth_Display +
+                        ((ADisplayStats.TotalArmor_Display + ADisplayStats.TotalHealth_Display) *
+                        (LSetBonus.Value / 100.0)); // Approximation if % Health
+                    atIncomingRepairs:
+                      ADisplayStats.TotalIncomingRepairsPct :=
+                        ADisplayStats.TotalIncomingRepairsPct + LSetBonus.Value;
+                  end;
+                end;
               end;
             sbtResistance:
                begin
-                 if SameText(LSetBonus.AttributeID, 'explosive_resistance') then
-                   ADisplayStats.TotalExplosiveResistancePct := ADisplayStats.TotalExplosiveResistancePct + LSetBonus.Value
+                 if HasAttrID and (AttrID = atExplosiveResistance) then
+                   ADisplayStats.TotalExplosiveResistancePct :=
+                     ADisplayStats.TotalExplosiveResistancePct + LSetBonus.Value
                  else if SameText(LSetBonus.AttributeID, 'protection_from_elites') then
                    ADisplayStats.TotalProtectionFromElitesPct := ADisplayStats.TotalProtectionFromElitesPct + LSetBonus.Value
                  else if SameText(LSetBonus.AttributeID, 'shock_resistance') then
@@ -1190,6 +1277,21 @@ begin
       Exit; // Cannot proceed without weapon stat definition
     end;
 
+    // --- 2b. Base Armor from equipped gear slots ---
+    // Every equipped gear piece contributes its slot's base armor
+    // (this is the armor value shown in the slot header, BEFORE cores/bonuses).
+    for i := Ord(itMask) to Ord(itKneepads) do
+    begin
+      if LoadoutInput.EquippedGear[TItemType(i)].Name <> '' then
+        AggregatedDisplayStats.TotalArmor_Display :=
+          AggregatedDisplayStats.TotalArmor_Display +
+          BaseArmorPerSlot[TItemType(i)];
+    end;
+
+    // Base health for all agents
+    AggregatedDisplayStats.TotalHealth_Display :=
+      AggregatedDisplayStats.TotalHealth_Display + BaseHealth;
+
   for i := 0 to High(WeaponStat.CoreAttributes) do
   begin
     var LAttribute := WeaponStat.CoreAttributes[i];
@@ -1288,10 +1390,8 @@ begin
 
   // Initialize display stats from weapon's direct contribution
   AggregatedDisplayStats.FinalCHC_Pct_Display := Pools.CHC;
-  AggregatedDisplayStats.FinalCHD_Pct_Display := Sum(Pools.B_CritHead);
-  // CHD is sum of fractions
-  AggregatedDisplayStats.FinalHSD_Pct_Display := Pools.HeadDmg;
-  // HSD is sum of fractions
+  AggregatedDisplayStats.FinalCHD_Pct_Display := Sum(Pools.B_CritHead);  // CHD is sum of fractions
+  AggregatedDisplayStats.FinalHSD_Pct_Display := Pools.HeadDmg;          // HSD is sum of fractions
 
   // --- 3. Gear Bonuses Aggregation ---
   for i := Ord(Low(LoadoutInput.EquippedGear)) to Ord(High(LoadoutInput.EquippedGear)) do
@@ -1360,7 +1460,6 @@ begin
           [LBonusName] / 100.0;
         // Example: Map general bonuses to relevant pools or display stats
         if SameText(LBonusName, 'weaponDamage') then
-        // If a spec gives general WD
         begin
           AddPct(Pools.B_AWD, 'Spec: General WD', LSpecBonusValue);
           AggregatedDisplayStats.TotalWeaponDamage_AWD_Pct_Display :=
@@ -1373,6 +1472,44 @@ begin
           AggregatedDisplayStats.FinalCHC_Pct_Display :=
             AggregatedDisplayStats.FinalCHC_Pct_Display + LSpecBonusValue;
         end
+        else if SameText(LBonusName, 'headshotDamage') then
+        begin
+          Pools.HeadDmg := Pools.HeadDmg + LSpecBonusValue;
+          AggregatedDisplayStats.FinalHSD_Pct_Display :=
+            AggregatedDisplayStats.FinalHSD_Pct_Display + LSpecBonusValue;
+        end
+        else if SameText(LBonusName, 'stability') then
+        begin
+          AggregatedDisplayStats.TotalHandling_Stability_Pct_Display :=
+            AggregatedDisplayStats.TotalHandling_Stability_Pct_Display +
+            LSpecBonusValue;
+        end
+        else if SameText(LBonusName, 'skillTier') then
+        begin
+          // Technician's +1 Skill Tier — this is a RAW integer, not a %
+          // Note: general_bonuses stores as raw values, not divided by 100
+          AggregatedDisplayStats.TotalSkillTiers_Display :=
+            AggregatedDisplayStats.TotalSkillTiers_Display +
+            Round(LoadoutInput.ChosenSpecialization.GeneralBonuses[LBonusName]);
+        end
+        else if SameText(LBonusName, 'skillDamage') then
+        begin
+          AggregatedDisplayStats.TotalSkillDamagePct :=
+            AggregatedDisplayStats.TotalSkillDamagePct +
+            LoadoutInput.ChosenSpecialization.GeneralBonuses[LBonusName];
+        end
+        else if SameText(LBonusName, 'explosiveDamage') then
+        begin
+          AggregatedDisplayStats.TotalExplosiveDamagePct :=
+            AggregatedDisplayStats.TotalExplosiveDamagePct +
+            LoadoutInput.ChosenSpecialization.GeneralBonuses[LBonusName];
+        end
+        else if SameText(LBonusName, 'armorOnKill') then
+        begin
+          AggregatedDisplayStats.TotalArmorOnKillPct :=
+            AggregatedDisplayStats.TotalArmorOnKillPct +
+            LoadoutInput.ChosenSpecialization.GeneralBonuses[LBonusName];
+        end;
         // Add more mappings as needed for other general spec bonuses
       end;
     end;
@@ -1492,6 +1629,19 @@ var
 begin
   Result := TDictionary<string, Double>.Create;
 
+  // 0. Base armor from equipped gear slots
+  var LBaseArmor: Double;
+  LBaseArmor := 0;
+  for I := Ord(itMask) to Ord(itKneepads) do
+  begin
+    if AInput.EquippedGear[TItemType(I)].Name <> '' then
+      LBaseArmor := LBaseArmor + BaseArmorPerSlot[TItemType(I)];
+  end;
+  if LBaseArmor > 0 then
+    AddStat('totalArmor', LBaseArmor);  // note: lowercase normalized key
+
+  AddStat('health', BaseHealth);
+
   // 1. From Gear
   for I := Ord(Low(AInput.EquippedGear)) to Ord(High(AInput.EquippedGear)) do
   begin
@@ -1562,6 +1712,40 @@ begin
   AddStat('skillHaste', AInput.WatchBonuses.SkillHastePct);
   AddStat('skillDuration', AInput.WatchBonuses.SkillDurationPct);
   AddStat('repairSkills', AInput.WatchBonuses.RepairSkillsPct);
+
+  // 4. From Specialization specific bonuses
+  if Assigned(AInput.ChosenSpecialization) and
+     Assigned(AInput.ChosenSpecialization.GeneralBonuses) then
+  begin
+    for var LBonusKey in AInput.ChosenSpecialization.GeneralBonuses.Keys do
+      AddStat(LBonusKey,
+        AInput.ChosenSpecialization.GeneralBonuses[LBonusKey]);
+  end;
+
+  // 5. From Specialization weapon type bonuses (if matching active weapon)
+  if Assigned(AInput.ChosenSpecialization) and
+     Assigned(AInput.ChosenSpecialization.InherentWeaponTypeBonuses) then
+  begin
+    for var LWF in AInput.ActivatedSpecWeaponTypeBonuses do
+    begin
+      var LBonusVal: Double;
+      if AInput.ChosenSpecialization.InherentWeaponTypeBonuses
+        .TryGetValue(LWF, LBonusVal) then
+      begin
+        // Map weapon family to SWD attribute ID
+        case LWF of
+          wcAR:     AddStat('assaultRifleDamage', LBonusVal);
+          wcSMG:    AddStat('smgDamage', LBonusVal);
+          wcLMG:    AddStat('lmgDamage', LBonusVal);
+          wcSTG:    AddStat('shotgunDamage', LBonusVal);
+          wcMMR:    AddStat('marksmanRifleDamage', LBonusVal);
+          wcRIFLE:  AddStat('rifleDamage', LBonusVal);
+          wcPISTOL: AddStat('pistolDamage', LBonusVal);
+        end;
+      end;
+    end;
+  end;
+
 end;
 
 function AggregatePlayerStats(const APlayerLoadout: TFullLoadoutInput;
@@ -1636,33 +1820,75 @@ begin
 
     // Apply player stats based on the effect name
     if SameText(LEffectProperty.Name, 'damage') or
-      SameText(LEffectProperty.Name, 'explosionDamage') or
-      SameText(LEffectProperty.Name, 'burnDamage') then
+       SameText(LEffectProperty.Name, 'explosionDamage') or
+       SameText(LEffectProperty.Name, 'burnDamage') or
+       SameText(LEffectProperty.Name, 'damagePerTick') or
+       SameText(LEffectProperty.Name, 'deflectorDamage') then
     begin
       LFinalValue := LFinalValue * (1 + APlayerStats.TotalSkillDamage);
+      // Sub-type scaling for explosive damage
       if SameText(LEffectProperty.Name, 'explosionDamage') then
         LFinalValue := LFinalValue * (1 + APlayerStats.TotalExplosiveDamage);
+      // Sub-type scaling for burn damage
       if SameText(LEffectProperty.Name, 'burnDamage') then
         LFinalValue := LFinalValue * (1 + APlayerStats.TotalStatusEffects);
     end
     else if SameText(LEffectProperty.Name, 'duration') or
-      SameText(LEffectProperty.Name, 'burnDuration') then
+            SameText(LEffectProperty.Name, 'burnDuration') or
+            SameText(LEffectProperty.Name, 'cloudDurationSeconds') or
+            SameText(LEffectProperty.Name, 'zoneDuration') then
     begin
       LFinalValue := LFinalValue * (1 + APlayerStats.TotalSkillDuration);
     end
     else if SameText(LEffectProperty.Name, 'cooldown') then
     begin
+      // Cooldown is REDUCED by haste, so divide
       LFinalValue := LFinalValue / (1 + APlayerStats.TotalSkillHaste);
     end
-    else if SameText(LEffectProperty.Name, 'health') then
+    else if SameText(LEffectProperty.Name, 'health') or
+            SameText(LEffectProperty.Name, 'zoneHealth') or
+            SameText(LEffectProperty.Name, 'ensnareHealth') then
     begin
       LFinalValue := LFinalValue * (1 + APlayerStats.TotalSkillHealth);
     end
-    else if SameText(LEffectProperty.Name, 'repair') then
+    else if SameText(LEffectProperty.Name, 'repair') or
+            SameText(LEffectProperty.Name, 'healing') or
+            SameText(LEffectProperty.Name, 'allyRepair') or
+            SameText(LEffectProperty.Name, 'repairOverTime') or
+            SameText(LEffectProperty.Name, 'skillRepair') or
+            SameText(LEffectProperty.Name, 'activeRegen') then
     begin
       LFinalValue := LFinalValue * (1 + APlayerStats.TotalRepairSkills);
+    end
+    else if SameText(LEffectProperty.Name, 'ensnareDuration') or
+            SameText(LEffectProperty.Name, 'shockDuration') or
+            SameText(LEffectProperty.Name, 'blindDuration') then
+    begin
+      // Status effect durations scale with Status Effects stat
+      LFinalValue := LFinalValue * (1 + APlayerStats.TotalStatusEffects);
+    end;
+    // All other properties (damageReduction, charges, radius, speed,
+    // ammo, mines, traps, etc.) pass through UNSCALED — correct behavior.
+
+    // ── Inject cooldown from base property if not already in tier effects ──
+    if (ASkillVariant.BaseCooldownSeconds > 0) and
+       (not Result.ContainsKey('cooldown')) then
+    begin
+      var LCooldown: Double;
+      LCooldown := ASkillVariant.BaseCooldownSeconds /
+        (1 + APlayerStats.TotalSkillHaste);
+      Result.AddOrSetValue('cooldown', LCooldown);
     end;
 
+    // ── Inject duration from base property if not already in tier effects ──
+    if (ASkillVariant.BaseDurationSeconds > 0) and
+       (not Result.ContainsKey('duration')) then
+    begin
+      var LDuration: Double;
+      LDuration := ASkillVariant.BaseDurationSeconds *
+        (1 + APlayerStats.TotalSkillDuration);
+      Result.AddOrSetValue('duration', LDuration);
+    end;
     // TODO: Add PvP modifiers here
 
     Result.AddOrSetValue(LEffectProperty.Name, LFinalValue);

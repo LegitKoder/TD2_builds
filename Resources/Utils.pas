@@ -20,6 +20,7 @@ type
   end;
 
 function RemoveAttributeSuffix(const ID: string): string;
+function TryStrToMinorAttributeType(const S: string; out AttrType: TMinorAttributeType): Boolean;
 function GetMaxGearModValue(AEffectType: TGearModEffectType): Double;
 function GetCompatibleModEffects(ASlotType: TGearModType)
   : TArray<TGearModEffectType>;
@@ -173,6 +174,101 @@ begin
 
     if IsNumeric then
       Result := Result.Substring(0, UnderscorePos);
+  end;
+end;
+
+function TryStrToMinorAttributeType(const S: string; out AttrType: TMinorAttributeType): Boolean;
+var
+  Normalized: string;
+begin
+  Result := False;
+  AttrType := Low(TMinorAttributeType);
+
+  Normalized := RemoveAttributeSuffix(S);
+  Normalized := LowerCase(Normalized);
+  Normalized := StringReplace(Normalized, '_', '', [rfReplaceAll]);
+  Normalized := StringReplace(Normalized, ' ', '', [rfReplaceAll]);
+
+  if (Normalized = 'criticalhitchance') or (Normalized = 'crithitchance') or
+     (Normalized = 'chc') or (Normalized = 'critchance') then
+  begin
+    AttrType := madCriticalHitChance;
+    Result := True;
+  end
+  else if (Normalized = 'criticalhitdamage') or (Normalized = 'crithitdamage') or
+          (Normalized = 'chd') or (Normalized = 'critdamage') then
+  begin
+    AttrType := madCriticalHitDamage;
+    Result := True;
+  end
+  else if (Normalized = 'headshotdamage') or (Normalized = 'hsd') or
+          (Normalized = 'headshot') then
+  begin
+    AttrType := madHeadshotDamage;
+    Result := True;
+  end
+  else if (Normalized = 'weaponhandling') or (Normalized = 'handling') then
+  begin
+    AttrType := madWeaponHandling;
+    Result := True;
+  end
+  else if (Normalized = 'armorregen') or (Normalized = 'armorregenpct') or
+          (Normalized = 'armorregeneraton') then
+  begin
+    AttrType := madArmorRegen;
+    Result := True;
+  end
+  else if (Normalized = 'hazardprotection') or (Normalized = 'hazard') then
+  begin
+    AttrType := madHazardProtection;
+    Result := True;
+  end
+  else if (Normalized = 'health') then
+  begin
+    AttrType := madHealth;
+    Result := True;
+  end
+  else if (Normalized = 'explosiveresistance') or (Normalized = 'expres') or
+          (Normalized = 'explosive') then
+  begin
+    AttrType := madExplosiveResistance;
+    Result := True;
+  end
+  else if (Normalized = 'incomingrepairs') or (Normalized = 'repairs') or
+          (Normalized = 'increpairs') then
+  begin
+    AttrType := madIncomingRepairs;
+    Result := True;
+  end
+  else if (Normalized = 'repairskills') or (Normalized = 'repair') or
+          (Normalized = 'skillrepair') then
+  begin
+    AttrType := madRepairSkills;
+    Result := True;
+  end
+  else if (Normalized = 'skillhaste') or (Normalized = 'haste') then
+  begin
+    AttrType := madSkillHaste;
+    Result := True;
+  end
+  else if (Normalized = 'skilldamage') or (Normalized = 'skilldmg') or
+          (Normalized = 'skdamage') then
+  begin
+    AttrType := madSkillDamage;
+    Result := True;
+  end
+  else if (Normalized = 'statuseffects') or (Normalized = 'status') then
+  begin
+    AttrType := madStatusEffects;
+    Result := True;
+  end
+  else if (Normalized = 'skillduration') or (Normalized = 'duration') then
+  begin
+    Result := False;
+  end
+  else if (Normalized = 'skillhealth') or (Normalized = 'skillhp') then
+  begin
+    Result := False;
   end;
 end;
 

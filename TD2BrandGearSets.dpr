@@ -7,13 +7,11 @@ uses
   FMX.Skia,
   MainBuilds in 'MainBuilds.pas' {MainForm},
   FormSets in 'Views\FormSets.pas' {FormSlots},
-  Acrylic in 'Resources\Acrylic.pas' {AcrylicFrame: TFrame},
   FormWeapons in 'Views\FormWeapons.pas' {FormCw},
   Utils in 'Resources\Utils.pas',
   Game.Types in 'Resources\Game.Types.pas',
   CalcEngine in 'Resources\CalcEngine.pas',
   FormSkills in 'Views\FormSkills.pas' {FormSkill},
-  Game.Player in 'Resources\Game.Player.pas',
   LoadoutManager in 'Resources\LoadoutManager.pas',
   Game.JsonIterator in 'Resources\Game.JsonIterator.pas' {DataJsonIterator: TDataModule},
   BuildGenerator in 'Resources\BuildGenerator.pas',
@@ -21,7 +19,8 @@ uses
   BuildArchetypes in 'Resources\BuildArchetypes.pas',
   FormRecPrefs in 'Views\FormRecPrefs.pas' {FrmRecPrefs},
   MainController in 'Controllers\MainController.pas',
-  WindowEffects in 'Resources\WindowEffects.pas';
+  WindowEffects in 'Resources\WindowEffects.pas',
+  Game.AttributeMapper in 'Resources\Game.AttributeMapper.pas';
 
 {$R *.res}
 
