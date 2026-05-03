@@ -16,7 +16,11 @@
             "value": 1
         }
     ],
-    "minorAttributeSlotCount": [1, 2, 3],
+    "minorAttributeSlotCount": [
+        1,
+        2,
+        3
+    ],
     "fixedMinorAttributes": [
         {
             "id": "modSlots",
@@ -198,7 +202,14 @@
     "improvisedSets": [
         {
             "name": "Improvised",
-            "imageIndex": [89, 90, 91, 92, 93, 94],
+            "imageIndex": [
+                89,
+                90,
+                91,
+                92,
+                93,
+                94
+            ],
             "parts": {
                 "Mask": {
                     "name": "Improvised Mask",
@@ -1768,6 +1779,50 @@
                     "itemsRequired": 3
                 }
             ]
+        },
+        {
+            "name": "Royal Works",
+            "imageIndex": 95,
+            "parts": {
+                "Mask": {
+                    "name": "Royal Works Mask",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Vest": {
+                    "name": "Royal Works Vest",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Holster": {
+                    "name": "Royal Works Holster",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Backpack": {
+                    "name": "Royal Works Backpack",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Glove": {
+                    "name": "Royal Works Glove",
+                    "coreAttribute": "weaponDamage"
+                },
+                "Kneepad": {
+                    "name": "Royal Works Kneepad",
+                    "coreAttribute": "weaponDamage"
+                }
+            },
+            "bonuses": [
+                {
+                    "weapon_handling": 5,
+                    "itemsRequired": 1
+                },
+                {
+                    "magazine_size": 32,
+                    "itemsRequired": 2
+                },
+                {
+                    "critical_hit_damage": 15,
+                    "itemsRequired": 3
+                }
+            ]
         }
     ],
     "gearSets": [
@@ -3010,7 +3065,7 @@
                     "talent": "Perfectly Unbreakable"
                 },
                 "Holster": {
-                    "name": "Ammo Dump Holster",
+                    "name": "Ammo Dump",
                     "coreAttribute": "armor",
                     "fixedMinorAttributes": [
                         "ammoCapacity"
@@ -3075,7 +3130,7 @@
                 "Backpack": {
                     "name": "Strategic Alignment",
                     "coreAttribute": "skillTier",
-                    "talent": "Perfect Shock & Awe"
+                    "talent": "Perfect Shock and Awe"
                 }
             }
         },
@@ -3123,29 +3178,31 @@
             "name": "Gila Guard",
             "imageIndex": 12,
             "parts": {
-                "Mask": {
-                    "name": "Nightwatcher",
-                    "coreAttribute": "armor",
-                    "fixedMinorAttributes": [
-                        "scannerPulseHaste"
-                    ]
-                },
+                "Mask": [
+                    {
+                        "name": "Nightwatcher",
+                        "coreAttribute": "armor",
+                        "fixedMinorAttributes": [
+                            "scannerPulseHaste"
+                        ]
+                    },
+                    {
+                        "name": "Chill Out",
+                        "coreAttribute": "armor",
+                        "fixedMinorAttributes": [
+                            "modSlots"
+                        ]
+                    }
+                ],
                 "Vest": {
                     "name": "Pointman",
                     "coreAttribute": "armor",
                     "talent": "Perfect Vanguard"
-                },
-                "Mask_ChillOut": {
-                    "name": "Chill Out",
-                    "coreAttribute": "armor",
-                    "fixedMinorAttributes": [
-                        "modSlots"
-                    ]
                 }
             }
         },
         {
-            "name": "Golan Gear",
+            "name": "Golan Gear Ltd",
             "imageIndex": 13,
             "parts": {
                 "Vest": {
@@ -3333,6 +3390,11 @@
                         "pistolDamage"
                     ],
                     "minorAttributeSlotCount": 3
+                },
+                "Vest": {
+                    "name": "Impetus",
+                    "coreAttribute": "skillTier",
+                    "talent": "Perfect Kinetic Momentum"
                 }
             }
         },
@@ -3489,6 +3551,40 @@
                     "fixedMinorAttributes": [
                         "accuracy"
                     ]
+                }
+            }
+        },
+        {
+            "name": "Unit Alloys",
+            "imageIndex": 28,
+            "parts": {
+                "Vest": {
+                    "name": "Equalizer",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Obliterate"
+                },
+                "Holster": {
+                    "name": "Salvo",
+                    "coreAttribute": "weaponDamage",
+                    "fixedMinorAttributes": [
+                        "rateOfFire"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Royal Works",
+            "imageIndex": 95,
+            "parts": {
+                "Vest": {
+                    "name": "Robin",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Gunslinger"
+                },
+                "Backpack": {
+                    "name": "Bulldog",
+                    "coreAttribute": "weaponDamage",
+                    "talent": "Perfect Composure"
                 }
             }
         }
@@ -3745,7 +3841,10 @@
                         "skillDamage",
                         "skillHaste"
                     ],
-                    "talent": ["One in Hand", "Two in the Bag"]
+                    "talent": [
+                        "One in Hand",
+                        "Two in the Bag"
+                    ]
                 }
             }
         },

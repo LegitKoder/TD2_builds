@@ -40,6 +40,10 @@ type
     Talents: TGroupBox;
     ListBoxTalents: TListBox;
     GroupBox1: TGroupBox;
+    Group_Expertise: TGroupBox;
+    GridPanelLayout3: TGridPanelLayout;
+    SkLabel2: TSkLabel;
+    SpinBox1: TSpinBox;
     procedure OkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ListBoxMinorAttributesClick(Sender: TObject);

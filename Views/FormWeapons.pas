@@ -10,8 +10,8 @@ uses
   FMX.ImgList, FMX.Edit, FMX.EditBox, FMX.SpinBox, System.Skia, FMX.Skia,
   FMX.Objects, System.JSON.Types, System.JSON.Builders, System.JSON.Readers,
   System.IOUtils,
-  System.Generics.Collections, System.TypInfo, Utils, Game.Types,
-  CalcEngine, Game.JsonIterator;
+  System.Generics.Collections, System.Generics.Defaults, System.TypInfo, Utils,
+  Game.Types, CalcEngine, Game.JsonIterator;
 
 type
   TWeaponChangedEvent = procedure(Sender: TObject; const NewWeapon: TWeapon)
@@ -220,7 +220,8 @@ var
 begin
   for i := 0 to ListBox.Items.Count - 1 do
     if (ListBox.ListItems[i] is TListBoxGroupHeader) and
-      ((ListBox.ListItems[i] as TListBoxGroupHeader).Text = Category) then
+//      ((ListBox.ListItems[i] as TListBoxGroupHeader).Text = Category) then
+      SameText((ListBox.ListItems[i] as TListBoxGroupHeader).Text, Category) then
       Exit;
 
   Header := TListBoxGroupHeader.Create(ListBox);
@@ -256,6 +257,8 @@ var
   Item : TListBoxItem;
   LastExoCat, LastNamedCat, LastRegCat: string;
 
+  SortedWeapons: TArray<TWeapon>;
+
   function FamilyAllowed(WF: TWeaponFamily): Boolean;
   var
     F: TWeaponFamily;
@@ -278,7 +281,24 @@ begin
     LastExoCat := '';
     LastNamedCat := '';
     LastRegCat := '';
-    for W in DataJsonIterator.Weapons.Values do
+    { for W in DataJsonIterator.Weapons.Values do }
+
+    // TDictionary.Values enumerates in hash-bucket order, which scatters
+    // weapons of the same family. Sort by (Rarity, WeaponType, Name) so that
+    // each rarity list groups its families contiguously under one header.
+    SortedWeapons := DataJsonIterator.Weapons.Values.ToArray;
+    TArray.Sort<TWeapon>(SortedWeapons,
+      TComparer<TWeapon>.Construct(
+        function(const A, B: TWeapon): Integer
+        begin
+          Result := Ord(A.Rarity) - Ord(B.Rarity);
+          if Result = 0 then
+            Result := Ord(A.WeaponType) - Ord(B.WeaponType);
+          if Result = 0 then
+            Result := CompareText(A.Name, B.Name);
+        end));
+
+    for W in SortedWeapons do
     begin
       if not FamilyAllowed(W.WeaponType) then
         Continue;

@@ -157,7 +157,7 @@ object FormCw: TFormCw
           Size.Width = 661.000000000000000000
           Size.Height = 620.000000000000000000
           Size.PlatformDefault = False
-          TabOrder = 38
+          TabOrder = 37
           ColumnCollection = <
             item
               Value = 33.331298828125000000
@@ -243,6 +243,7 @@ object FormCw: TFormCw
             Size.PlatformDefault = False
             TabOrder = 39
             ScrollAnimation = True
+            DisableFocusEffect = True
             DefaultItemStyles.ItemStyle = ''
             DefaultItemStyles.GroupHeaderStyle = ''
             DefaultItemStyles.GroupFooterStyle = ''
@@ -307,7 +308,7 @@ object FormCw: TFormCw
           Size.Width = 242.000000000000000000
           Size.Height = 620.000000000000000000
           Size.PlatformDefault = False
-          TabOrder = 38
+          TabOrder = 37
           ColumnCollection = <
             item
               Value = 100.000000000000000000

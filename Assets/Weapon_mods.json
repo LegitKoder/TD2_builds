@@ -335,7 +335,7 @@
       "type": "Merciless only",
       "name": "Merciless Optics",
       "bonus": {
-        "accuracy": 10
+        "accuracy": 15
       },
       "drawback": {},
       "specialization": null
@@ -1373,7 +1373,7 @@
       "type": "Bullet King only",
       "name": "Solid Gold Bipod",
       "bonus": {
-        "stability": 10
+        "stability": 20
       },
       "drawback": {},
       "specialization": null
@@ -1384,7 +1384,8 @@
       "type": "Overlord only",
       "name": "Overlord Underbarrel",
       "bonus": {
-        "weapon_stability": 20
+        "weapon_stability": 20,
+        "stability": 20
       },
       "drawback": {},
       "specialization": null
@@ -1472,7 +1473,8 @@
       "type": "The Ravenous only",
       "name": "Wolf's Claw",
       "bonus": {
-        "critical_hit_damage": 5
+        "critical_hit_damage": 5,
+        "stability": 10
       },
       "drawback": {},
       "specialization": null
@@ -2042,7 +2044,7 @@
       "type": "Merciless only",
       "name": "Merciless Muzzle",
       "bonus": {
-        "stability": 10
+        "stability": 15
       },
       "drawback": {},
       "specialization": null
@@ -2063,9 +2065,7 @@
       "slot": "Muzzle",
       "type": "The Ravenous only",
       "name": "Devouring Maw",
-      "bonus": {
-        "stability": 10
-      },
+      "bonus": {},
       "drawback": {},
       "specialization": null
     },
@@ -2086,7 +2086,8 @@
       "type": "Mantis only",
       "name": "Wrapped Suppressor",
       "bonus": {
-        "critical_hit_chance": 5
+        "critical_hit_chance": 5,
+        "accuracy": 5
       },
       "drawback": {},
       "specialization": null
@@ -2163,7 +2164,7 @@
       "type": "Ruthless only",
       "name": "Mayhem's Muzzle",
       "bonus": {
-        "stability": 10
+        "stability": 15
       },
       "drawback": {},
       "specialization": null
@@ -2332,7 +2333,286 @@
       },
       "drawback": {},
       "specialization": null
+    },
+    {
+      "id": 211,
+      "slot": "Optics Rail",
+      "type": "Agitator only",
+      "name": "Agitator Optic",
+      "bonus": {
+        "critical_hit_chance": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 212,
+      "slot": "Magazine",
+      "type": "Agitator only",
+      "name": "Agitator Magazine",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 213,
+      "slot": "Underbarrel",
+      "type": "Agitator only",
+      "name": "Agitator Underbarrel",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 214,
+      "slot": "Muzzle",
+      "type": "Agitator only",
+      "name": "Agitator Muzzle",
+      "bonus": {
+        "swap_speed": 50
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 215,
+      "slot": "Optics Rail",
+      "type": "Strega only",
+      "name": "Strega Optic",
+      "bonus": {
+        "critical_hit_chance": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 216,
+      "slot": "Magazine",
+      "type": "Strega only",
+      "name": "Strega Magazine",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 217,
+      "slot": "Underbarrel",
+      "type": "Strega only",
+      "name": "Strega Underbarrel",
+      "bonus": {
+        "weapon_handling": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 218,
+      "slot": "Muzzle",
+      "type": "Strega only",
+      "name": "Strega Muzzle",
+      "bonus": {
+        "critical_hit_damage": 5
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 219,
+      "slot": "Optics Rail",
+      "type": "Pakhan only",
+      "name": "Pakhan Optic",
+      "bonus": {
+        "weapon_damage": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 220,
+      "slot": "Magazine",
+      "type": "Pakhan only",
+      "name": "Pakhan Magazine",
+      "bonus": {
+        "extra_rounds": 20
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 221,
+      "slot": "Underbarrel",
+      "type": "Pakhan only",
+      "name": "Pakhan Underbarrel",
+      "bonus": {
+        "critical_hit_chance": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 222,
+      "slot": "Muzzle",
+      "type": "Pakhan only",
+      "name": "Pakhan Muzzle",
+      "bonus": {
+        "reload_speed": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 223,
+      "slot": "Optics Rail",
+      "type": "Big Alejandro only",
+      "name": "Big Alejandro Optic",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 224,
+      "slot": "Magazine",
+      "type": "Big Alejandro only",
+      "name": "Big Alejandro Magazine",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 225,
+      "slot": "Underbarrel",
+      "type": "Big Alejandro only",
+      "name": "Big Alejandro Underbarrel",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 226,
+      "slot": "Muzzle",
+      "type": "Big Alejandro only",
+      "name": "Big Alejandro Muzzle",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 227,
+      "slot": "Optics Rail",
+      "type": "Tempest only",
+      "name": "Tempest Optic",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 228,
+      "slot": "Magazine",
+      "type": "Tempest only",
+      "name": "Tempest Magazine",
+      "bonus": {
+        "stability": 50
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 229,
+      "slot": "Underbarrel",
+      "type": "Tempest only",
+      "name": "Tempest Underbarrel",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 230,
+      "slot": "Muzzle",
+      "type": "Tempest only",
+      "name": "Tempest Muzzle",
+      "bonus": {
+        "critical_hit_chance": 15
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 231,
+      "slot": "Optics Rail",
+      "type": "Bittersweet only",
+      "name": "Bittersweet Optic",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 232,
+      "slot": "Magazine",
+      "type": "Bittersweet only",
+      "name": "Bittersweet Magazine",
+      "bonus": {
+        "extra_rounds": 10
+      },
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 233,
+      "slot": "Underbarrel",
+      "type": "Bittersweet only",
+      "name": "Bittersweet Underbarrel",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 234,
+      "slot": "Muzzle",
+      "type": "Bittersweet only",
+      "name": "Bittersweet Muzzle",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 235,
+      "slot": "Optics Rail",
+      "type": "Sheriff only",
+      "name": "Sheriff Optic",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 236,
+      "slot": "Magazine",
+      "type": "Sheriff only",
+      "name": "Sheriff Magazine",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 237,
+      "slot": "Underbarrel",
+      "type": "Sheriff only",
+      "name": "Sheriff Underbarrel",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
+    },
+    {
+      "id": 238,
+      "slot": "Muzzle",
+      "type": "Sheriff only",
+      "name": "Sheriff Muzzle",
+      "bonus": {},
+      "drawback": {},
+      "specialization": null
     }
   ]
 }
-
